@@ -14,8 +14,11 @@ Install & Run
 - App runs on `http://localhost:3000`
 
 Auth Flow
-- On login/register, backend returns a token.
-- Token is stored in `localStorage` and sent in `Authorization: Token <token>` header.
+- Login/Register happen via Next API routes under `/api/auth/*`.
+- A secure httpOnly cookie stores the token; no localStorage.
+- Server components get the user via `getCurrentUser()` for SSR.
+- Client components consume `AuthProvider` context with `initialUser` from SSR.
 
 Notes
-- For production, consider httpOnly cookies and SSR-friendly auth.
+- Configure `NEXT_PUBLIC_API_BASE_URL` to point to the Django server (e.g., `http://localhost:8000`).
+- Cookies use `SameSite=Lax`, `HttpOnly`, and `Secure` in production.
