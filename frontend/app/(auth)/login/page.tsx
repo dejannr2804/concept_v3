@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation'
 
 export default function LoginPage() {
   const router = useRouter()
-  const { login, loading } = useAuth()
+  const { user, login, logout, loading } = useAuth()
   const [identifier, setIdentifier] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
@@ -20,6 +20,22 @@ export default function LoginPage() {
     } catch (err: any) {
       setError(err?.message || 'Login failed')
     }
+  }
+
+  // If already authenticated, show a friendly message and shortcuts
+  if (user) {
+    return (
+      <main className="container">
+        <div className="card">
+          <h2>Already logged in</h2>
+          <p>You are signed in as <strong>{user.username}</strong>.</p>
+          <div className="row" style={{ gap: 12 }}>
+            <button onClick={() => router.push('/')}>Go to Home</button>
+            <button onClick={async () => { await logout(); router.refresh() }}>Logout</button>
+          </div>
+        </div>
+      </main>
+    )
   }
 
   return (
@@ -45,4 +61,3 @@ export default function LoginPage() {
     </main>
   )
 }
-
