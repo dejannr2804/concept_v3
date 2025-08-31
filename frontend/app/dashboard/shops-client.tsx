@@ -1,5 +1,6 @@
 "use client"
 import { useEffect, useState } from 'react'
+import Link from 'next/link'
 
 type Shop = { id: number; name: string }
 
@@ -27,11 +28,13 @@ export default function ShopsClient() {
   if (shops.length === 0) return <div>You have no shops yet.</div>
 
   return (
-    <ul>
+    <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
       {shops.map((s) => (
-        <li key={s.id}>{s.name}</li>
+        <li key={s.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem', border: '1px solid #e5e7eb', borderRadius: 8, padding: '0.5rem 0.75rem' }}>
+          <div>{s.name}</div>
+          <Link href={`/dashboard/${s.id}`} style={{ padding: '0.4rem 0.75rem', border: '1px solid #d1d5db', borderRadius: 6, background: '#f3f4f6' }}>Manage</Link>
+        </li>
       ))}
     </ul>
   )
 }
-
