@@ -95,6 +95,7 @@ AUTH_USER_MODEL = "users.User"
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
+        "config.auth.CookieTokenAuthentication",
         "rest_framework.authentication.TokenAuthentication",
     ],
     "DEFAULT_PERMISSION_CLASSES": [
@@ -105,6 +106,7 @@ REST_FRAMEWORK = {
 # CORS
 FRONTEND_URL = os.environ.get("FRONTEND_URL", "http://localhost:3000")
 CORS_ALLOWED_ORIGINS = [FRONTEND_URL]
+CORS_ALLOW_CREDENTIALS = True
 CSRF_TRUSTED_ORIGINS = [FRONTEND_URL]
 
 LANGUAGE_CODE = "en-us"

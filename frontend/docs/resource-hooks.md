@@ -7,6 +7,7 @@ Reusable, UI‑agnostic logic for creating and updating resources. You fully con
   - `useResourceUpdater`
   - `useResourceField`
   - `useResourceCreator`
+  - `useResourceList`
 - Notifications provider is already mounted in `app/layout.tsx`.
 
 ## `useResourceUpdater`
@@ -39,7 +40,7 @@ Returns:
 
 Example (Manage Shop):
 ```tsx
-const u = useResourceUpdater(`/api/shops/${shopId}`)
+const u = useResourceUpdater(`shops/${shopId}`)
 <input value={u.data.name || ''} onChange={(e) => u.setField('name', e.target.value)} />
 <button onClick={() => u.save(['name'])}>Save</button>
 <button onClick={() => u.deleteResource()}>Delete Shop</button>
@@ -47,7 +48,7 @@ const u = useResourceUpdater(`/api/shops/${shopId}`)
 
 Example (Profile without GET):
 ```tsx
-const u = useResourceUpdater('/api/auth/me', {
+const u = useResourceUpdater('auth/me', {
   load: false,
   initialData: { first_name: user.first_name, last_name: user.last_name },
   extract: (raw) => raw?.user || raw,
@@ -78,7 +79,7 @@ Returns:
 
 Example (debounced autosave):
 ```tsx
-const name = useResourceField(`/api/shops/${id}`, 'name', initialName, { debounceMs: 400 })
+const name = useResourceField(`shops/${id}`, 'name', initialName, { debounceMs: 400 })
 <input value={name.value} onChange={(e) => name.setValue(e.target.value, true)} />
 ```
 
@@ -105,16 +106,43 @@ Returns:
 
 Example (Create Shop):
 ```tsx
-const c = useResourceCreator('/api/shops')
+const c = useResourceCreator('shops')
 <input value={c.data.name || ''} onChange={(e) => c.setField('name', e.target.value)} />
 <button onClick={() => c.create(['name'])}>Create</button>
 ```
 
 Example (Create Product):
 ```tsx
-const c = useResourceCreator(`/api/shops/${shopId}/products`)
+const c = useResourceCreator(`shops/${shopId}/products`)
 // set name/description
 const res = await c.create(['name','description'])
+```
+
+## `useResourceList`
+Fetch lists of resources with optional query params. Uses the same API client under the hood and includes a `refresh()` helper.
+
+Import:
+```ts
+import { useResourceList } from '@/hooks/resource'
+```
+
+Signature:
+```ts
+const list = useResourceList<T>(resourcePath, {
+  params?: Record<string, string | number | boolean | undefined | null>,
+  extract?: (raw: any) => T[],
+})
+```
+
+Returns:
+- `data`: `T[] | null`
+- `loading`: boolean
+- `error`: string | null
+- `refresh()`: void
+
+Example (List Shops):
+```tsx
+const { data: shops, loading, error } = useResourceList<Shop>('shops')
 ```
 
 ## Patterns & Tips

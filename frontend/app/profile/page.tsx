@@ -7,7 +7,7 @@ import { useResourceUpdater } from '@/hooks/resource'
 export default function ProfilePage() {
   const router = useRouter()
   const { user } = useAuth()
-  const updater = useResourceUpdater('/api/auth/me', {
+  const updater = useResourceUpdater('auth/me', {
     load: false,
     initialData: { first_name: user?.first_name || '', last_name: user?.last_name || '' },
     extract: (raw) => (raw && (raw as any).user) || raw,

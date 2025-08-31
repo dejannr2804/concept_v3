@@ -1,6 +1,7 @@
 "use client"
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useNotifications } from '@/components/Notifications'
+import { api } from '@/lib/api'
 
 type ExtractFn = (raw: any) => any
 
@@ -35,9 +36,7 @@ export function useResourceUpdater(resourcePath: string, opts: UpdaterOptions = 
       setLoading(true)
       setError(null)
       try {
-        const res = await fetch(resourcePath, { cache: 'no-store' })
-        if (!res.ok) throw new Error(await responseErrorMessage(res))
-        const raw = await safeJson(res)
+        const raw = await api.get(resourcePath)
         const obj = extract ? extract(raw) : raw
         if (!cancelled) {
           setData(obj || {})
@@ -76,21 +75,10 @@ export function useResourceUpdater(resourcePath: string, opts: UpdaterOptions = 
     }
     setSaving(true)
     try {
-      const res = await fetch(resourcePath, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(patch),
-      })
-      if (!res.ok) throw new Error(await responseErrorMessage(res))
-      // If backend returns content, update local state; otherwise accept current data
-      if (res.status !== 204) {
-        const raw = await safeJson(res)
-        const obj = extract ? extract(raw) : raw
-        if (obj && typeof obj === 'object') setData(obj)
-        initialRef.current = obj || { ...data }
-      } else {
-        initialRef.current = { ...data }
-      }
+      const raw = await api.patch(resourcePath, patch)
+      const obj = extract ? extract(raw) : raw
+      if (obj && typeof obj === 'object') setData(obj)
+      initialRef.current = (obj && typeof obj === 'object') ? obj : { ...data }
       notify.success('Saved')
       return { ok: true }
     } catch (e: any) {
@@ -105,8 +93,7 @@ export function useResourceUpdater(resourcePath: string, opts: UpdaterOptions = 
     if (!confirm('Are you sure you want to delete this item?')) return { ok: false }
     setDeleting(true)
     try {
-      const res = await fetch(resourcePath, { method: 'DELETE' })
-      if (!res.ok) throw new Error(await responseErrorMessage(res))
+      await api.delete(resourcePath)
       notify.success('Deleted')
       return { ok: true }
     } catch (e: any) {
@@ -168,21 +155,11 @@ export function useResourceField(
     if (optimistic) baseRef.current = value
     setSaving(true)
     try {
-      const res = await fetch(resourcePath, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(patch),
-      })
-      if (!res.ok) throw new Error(await responseErrorMessage(res))
-      if (res.status !== 204) {
-        const raw = await safeJson(res)
-        const serverVal = raw?.[fieldName]
-        if (serverVal !== undefined) {
-          baseRef.current = serverVal
-          setValue(serverVal)
-        } else {
-          baseRef.current = value
-        }
+      const raw = await api.patch(resourcePath, patch)
+      const serverVal = raw?.[fieldName]
+      if (serverVal !== undefined) {
+        baseRef.current = serverVal
+        setValue(serverVal)
       } else {
         baseRef.current = value
       }
@@ -265,13 +242,7 @@ export function useResourceCreator(resourcePath: string, opts: CreatorOptions = 
     setSaving(true)
     setError(null)
     try {
-      const res = await fetch(resourcePath, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
-      })
-      if (!res.ok) throw new Error(await responseErrorMessage(res))
-      const raw = await safeJson(res)
+      const raw = await api.post(resourcePath, body)
       const created = extract ? extract(raw) : raw
       notify.success('Created')
       return { ok: true, data: created }
@@ -292,4 +263,70 @@ function pick(obj: Record<string, any>, keys: string[]) {
   const out: Record<string, any> = {}
   for (const k of keys) out[k] = obj[k]
   return out
+}
+
+// List hook for collections, with optional params and extract
+export type ListOptions<T> = {
+  params?: Record<string, string | number | boolean | undefined | null>
+  extract?: (raw: any) => T[]
+}
+
+export function useResourceList<T = any>(resourcePath: string, opts: ListOptions<T> = {}) {
+  const { params, extract } = opts
+  const notify = useNotifications()
+  const [data, setData] = useState<T[] | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [version, setVersion] = useState(0)
+
+  useEffect(() => {
+    let cancelled = false
+    setLoading(true)
+    setError(null)
+    api.get<any>(resourcePath, { params })
+      .then((raw) => {
+        const arr = (extract ? extract(raw) : raw) as T[]
+        if (!cancelled) setData(arr)
+      })
+      .catch((e: any) => {
+        if (!cancelled) setError(e?.message || 'Failed to load')
+      })
+      .finally(() => !cancelled && setLoading(false))
+    return () => { cancelled = true }
+  }, [resourcePath, JSON.stringify(params || {}), version])
+
+  function refresh() { setVersion((x) => x + 1) }
+
+  return { data, loading, error, refresh, notify }
+}
+
+// Single item loader
+export type ItemOptions<T> = { extract?: (raw: any) => T }
+
+export function useResourceItem<T = any>(resourcePath: string, opts: ItemOptions<T> = {}) {
+  const { extract } = opts
+  const [data, setData] = useState<T | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [version, setVersion] = useState(0)
+
+  useEffect(() => {
+    let cancelled = false
+    setLoading(true)
+    setError(null)
+    api.get<any>(resourcePath)
+      .then((raw) => {
+        const obj = (extract ? extract(raw) : raw) as T
+        if (!cancelled) setData(obj)
+      })
+      .catch((e: any) => {
+        if (!cancelled) setError(e?.message || 'Failed to load')
+      })
+      .finally(() => !cancelled && setLoading(false))
+    return () => { cancelled = true }
+  }, [resourcePath, version])
+
+  function refresh() { setVersion((x) => x + 1) }
+
+  return { data, loading, error, refresh }
 }

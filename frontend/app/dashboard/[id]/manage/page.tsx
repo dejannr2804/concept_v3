@@ -6,7 +6,7 @@ import { useResourceUpdater } from '@/hooks/resource'
 export default function ManageShopPage({ params }: { params: { id: string } }) {
   const { id } = params
   const router = useRouter()
-  const updater = useResourceUpdater(`/api/shops/${id}`)
+  const updater = useResourceUpdater(`shops/${id}`)
 
   return (
     <main className="container">

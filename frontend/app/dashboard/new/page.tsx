@@ -4,7 +4,7 @@ import { useResourceCreator } from '@/hooks/resource'
 
 export default function NewShopPage() {
   const router = useRouter()
-  const creator = useResourceCreator('/api/shops')
+  const creator = useResourceCreator('shops')
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault()
     const name = String(creator.data?.name || '').trim()

@@ -2,9 +2,9 @@ Frontend (Next.js + TypeScript)
 
 Features
 - Next.js App Router (TypeScript)
-- Reusable API client and hooks for calling Django APIs
+- Reusable API client and hooks for calling Django APIs directly (no per‑resource Next API proxies)
 - Basic pages: Home, Login, Register
-- Resource hooks for scalable create/update: see `docs/resource-hooks.md`
+- Resource hooks for scalable list/create/update/delete: see `docs/resource-hooks.md`
 
 Environment
 - Copy `.env.example` to `.env.local` and set `NEXT_PUBLIC_API_BASE_URL` (e.g., `http://localhost:8000`).
@@ -19,7 +19,9 @@ Auth Flow
 - A secure httpOnly cookie stores the token; no localStorage.
 - Server components get the user via `getCurrentUser()` for SSR.
 - Client components consume `AuthProvider` context with `initialUser` from SSR.
+ - App pages call Django directly with `credentials: 'include'` via the API client/hooks.
 
 Notes
 - Configure `NEXT_PUBLIC_API_BASE_URL` to point to the Django server (e.g., `http://localhost:8000`).
 - Cookies use `SameSite=Lax`, `HttpOnly`, and `Secure` in production.
+ - Django `CORS_ALLOW_CREDENTIALS=True` is enabled; ensure `FRONTEND_URL` matches your Next.js origin.

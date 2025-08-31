@@ -6,7 +6,7 @@ import { useResourceUpdater } from '@/hooks/resource'
 export default function ProductDashboard({ params }: { params: { id: string; productId: string } }) {
   const { id: shopId, productId } = params
   const router = useRouter()
-  const updater = useResourceUpdater(`/api/shops/${shopId}/products/${productId}`)
+  const updater = useResourceUpdater(`shops/${shopId}/products/${productId}`)
 
   return (
     <main className="container">
