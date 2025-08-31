@@ -21,6 +21,7 @@ export default function Header() {
     <header style={styles.header}>
       <div style={styles.left}>
         <Link href="/" style={styles.brand}>Concept</Link>
+        {user && <Link href="/dashboard">Dashboard</Link>}
       </div>
       <div style={styles.right}>
         {user ? (
@@ -90,4 +91,3 @@ const styles: Record<string, React.CSSProperties> = {
     cursor: 'pointer',
   },
 }
-

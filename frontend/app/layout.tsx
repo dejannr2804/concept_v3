@@ -3,6 +3,7 @@ import type { Metadata } from 'next'
 import { AuthProvider } from '@/components/AuthProvider'
 import { NotificationsProvider } from '@/components/Notifications'
 import { getCurrentUser } from '@/lib/auth'
+import Header from '@/components/Header'
 
 export const metadata: Metadata = {
   title: 'Next + Django Starter',
@@ -16,6 +17,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       <body>
         <NotificationsProvider>
           <AuthProvider initialUser={user}>
+            <Header />
             {children}
           </AuthProvider>
         </NotificationsProvider>
