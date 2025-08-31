@@ -10,16 +10,15 @@ export default function RegisterPage() {
   const [username, setUsername] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [error, setError] = useState<string | null>(null)
+  // Notifications are handled globally; no inline error state
 
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault()
-    setError(null)
     try {
       await registerUser({ username, email, password })
       router.push('/')
     } catch (err: any) {
-      setError(err?.message || 'Register failed')
+      // Error toast already shown in AuthProvider
     }
   }
 
@@ -40,7 +39,6 @@ export default function RegisterPage() {
             <span>Password</span>
             <input type="password" value={password} onChange={e => setPassword(e.target.value)} required />
           </label>
-          {error && <div style={{color: '#ff6666'}}>{error}</div>}
           <div className="row" style={{justifyContent: 'space-between'}}>
             <button type="submit" disabled={loading}>{loading ? 'Creating…' : 'Register'}</button>
             <Link href="/login">Have an account?</Link>
@@ -50,4 +48,3 @@ export default function RegisterPage() {
     </main>
   )
 }
-

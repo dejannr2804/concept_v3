@@ -9,16 +9,15 @@ export default function LoginPage() {
   const { user, login, logout, loading } = useAuth()
   const [identifier, setIdentifier] = useState('')
   const [password, setPassword] = useState('')
-  const [error, setError] = useState<string | null>(null)
+  // Notifications are handled globally; no inline error state
 
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault()
-    setError(null)
     try {
       await login({ identifier, password })
       router.push('/')
     } catch (err: any) {
-      setError(err?.message || 'Login failed')
+      // Error toast already shown in AuthProvider
     }
   }
 
@@ -51,7 +50,6 @@ export default function LoginPage() {
             <span>Password</span>
             <input type="password" value={password} onChange={e => setPassword(e.target.value)} required />
           </label>
-          {error && <div style={{color: '#ff6666'}}>{error}</div>}
           <div className="row" style={{justifyContent: 'space-between'}}>
             <button type="submit" disabled={loading}>{loading ? 'Signing in…' : 'Login'}</button>
             <Link href="/register">Need an account?</Link>

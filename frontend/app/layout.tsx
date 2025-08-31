@@ -1,6 +1,7 @@
 import './globals.css'
 import type { Metadata } from 'next'
 import { AuthProvider } from '@/components/AuthProvider'
+import { NotificationsProvider } from '@/components/Notifications'
 import { getCurrentUser } from '@/lib/auth'
 
 export const metadata: Metadata = {
@@ -13,9 +14,11 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html lang="en">
       <body>
-        <AuthProvider initialUser={user}>
-          {children}
-        </AuthProvider>
+        <NotificationsProvider>
+          <AuthProvider initialUser={user}>
+            {children}
+          </AuthProvider>
+        </NotificationsProvider>
       </body>
     </html>
   )
