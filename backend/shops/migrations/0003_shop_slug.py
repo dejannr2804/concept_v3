@@ -41,7 +41,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name="shop",
             name="slug",
-            field=models.SlugField(max_length=255, unique=True),
+            field=models.SlugField(max_length=255, unique=True, null=False, blank=False),
         ),
     ]
-

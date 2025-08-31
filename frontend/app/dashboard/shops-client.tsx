@@ -2,7 +2,7 @@
 import Link from 'next/link'
 import { useResourceList } from '@/hooks/resource'
 
-type Shop = { id: number; name: string }
+type Shop = { id: number; name: string; slug: string }
 
 export default function ShopsClient() {
   const { data, loading, error } = useResourceList<Shop>('shops')
@@ -17,7 +17,10 @@ export default function ShopsClient() {
       {data.map((s) => (
         <li key={s.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem', border: '1px solid #e5e7eb', borderRadius: 8, padding: '0.5rem 0.75rem' }}>
           <div>{s.name}</div>
-          <Link href={`/dashboard/${s.id}`} style={{ padding: '0.4rem 0.75rem', border: '1px solid #d1d5db', borderRadius: 6, background: '#f3f4f6' }}>Manage</Link>
+          <div style={{ display: 'flex', gap: '0.5rem' }}>
+            <Link href={`/shops/${s.slug}`} style={{ padding: '0.4rem 0.75rem', border: '1px solid #d1d5db', borderRadius: 6, background: 'white' }}>View</Link>
+            <Link href={`/dashboard/${s.id}`} style={{ padding: '0.4rem 0.75rem', border: '1px solid #d1d5db', borderRadius: 6, background: '#f3f4f6' }}>Manage</Link>
+          </div>
         </li>
       ))}
     </ul>

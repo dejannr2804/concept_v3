@@ -30,6 +30,15 @@ export default function ManageShopPage({ params }: { params: { id: string } }) {
               />
             </label>
             <label>
+              <div>Description</div>
+              <textarea
+                value={updater.data?.description || ''}
+                onChange={(e) => updater.setField('description', e.target.value)}
+                rows={4}
+                style={{ padding: '0.6rem 0.8rem', borderRadius: 8, border: '1px solid #d1d5db' }}
+              />
+            </label>
+            <label>
               <div>Slug</div>
               <input
                 value={updater.data?.slug || ''}
@@ -38,7 +47,7 @@ export default function ManageShopPage({ params }: { params: { id: string } }) {
               <small>Must be unique. Changing it updates your shop URL.</small>
             </label>
             <div className="row" style={{ gap: '0.5rem' }}>
-              <button onClick={() => updater.save(['name', 'slug'])} disabled={updater.saving}>
+              <button onClick={() => updater.save(['name', 'slug', 'description'])} disabled={updater.saving}>
                 {updater.saving ? 'Saving…' : 'Save Changes'}
               </button>
               <button

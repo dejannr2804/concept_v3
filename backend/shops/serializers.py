@@ -7,7 +7,7 @@ from .models import Shop, Product
 class ShopSerializer(serializers.ModelSerializer):
     class Meta:
         model = Shop
-        fields = ["id", "name", "slug"]
+        fields = ["id", "name", "slug", "description"]
 
     def validate_slug(self, value: str) -> str:
         # Normalize slug to slug-case
@@ -28,6 +28,20 @@ class ShopSerializer(serializers.ModelSerializer):
             # If empty string provided, regenerate based on name
             validated_data["slug"] = slugify(validated_data.get("name", instance.name))
         return super().update(instance, validated_data)
+
+
+class PublicProductSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Product
+        fields = ["id", "name", "description", "created_at", "updated_at"]
+
+
+class PublicShopSerializer(serializers.ModelSerializer):
+    products = PublicProductSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Shop
+        fields = ["id", "name", "slug", "description", "products"]
 
 
 class ProductSerializer(serializers.ModelSerializer):

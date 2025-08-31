@@ -1,9 +1,12 @@
 "use client"
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { useState, useRef, useEffect } from 'react'
 import { useAuth } from '@/hooks/useAuth'
 
 export default function Header() {
+  const pathname = usePathname()
+  if (pathname?.startsWith('/shops/')) return null
   const { user, logout } = useAuth()
   const [open, setOpen] = useState(false)
   const menuRef = useRef<HTMLDivElement | null>(null)

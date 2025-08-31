@@ -1,7 +1,8 @@
 from rest_framework import generics, permissions
+from rest_framework.generics import RetrieveAPIView
 
 from .models import Shop, Product
-from .serializers import ShopSerializer, ProductSerializer
+from .serializers import ShopSerializer, ProductSerializer, PublicShopSerializer
 
 
 class ShopListCreateView(generics.ListCreateAPIView):
@@ -47,3 +48,13 @@ class ProductRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     def get_queryset(self):
         # Constrain to products within the user's shops
         return Product.objects.filter(shop__user=self.request.user)
+
+
+class PublicShopDetailView(RetrieveAPIView):
+    permission_classes = [permissions.AllowAny]
+    serializer_class = PublicShopSerializer
+    lookup_field = "slug"
+
+    def get_queryset(self):
+        # Publicly readable shop by slug, no user constraint
+        return Shop.objects.all()
