@@ -42,6 +42,5 @@ export async function DELETE(_req: Request, { params }: { params: { id: string; 
     headers: token ? { Authorization: `Token ${token}` } : undefined,
   })
   if (!res.ok) return NextResponse.json(await safeJson(res), { status: res.status })
-  return NextResponse.json({}, { status: 204 })
+  return new NextResponse(null, { status: 204 })
 }
-

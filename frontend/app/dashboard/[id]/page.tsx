@@ -1,8 +1,7 @@
 "use client"
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
-import { useNotifications } from '@/components/Notifications'
+// Shop dashboard shows read-only info and links to manage pages
 
 type Shop = { id: number; name: string }
 type Product = { id: number; name: string; description?: string }
@@ -10,13 +9,9 @@ type Product = { id: number; name: string; description?: string }
 export default function ShopDashboardPage({ params }: { params: { id: string } }) {
   const { id } = params
   const [shop, setShop] = useState<Shop | null>(null)
-  const [name, setName] = useState('')
   const [loading, setLoading] = useState(true)
-  const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [products, setProducts] = useState<Product[] | null>(null)
-  const notify = useNotifications()
-  const router = useRouter()
 
   useEffect(() => {
     let cancelled = false
@@ -30,7 +25,6 @@ export default function ShopDashboardPage({ params }: { params: { id: string } }
       .then((data: Shop) => {
         if (!cancelled) {
           setShop(data)
-          setName(data.name)
           setError(null)
         }
       })
@@ -52,42 +46,15 @@ export default function ShopDashboardPage({ params }: { params: { id: string } }
     }
   }, [id])
 
-  async function onSave(e: React.FormEvent) {
-    e.preventDefault()
-    if (!shop) return
-    const newName = name.trim()
-    if (!newName) return notify.error('Name cannot be empty')
-    setSaving(true)
-    try {
-      const res = await fetch(`/api/shops/${shop.id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: newName }),
-      })
-      if (!res.ok) {
-        const data = await res.json().catch(() => null)
-        throw new Error(data?.detail || 'Failed to save changes')
-      }
-      const data = (await res.json()) as Shop
-      setShop(data)
-      setName(data.name)
-      notify.success('Changes saved')
-      // Refresh parent listing if user goes back
-      router.refresh()
-    } catch (e: any) {
-      notify.error(e?.message || 'Failed to save changes')
-    } finally {
-      setSaving(false)
-    }
-  }
+  // Product management is available in per-product pages
 
   // Product creation moved to a dedicated page
 
   return (
     <main className="container">
       <div className="card">
-        <div className="row" style={{ justifyContent: 'space-between' }}>
-          <h1>Manage Shop</h1>
+        <div className="row" style={{ justifyContent: 'space-between', alignItems: 'center' }}>
+          <h1>Shop</h1>
           <Link href="/dashboard">Back to Dashboard</Link>
         </div>
         <div className="spacer" />
@@ -96,15 +63,13 @@ export default function ShopDashboardPage({ params }: { params: { id: string } }
         ) : error ? (
           <div className="error">{error}</div>
         ) : shop ? (
-          <form onSubmit={onSave} className="col" style={{ gap: '0.75rem' }}>
-            <label>
-              <div>Shop Name</div>
-              <input value={name} onChange={(e) => setName(e.target.value)} />
-            </label>
-            <div className="row" style={{ gap: '0.5rem' }}>
-              <button type="submit" disabled={saving}>{saving ? 'Saving...' : 'Save Changes'}</button>
+          <div className="row" style={{ justifyContent: 'space-between', alignItems: 'center' }}>
+            <div>
+              <div style={{ fontSize: '0.9rem', opacity: 0.8 }}>Name</div>
+              <div style={{ fontWeight: 600, fontSize: '1.05rem' }}>{shop.name}</div>
             </div>
-          </form>
+            <Link href={`/dashboard/${shop.id}/manage`} style={{ padding: '0.5rem 0.75rem', border: '1px solid #d1d5db', borderRadius: 6, background: '#f3f4f6' }}>Manage Shop</Link>
+          </div>
         ) : (
           <div>Shop not found.</div>
         )}
