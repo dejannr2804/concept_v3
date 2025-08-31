@@ -4,6 +4,7 @@ Features
 - Next.js App Router (TypeScript)
 - Reusable API client and hooks for calling Django APIs
 - Basic pages: Home, Login, Register
+- Resource hooks for scalable create/update: see `docs/resource-hooks.md`
 
 Environment
 - Copy `.env.example` to `.env.local` and set `NEXT_PUBLIC_API_BASE_URL` (e.g., `http://localhost:8000`).

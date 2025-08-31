@@ -1,38 +1,16 @@
 "use client"
-import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { useNotifications } from '@/components/Notifications'
+import { useResourceCreator } from '@/hooks/resource'
 
 export default function NewShopPage() {
-  const [name, setName] = useState('')
-  const [loading, setLoading] = useState(false)
   const router = useRouter()
-  const notify = useNotifications()
-
+  const creator = useResourceCreator('/api/shops')
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault()
-    if (!name.trim()) {
-      notify.error('Please enter a shop name')
-      return
-    }
-    setLoading(true)
-    try {
-      const res = await fetch('/api/shops', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: name.trim() }),
-      })
-      if (!res.ok) {
-        const data = await res.json().catch(() => null)
-        throw new Error(data?.detail || 'Failed to create shop')
-      }
-      notify.success('Shop created')
-      router.push('/dashboard')
-    } catch (e: any) {
-      notify.error(e?.message || 'Failed to create shop')
-    } finally {
-      setLoading(false)
-    }
+    const name = String(creator.data?.name || '').trim()
+    if (!name) return alert('Please enter a shop name')
+    const res = await creator.create(['name'])
+    if (res.ok) router.push('/dashboard')
   }
 
   return (
@@ -42,14 +20,13 @@ export default function NewShopPage() {
         <form onSubmit={onSubmit} className="column" style={{ gap: '0.75rem' }}>
           <label>
             <div>Shop Name</div>
-            <input value={name} onChange={(e) => setName(e.target.value)} placeholder="My Shop" />
+            <input value={creator.data?.name || ''} onChange={(e) => creator.setField('name', e.target.value)} placeholder="My Shop" />
           </label>
-          <button type="submit" disabled={loading}>
-            {loading ? 'Creating...' : 'Create'}
+          <button type="submit" disabled={creator.saving}>
+            {creator.saving ? 'Creating...' : 'Create'}
           </button>
         </form>
       </div>
     </main>
   )
 }
-

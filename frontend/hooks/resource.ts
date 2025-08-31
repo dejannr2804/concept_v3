@@ -242,3 +242,54 @@ function flattenErrors(data: Record<string, any>): string {
 function shallowEqual(a: any, b: any) {
   return a === b
 }
+
+// Creator hook for new resources
+export type CreatorOptions = {
+  initialData?: Record<string, any> | null
+  extract?: ExtractFn
+}
+
+export function useResourceCreator(resourcePath: string, opts: CreatorOptions = {}) {
+  const { initialData = {}, extract } = opts
+  const notify = useNotifications()
+  const [data, setData] = useState<Record<string, any>>(initialData || {})
+  const [saving, setSaving] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  function setField(name: string, value: any) {
+    setData((prev) => ({ ...prev, [name]: value }))
+  }
+
+  async function create(keys?: string[]) {
+    const body = keys && keys.length ? pick(data, keys) : data
+    setSaving(true)
+    setError(null)
+    try {
+      const res = await fetch(resourcePath, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      })
+      if (!res.ok) throw new Error(await responseErrorMessage(res))
+      const raw = await safeJson(res)
+      const created = extract ? extract(raw) : raw
+      notify.success('Created')
+      return { ok: true, data: created }
+    } catch (e: any) {
+      const msg = e?.message || 'Failed to create'
+      setError(msg)
+      notify.error(msg)
+      return { ok: false, error: e }
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  return { data, setField, saving, error, create }
+}
+
+function pick(obj: Record<string, any>, keys: string[]) {
+  const out: Record<string, any> = {}
+  for (const k of keys) out[k] = obj[k]
+  return out
+}
