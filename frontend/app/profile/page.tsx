@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation'
 import { getCurrentUser } from '@/lib/auth'
+import ProfileClient from './profile-client'
 
 export default async function ProfilePage() {
   const user = await getCurrentUser()
@@ -9,10 +10,8 @@ export default async function ProfilePage() {
     <main className="container">
       <div className="card">
         <h1>Profile</h1>
-        <p>Username: {user.username}</p>
-        <p>Email: {user.email}</p>
+        <ProfileClient user={user} />
       </div>
     </main>
   )
 }
-

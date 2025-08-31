@@ -1,8 +1,8 @@
 :root {
-  --bg: #0b0f19;
-  --fg: #eaeef8;
-  --muted: #9aa3b2;
-  --primary: #4f7cff;
+  --bg: #ffffff;
+  --fg: #111827;
+  --muted: #6b7280;
+  --primary: #2563eb;
 }
 
 html, body {
@@ -21,20 +21,20 @@ input, button { font-size: 1rem; }
 input {
   padding: 0.6rem 0.8rem;
   border-radius: 8px;
-  border: 1px solid #2b3244;
-  background: #0e1422;
+  border: 1px solid #d1d5db;
+  background: #ffffff;
   color: var(--fg);
 }
 button {
   padding: 0.6rem 1rem;
   border-radius: 8px;
-  border: 1px solid #2b3244;
-  background: #192238;
+  border: 1px solid #d1d5db;
+  background: #f3f4f6;
   color: var(--fg);
   cursor: pointer;
 }
 .container { max-width: 720px; margin: 2rem auto; padding: 0 1rem; }
-.card { border: 1px solid #1f2740; border-radius: 12px; padding: 1.25rem; background: #0f1526; }
+.card { border: 1px solid #e5e7eb; border-radius: 12px; padding: 1.25rem; background: #ffffff; }
 .row { display: flex; gap: 0.75rem; align-items: center; }
 .col { display: flex; flex-direction: column; gap: 0.5rem; }
 .spacer { height: 1rem; }
@@ -56,12 +56,12 @@ button {
   gap: 10px;
   min-width: 280px;
   max-width: 420px;
-  border: 1px solid #1f2740;
-  background: #0f1526;
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
   color: var(--fg);
   border-radius: 12px;
   padding: 10px 12px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
 }
 .toast-left { display: flex; align-items: center; gap: 10px; }
 .toast-texts { display: flex; flex-direction: column; gap: 2px; }

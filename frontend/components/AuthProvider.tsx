@@ -26,6 +26,9 @@ export function AuthProvider({ children, initialUser = null }: { children: React
         .then(async (r) => (r.ok ? (await r.json())?.user ?? null : null))
         .then((u) => setUser(u))
         .catch(() => setUser(null))
+    } else {
+      // Keep context in sync with server-provided user on navigation/refresh
+      setUser(initialUser)
     }
   }, [initialUser])
 

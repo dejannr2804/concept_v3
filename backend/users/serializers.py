@@ -2,6 +2,7 @@ from django.contrib.auth import authenticate
 from django.contrib.auth.password_validation import validate_password
 from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
+from rest_framework.validators import UniqueValidator
 from rest_framework.authtoken.models import Token
 
 from .models import User
@@ -11,6 +12,31 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ["id", "username", "email", "first_name", "last_name"]
+
+
+class UserUpdateSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(
+        required=False,
+        validators=[
+            UniqueValidator(
+                queryset=User.objects.all(),
+                message="account with this username already exists",
+            )
+        ],
+    )
+    email = serializers.EmailField(
+        required=False,
+        validators=[
+            UniqueValidator(
+                queryset=User.objects.all(),
+                message="account with this email already exists",
+            )
+        ],
+    )
+
+    class Meta:
+        model = User
+        fields = ["username", "email", "first_name", "last_name"]
 
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -57,4 +83,3 @@ class LoginSerializer(serializers.Serializer):
 
         attrs["user"] = user
         return attrs
-

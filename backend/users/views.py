@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view, permission_classes
 
-from .serializers import RegisterSerializer, LoginSerializer, UserSerializer
+from .serializers import RegisterSerializer, LoginSerializer, UserSerializer, UserUpdateSerializer
 
 
 class RegisterView(APIView):
@@ -43,6 +43,31 @@ class MeView(APIView):
     def get(self, request):
         return Response({"user": UserSerializer(request.user).data})
 
+    def patch(self, request):
+        serializer = UserUpdateSerializer(instance=request.user, data=request.data, partial=True)
+        if serializer.is_valid():
+            user = serializer.save()
+            return Response({"user": UserSerializer(user).data})
+        # Include a concise 'detail' message for convenience
+        errors = serializer.errors
+        # Try to pick the first field error as a human-readable detail
+        detail = None
+        try:
+            for key in ["email", "username", *errors.keys()]:
+                val = errors.get(key)
+                if isinstance(val, (list, tuple)) and val:
+                    detail = str(val[0])
+                    break
+                if isinstance(val, str):
+                    detail = val
+                    break
+        except Exception:
+            detail = None
+        payload = {**errors}
+        if detail and not payload.get("detail"):
+            payload["detail"] = detail
+        return Response(payload, status=status.HTTP_400_BAD_REQUEST)
+
 
 class LogoutView(APIView):
     permission_classes = [permissions.IsAuthenticated]
@@ -54,4 +79,3 @@ class LogoutView(APIView):
         except Token.DoesNotExist:
             pass
         return Response({"detail": "Logged out"})
-
