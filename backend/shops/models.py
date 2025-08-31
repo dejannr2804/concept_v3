@@ -5,6 +5,7 @@ from django.db import models
 class Shop(models.Model):
     name = models.CharField(max_length=255)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="shops")
+    slug = models.SlugField(max_length=255, unique=True)
 
     class Meta:
         db_table = "cp_shop"

@@ -29,8 +29,16 @@ export default function ManageShopPage({ params }: { params: { id: string } }) {
                 onChange={(e) => updater.setField('name', e.target.value)}
               />
             </label>
+            <label>
+              <div>Slug</div>
+              <input
+                value={updater.data?.slug || ''}
+                onChange={(e) => updater.setField('slug', e.target.value)}
+              />
+              <small>Must be unique. Changing it updates your shop URL.</small>
+            </label>
             <div className="row" style={{ gap: '0.5rem' }}>
-              <button onClick={() => updater.save(['name'])} disabled={updater.saving}>
+              <button onClick={() => updater.save(['name', 'slug'])} disabled={updater.saving}>
                 {updater.saving ? 'Saving…' : 'Save Changes'}
               </button>
               <button

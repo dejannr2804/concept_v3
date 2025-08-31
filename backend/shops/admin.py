@@ -5,8 +5,8 @@ from .models import Shop, Product
 
 @admin.register(Shop)
 class ShopAdmin(admin.ModelAdmin):
-    list_display = ("id", "name", "user")
-    search_fields = ("name",)
+    list_display = ("id", "name", "slug", "user")
+    search_fields = ("name", "slug")
     list_select_related = ("user",)
 
 
