@@ -3,7 +3,7 @@ import Link from 'next/link'
 // Shop dashboard shows read-only info and links to manage pages
 import { useResourceItem, useResourceList } from '@/hooks/resource'
 
-type Shop = { id: number; name: string }
+type Shop = { id: number; name: string; slug: string }
 type Product = { id: number; name: string; description?: string }
 
 export default function ShopDashboardPage({ params }: { params: { id: string } }) {
@@ -19,8 +19,26 @@ export default function ShopDashboardPage({ params }: { params: { id: string } }
     <main className="container">
       <div className="card">
         <div className="row" style={{ justifyContent: 'space-between', alignItems: 'center' }}>
-          <h1>Shop</h1>
-          <Link href="/dashboard">Back to Dashboard</Link>
+          <h1>{shop.data ? shop.data.name : 'Shop'}</h1>
+          <div className="row" style={{ gap: '0.5rem', alignItems: 'center' }}>
+            {shop.data && (
+              <>
+                <Link
+                  href={`/shops/${shop.data.slug}`}
+                  style={{ padding: '0.5rem 0.75rem', border: '1px solid #d1d5db', borderRadius: 6, background: '#f3f4f6' }}
+                >
+                  View
+                </Link>
+                <Link
+                  href={`/dashboard/${shop.data.id}/manage`}
+                  style={{ padding: '0.5rem 0.75rem', border: '1px solid #d1d5db', borderRadius: 6, background: '#f3f4f6' }}
+                >
+                  Manage
+                </Link>
+              </>
+            )}
+            <Link href="/dashboard">Back to Dashboard</Link>
+          </div>
         </div>
         <div className="spacer" />
         {shop.loading ? (
@@ -28,13 +46,7 @@ export default function ShopDashboardPage({ params }: { params: { id: string } }
         ) : shop.error ? (
           <div className="error">{shop.error}</div>
         ) : shop.data ? (
-          <div className="row" style={{ justifyContent: 'space-between', alignItems: 'center' }}>
-            <div>
-              <div style={{ fontSize: '0.9rem', opacity: 0.8 }}>Name</div>
-              <div style={{ fontWeight: 600, fontSize: '1.05rem' }}>{shop.data.name}</div>
-            </div>
-            <Link href={`/dashboard/${shop.data.id}/manage`} style={{ padding: '0.5rem 0.75rem', border: '1px solid #d1d5db', borderRadius: 6, background: '#f3f4f6' }}>Manage Shop</Link>
-          </div>
+          <></>
         ) : (
           <div>Shop not found.</div>
         )}
