@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { useResourceItem, useResourceList } from '@/hooks/resource'
 
 type Shop = { id: number; name: string; slug: string }
-type Product = { id: number; name: string; description?: string }
+type Product = { id: number; name: string; slug: string; description?: string }
 
 export default function ShopDashboardPage({ params }: { params: { id: string } }) {
   const { id } = params
@@ -19,26 +19,31 @@ export default function ShopDashboardPage({ params }: { params: { id: string } }
     <main className="container">
       <div className="card">
         <div className="row" style={{ justifyContent: 'space-between', alignItems: 'center' }}>
-          <h1>{shop.data ? shop.data.name : 'Shop'}</h1>
-          <div className="row" style={{ gap: '0.5rem', alignItems: 'center' }}>
-            {shop.data && (
-              <>
-                <Link
-                  href={`/shops/${shop.data.slug}`}
-                  style={{ padding: '0.5rem 0.75rem', border: '1px solid #d1d5db', borderRadius: 6, background: '#f3f4f6' }}
-                >
-                  View
-                </Link>
-                <Link
-                  href={`/dashboard/${shop.data.id}/manage`}
-                  style={{ padding: '0.5rem 0.75rem', border: '1px solid #d1d5db', borderRadius: 6, background: '#f3f4f6' }}
-                >
-                  Manage
-                </Link>
-              </>
-            )}
-            <Link href="/dashboard">Back to Dashboard</Link>
+          <div className="row" style={{ alignItems: 'center', gap: '0.75rem' }}>
+            <Link
+              href="/dashboard"
+              style={{ padding: '0.5rem 0.75rem', border: '1px solid #d1d5db', borderRadius: 6, background: '#f3f4f6' }}
+            >
+              Back
+            </Link>
+            <h1 style={{ margin: 0 }}>{shop.data ? shop.data.name : 'Shop'}</h1>
           </div>
+          {shop.data && (
+            <div className="row" style={{ gap: '0.5rem', alignItems: 'center' }}>
+              <Link
+                href={`/shops/${shop.data.slug}`}
+                style={{ padding: '0.5rem 0.75rem', border: '1px solid #d1d5db', borderRadius: 6, background: '#f3f4f6' }}
+              >
+                View
+              </Link>
+              <Link
+                href={`/dashboard/${shop.data.id}/manage`}
+                style={{ padding: '0.5rem 0.75rem', border: '1px solid #d1d5db', borderRadius: 6, background: '#f3f4f6' }}
+              >
+                Manage
+              </Link>
+            </div>
+          )}
         </div>
         <div className="spacer" />
         {shop.loading ? (
@@ -69,7 +74,10 @@ export default function ShopDashboardPage({ params }: { params: { id: string } }
                       <div style={{ fontWeight: 600 }}>{p.name}</div>
                       {p.description && <div style={{ opacity: 0.8, marginTop: 4 }}>{p.description}</div>}
                     </div>
-                    <Link href={`/dashboard/${shop.data.id}/products/${p.id}`} style={{ padding: '0.4rem 0.75rem', border: '1px solid #d1d5db', borderRadius: 6, background: '#f3f4f6' }}>Manage</Link>
+                    <div className="row" style={{ gap: '0.5rem', alignItems: 'center' }}>
+                      <Link href={`/shops/${shop.data.slug}/products/${p.slug}`} style={{ padding: '0.4rem 0.75rem', border: '1px solid #d1d5db', borderRadius: 6, background: '#f3f4f6' }}>View</Link>
+                      <Link href={`/dashboard/${shop.data.id}/products/${p.id}`} style={{ padding: '0.4rem 0.75rem', border: '1px solid #d1d5db', borderRadius: 6, background: '#f3f4f6' }}>Manage</Link>
+                    </div>
                   </li>
                 ))}
               </ul>

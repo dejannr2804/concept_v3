@@ -1,4 +1,5 @@
 "use client"
+import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useResourceCreator } from '@/hooks/resource'
 
@@ -6,11 +7,23 @@ export default function NewProductPage({ params }: { params: { id: string } }) {
   const { id } = params
   const router = useRouter()
   const creator = useResourceCreator(`shops/${id}/products`)
+  const [slugTouched, setSlugTouched] = useState(false)
+
+  function toSlug(v: string) {
+    return v
+      .toLowerCase()
+      .normalize('NFKD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '')
+  }
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault()
     const n = String(creator.data?.name || '').trim()
     if (!n) return alert('Product name is required')
-    const res = await creator.create(['name', 'description'])
+    const currentSlug = String(creator.data?.slug || '').trim()
+    if (!currentSlug) creator.setField('slug', toSlug(n))
+    const res = await creator.create(['name', 'slug', 'description'])
     if (res.ok) { router.push(`/dashboard/${id}`); router.refresh() }
   }
 
@@ -21,7 +34,24 @@ export default function NewProductPage({ params }: { params: { id: string } }) {
         <form onSubmit={onSubmit} className="col" style={{ gap: '0.75rem' }}>
           <label>
             <div>Name</div>
-            <input value={creator.data?.name || ''} onChange={(e) => creator.setField('name', e.target.value)} placeholder="Product name" />
+            <input
+              value={creator.data?.name || ''}
+              onChange={(e) => {
+                const name = e.target.value
+                creator.setField('name', name)
+                if (!slugTouched) creator.setField('slug', toSlug(name))
+              }}
+              placeholder="Product name"
+            />
+          </label>
+          <label>
+            <div>Slug</div>
+            <input
+              value={creator.data?.slug || ''}
+              onChange={(e) => { setSlugTouched(true); creator.setField('slug', toSlug(e.target.value)) }}
+              placeholder="my-product"
+            />
+            <small>Appears in the URL. Leave empty to auto-generate from name.</small>
           </label>
           <label>
             <div>Description</div>

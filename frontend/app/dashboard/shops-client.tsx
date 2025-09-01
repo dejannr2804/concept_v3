@@ -19,7 +19,7 @@ export default function ShopsClient() {
           <div>{s.name}</div>
           <div style={{ display: 'flex', gap: '0.5rem' }}>
             <Link href={`/shops/${s.slug}`} style={{ padding: '0.4rem 0.75rem', border: '1px solid #d1d5db', borderRadius: 6, background: 'white' }}>View</Link>
-            <Link href={`/dashboard/${s.id}`} style={{ padding: '0.4rem 0.75rem', border: '1px solid #d1d5db', borderRadius: 6, background: '#f3f4f6' }}>Manage</Link>
+            <Link href={`/dashboard/${s.id}`} style={{ padding: '0.4rem 0.75rem', border: '1px solid #d1d5db', borderRadius: 6, background: '#f3f4f6' }}>Dashboard</Link>
           </div>
         </li>
       ))}

@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react'
 import { api } from '@/lib/api'
 
-type Product = { id: number; name: string; description?: string }
+type Product = { id: number; name: string; slug: string; description?: string }
 type Shop = { id: number; name: string; slug: string; description?: string; products: Product[] }
 
 export default function PublicShopPage({ params }: { params: { slug: string } }) {
@@ -48,7 +48,9 @@ export default function PublicShopPage({ params }: { params: { slug: string } })
           <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
             {shop.products.map((p) => (
               <li key={p.id} style={{ border: '1px solid #e5e7eb', borderRadius: 8, padding: '0.5rem 0.75rem' }}>
-                <div style={{ fontWeight: 600 }}>{p.name}</div>
+                <div style={{ fontWeight: 600 }}>
+                  <a href={`/shops/${shop.slug}/products/${p.slug}`} style={{ color: '#111827', textDecoration: 'none' }}>{p.name}</a>
+                </div>
                 {p.description && <div style={{ color: '#374151', marginTop: 4 }}>{p.description}</div>}
               </li>
             ))}
@@ -60,4 +62,3 @@ export default function PublicShopPage({ params }: { params: { slug: string } })
     </main>
   )
 }
-

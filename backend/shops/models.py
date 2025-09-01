@@ -19,6 +19,7 @@ class Shop(models.Model):
 class Product(models.Model):
     shop = models.ForeignKey(Shop, on_delete=models.CASCADE, related_name="products")
     name = models.CharField(max_length=255)
+    slug = models.SlugField(max_length=255)
     description = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -26,6 +27,9 @@ class Product(models.Model):
     class Meta:
         db_table = "cp_product"
         ordering = ["id"]
+        constraints = [
+            models.UniqueConstraint(fields=["shop", "slug"], name="unique_product_slug_per_shop"),
+        ]
 
     def __str__(self) -> str:
         return f"{self.name} (shop={self.shop_id})"

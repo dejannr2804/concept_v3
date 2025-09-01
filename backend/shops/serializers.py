@@ -33,7 +33,7 @@ class ShopSerializer(serializers.ModelSerializer):
 class PublicProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
-        fields = ["id", "name", "description", "created_at", "updated_at"]
+        fields = ["id", "name", "slug", "description", "created_at", "updated_at"]
 
 
 class PublicShopSerializer(serializers.ModelSerializer):
@@ -47,5 +47,21 @@ class PublicShopSerializer(serializers.ModelSerializer):
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
-        fields = ["id", "name", "description", "shop", "created_at", "updated_at"]
+        fields = ["id", "name", "slug", "description", "shop", "created_at", "updated_at"]
         read_only_fields = ["shop", "created_at", "updated_at"]
+
+    def validate_slug(self, value: str) -> str:
+        normalized = slugify(value or "")
+        if not normalized:
+            raise serializers.ValidationError("Slug cannot be empty")
+        return normalized
+
+    def create(self, validated_data):
+        if not validated_data.get("slug"):
+            validated_data["slug"] = slugify(validated_data.get("name", ""))
+        return super().create(validated_data)
+
+    def update(self, instance, validated_data):
+        if "slug" in validated_data and not validated_data.get("slug"):
+            validated_data["slug"] = slugify(validated_data.get("name", instance.name))
+        return super().update(instance, validated_data)
