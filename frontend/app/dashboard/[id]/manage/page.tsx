@@ -11,7 +11,7 @@ export default function ManageShopPage({ params }: { params: { id: string } }) {
   return (
     <main className="container">
       <div className="card">
-        <div className="row" style={{ justifyContent: 'space-between', alignItems: 'center' }}>
+        <div className="row row-between">
           <h1>Manage Shop</h1>
           <Link href={`/dashboard/${id}`}>Back to Shop</Link>
         </div>
@@ -21,7 +21,7 @@ export default function ManageShopPage({ params }: { params: { id: string } }) {
         ) : updater.error ? (
           <div className="error">{updater.error}</div>
         ) : (
-          <div className="col" style={{ gap: '0.75rem' }}>
+          <div className="col gap-075">
             <label>
               <div>Shop Name</div>
               <input
@@ -31,12 +31,7 @@ export default function ManageShopPage({ params }: { params: { id: string } }) {
             </label>
             <label>
               <div>Description</div>
-              <textarea
-                value={updater.data?.description || ''}
-                onChange={(e) => updater.setField('description', e.target.value)}
-                rows={4}
-                style={{ padding: '0.6rem 0.8rem', borderRadius: 8, border: '1px solid #d1d5db' }}
-              />
+              <textarea value={updater.data?.description || ''} onChange={(e) => updater.setField('description', e.target.value)} rows={4} />
             </label>
             <label>
               <div>Slug</div>
@@ -46,7 +41,7 @@ export default function ManageShopPage({ params }: { params: { id: string } }) {
               />
               <small>Must be unique. Changing it updates your shop URL.</small>
             </label>
-            <div className="row" style={{ gap: '0.5rem' }}>
+            <div className="row gap-05">
               <button onClick={() => updater.save(['name', 'slug', 'description'])} disabled={updater.saving}>
                 {updater.saving ? 'Saving…' : 'Save Changes'}
               </button>
@@ -56,7 +51,7 @@ export default function ManageShopPage({ params }: { params: { id: string } }) {
                   if (res.ok) { router.push('/dashboard'); router.refresh() }
                 }}
                 disabled={updater.deleting}
-                style={{ background: '#fee2e2', borderColor: '#fecaca', color: '#991b1b' }}
+                className="btn btn-danger"
               >
                 {updater.deleting ? 'Deleting…' : 'Delete Shop'}
               </button>

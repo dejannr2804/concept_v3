@@ -31,28 +31,19 @@ export default function ShopDashboardPage({ params }: { params: { id: string } }
   return (
     <main className="container">
       <div className="card">
-        <div className="row" style={{ justifyContent: 'space-between', alignItems: 'center' }}>
-          <div className="row" style={{ alignItems: 'center', gap: '0.75rem' }}>
-            <Link
-              href="/dashboard"
-              style={{ padding: '0.5rem 0.75rem', border: '1px solid #d1d5db', borderRadius: 6, background: '#f3f4f6' }}
-            >
+        <div className="row row-between">
+          <div className="row">
+            <Link href="/dashboard" className="btn btn-secondary">
               Back
             </Link>
-            <h1 style={{ margin: 0 }}>{shop.data ? shop.data.name : 'Shop'}</h1>
+            <h1 className="m-0">{shop.data ? shop.data.name : 'Shop'}</h1>
           </div>
           {shop.data && (
-            <div className="row" style={{ gap: '0.5rem', alignItems: 'center' }}>
-              <Link
-                href={`/shops/${shop.data.slug}`}
-                style={{ padding: '0.5rem 0.75rem', border: '1px solid #d1d5db', borderRadius: 6, background: '#f3f4f6' }}
-              >
+            <div className="row gap-05">
+              <Link href={`/shops/${shop.data.slug}`} className="btn btn-secondary">
                 View
               </Link>
-              <Link
-                href={`/dashboard/${shop.data.id}/manage`}
-                style={{ padding: '0.5rem 0.75rem', border: '1px solid #d1d5db', borderRadius: 6, background: '#f3f4f6' }}
-              >
+              <Link href={`/dashboard/${shop.data.id}/manage`} className="btn btn-secondary">
                 Manage
               </Link>
             </div>
@@ -70,8 +61,8 @@ export default function ShopDashboardPage({ params }: { params: { id: string } }
         )}
         <div className="spacer" />
         {shop.data && (
-          <div className="col" style={{ gap: '0.75rem' }}>
-            <div className="row" style={{ justifyContent: 'space-between', alignItems: 'center' }}>
+          <div className="col gap-075">
+            <div className="row row-between">
               <h2>Products</h2>
               <Link href={`/dashboard/${shop.data.id}/products/new`}>Create Product</Link>
             </div>
@@ -80,34 +71,34 @@ export default function ShopDashboardPage({ params }: { params: { id: string } }
             ) : products.data.length === 0 ? (
               <div>No products yet.</div>
             ) : (
-              <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+              <ul className="list">
             {products.data.map((p) => (
-              <li key={p.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem', border: '1px solid #e5e7eb', borderRadius: 8, padding: '0.5rem 0.75rem' }}>
+              <li key={p.id} className="list-item row row-between gap-1">
                 <div>
-                  <div style={{ fontWeight: 600 }}>{p.name}</div>
-                  <div style={{ fontSize: 12, color: '#6b7280', marginTop: 2 }}>SKU: {p.sku} • Status: {p.status}</div>
+                  <div className="fw-600">{p.name}</div>
+                  <div className="text-xs text-muted mt-2">SKU: {p.sku} • Status: {p.status}</div>
                   {(p.short_description || p.description) && (
-                    <div style={{ opacity: 0.85, marginTop: 4 }}>{p.short_description || p.description}</div>
+                    <div className="o-85 mt-4">{p.short_description || p.description}</div>
                   )}
-                  <div style={{ marginTop: 4, fontSize: 13 }}>
+                  <div className="mt-4 text-sm">
                     <span>
                       Price: {p.discounted_price != null && p.discounted_price !== undefined ? (
                         <>
                           <strong>{p.currency || 'USD'} {Number(p.discounted_price).toFixed(2)}</strong>
-                          <span style={{ color: '#6b7280', marginLeft: 6, textDecoration: 'line-through' }}>{p.currency || 'USD'} {Number(p.base_price || 0).toFixed(2)}</span>
+                          <span className="text-muted ml-6 line-through">{p.currency || 'USD'} {Number(p.base_price || 0).toFixed(2)}</span>
                         </>
                       ) : (
                         <strong>{p.currency || 'USD'} {Number(p.base_price || 0).toFixed(2)}</strong>
                       )}
                     </span>
-                    <span style={{ marginLeft: 12 }}>
+                    <span className="ml-12">
                       Stock: {p.stock_quantity ?? 0} ({p.stock_status === 'out_of_stock' ? 'Out of stock' : 'In stock'})
                     </span>
                   </div>
                 </div>
-                <div className="row" style={{ gap: '0.5rem', alignItems: 'center' }}>
-                  <Link href={`/shops/${shop.data.slug}/products/${p.slug}`} style={{ padding: '0.4rem 0.75rem', border: '1px solid #d1d5db', borderRadius: 6, background: '#f3f4f6' }}>View</Link>
-                  <Link href={`/dashboard/${shop.data.id}/products/${p.id}`} style={{ padding: '0.4rem 0.75rem', border: '1px solid #d1d5db', borderRadius: 6, background: '#f3f4f6' }}>Manage</Link>
+                <div className="row gap-05">
+                  <Link href={`/shops/${shop.data.slug}/products/${p.slug}`} className="btn btn-secondary">View</Link>
+                  <Link href={`/dashboard/${shop.data.id}/products/${p.id}`} className="btn btn-secondary">Manage</Link>
                 </div>
               </li>
             ))}

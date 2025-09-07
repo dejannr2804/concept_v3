@@ -29,29 +29,29 @@ export default function PublicShopPage({ params }: { params: { slug: string } })
     return () => { cancelled = true }
   }, [slug])
 
-  if (loading) return <div style={{ padding: '1rem' }}>Loading…</div>
-  if (error) return <div className="error" style={{ padding: '1rem' }}>{error}</div>
-  if (!shop) return <div style={{ padding: '1rem' }}>Shop not found.</div>
+  if (loading) return <div className="p-4">Loading…</div>
+  if (error) return <div className="error p-4">{error}</div>
+  if (!shop) return <div className="p-4">Shop not found.</div>
 
   return (
-    <main style={{ maxWidth: 800, margin: '1rem auto', padding: '0 1rem' }}>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-        <h1 style={{ margin: 0 }}>{shop.name}</h1>
+    <main className="container">
+      <div className="col gap-075">
+        <h1 className="m-0">{shop.name}</h1>
         {shop.description ? (
-          <p style={{ whiteSpace: 'pre-wrap', marginTop: 0 }}>{shop.description}</p>
+          <p className="pre-wrap m-0">{shop.description}</p>
         ) : (
-          <p style={{ color: '#6b7280', marginTop: 0 }}>No description provided.</p>
+          <p className="text-muted m-0">No description provided.</p>
         )}
-        <div style={{ height: 1, background: '#e5e7eb', margin: '0.5rem 0 1rem' }} />
-        <h2 style={{ margin: 0 }}>Products</h2>
+        <div className="divider" />
+        <h2 className="m-0">Products</h2>
         {shop.products && shop.products.length > 0 ? (
-          <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+          <ul className="list">
             {shop.products.map((p) => (
-              <li key={p.id} style={{ border: '1px solid #e5e7eb', borderRadius: 8, padding: '0.5rem 0.75rem' }}>
-                <div style={{ fontWeight: 600 }}>
-                  <a href={`/shops/${shop.slug}/products/${p.slug}`} style={{ color: '#111827', textDecoration: 'none' }}>{p.name}</a>
+              <li key={p.id} className="list-item">
+                <div className="fw-600">
+                  <a href={`/shops/${shop.slug}/products/${p.slug}`}>{p.name}</a>
                 </div>
-                {p.description && <div style={{ color: '#374151', marginTop: 4 }}>{p.description}</div>}
+                {p.description && <div className="mt-4 text-secondary">{p.description}</div>}
               </li>
             ))}
           </ul>

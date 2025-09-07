@@ -29,27 +29,24 @@ export default function PublicProductPage({ params }: { params: { slug: string; 
     return () => { cancelled = true }
   }, [shopSlug, productSlug])
 
-  if (loading) return <div style={{ padding: '1rem' }}>Loading…</div>
-  if (error) return <div className="error" style={{ padding: '1rem' }}>{error}</div>
-  if (!product) return <div style={{ padding: '1rem' }}>Product not found.</div>
+  if (loading) return <div className="p-4">Loading…</div>
+  if (error) return <div className="error p-4">{error}</div>
+  if (!product) return <div className="p-4">Product not found.</div>
 
   return (
-    <main style={{ maxWidth: 800, margin: '1rem auto', padding: '0 1rem' }}>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <h1 style={{ margin: 0 }}>{product.name}</h1>
-          <Link href={`/shops/${shopSlug}`} style={{ padding: '0.4rem 0.6rem', border: '1px solid #e5e7eb', borderRadius: 6, background: '#ffffff' }}>
-            Back to Shop
-          </Link>
+    <main className="container">
+      <div className="col gap-075">
+        <div className="row row-between">
+          <h1 className="m-0">{product.name}</h1>
+          <Link href={`/shops/${shopSlug}`} className="btn btn-white">Back to Shop</Link>
         </div>
-        <div style={{ height: 1, background: '#e5e7eb', margin: '0.5rem 0 1rem' }} />
+        <div className="divider" />
         {product.description ? (
-          <p style={{ whiteSpace: 'pre-wrap', marginTop: 0 }}>{product.description}</p>
+          <p className="pre-wrap m-0">{product.description}</p>
         ) : (
-          <p style={{ color: '#6b7280', marginTop: 0 }}>No description provided.</p>
+          <p className="text-muted m-0">No description provided.</p>
         )}
       </div>
     </main>
   )
 }
-

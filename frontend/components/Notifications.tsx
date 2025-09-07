@@ -71,11 +71,8 @@ export function useNotifications() {
 }
 
 function Icon({ type }: { type: NoticeType | undefined }) {
-  const color =
-    type === 'success' ? '#39d98a' : type === 'error' ? '#ff6b6b' : type === 'warning' ? '#ffcc66' : '#7aa2ff'
-  return (
-    <span aria-hidden style={{ display: 'inline-block', width: 10, height: 10, borderRadius: 9999, background: color }} />
-  )
+  const t = type ?? 'info'
+  return <span aria-hidden className={`inline-dot dot-${t}`} />
 }
 
 function NotificationsViewport({ items, onClose }: { items: Notice[]; onClose: (id: string) => void }) {
@@ -100,4 +97,3 @@ function NotificationsViewport({ items, onClose }: { items: Notice[]; onClose: (
     </div>
   )
 }
-

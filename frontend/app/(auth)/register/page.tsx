@@ -39,7 +39,7 @@ export default function RegisterPage() {
             <span>Password</span>
             <input type="password" value={password} onChange={e => setPassword(e.target.value)} required />
           </label>
-          <div className="row" style={{justifyContent: 'space-between'}}>
+          <div className="row row-between">
             <button type="submit" disabled={loading}>{loading ? 'Creating…' : 'Register'}</button>
             <Link href="/login">Have an account?</Link>
           </div>

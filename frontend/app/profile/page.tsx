@@ -22,7 +22,7 @@ export default function ProfilePage() {
       <div className="card">
         <h1>Profile</h1>
         {!user ? null : (
-          <div className="col" style={{ gap: '0.75rem', marginTop: '0.5rem' }}>
+          <div className="col gap-075 mt-8">
             <label>
               <div>Username</div>
               <input value={user.username} readOnly disabled />
@@ -46,7 +46,7 @@ export default function ProfilePage() {
                 onChange={(e) => updater.setField('last_name', e.target.value)}
               />
             </label>
-            <div className="row" style={{ gap: '0.75rem' }}>
+            <div className="row gap-075">
               <button onClick={() => updater.save(['first_name', 'last_name'])} disabled={updater.saving}>
                 {updater.saving ? 'Saving…' : 'Save changes'}
               </button>

@@ -13,13 +13,13 @@ export default function ShopsClient() {
   if (data.length === 0) return <div>You have no shops yet.</div>
 
   return (
-    <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+    <ul className="list">
       {data.map((s) => (
-        <li key={s.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem', border: '1px solid #e5e7eb', borderRadius: 8, padding: '0.5rem 0.75rem' }}>
+        <li key={s.id} className="list-item row row-between gap-1">
           <div>{s.name}</div>
-          <div style={{ display: 'flex', gap: '0.5rem' }}>
-            <Link href={`/shops/${s.slug}`} style={{ padding: '0.4rem 0.75rem', border: '1px solid #d1d5db', borderRadius: 6, background: 'white' }}>View</Link>
-            <Link href={`/dashboard/${s.id}`} style={{ padding: '0.4rem 0.75rem', border: '1px solid #d1d5db', borderRadius: 6, background: '#f3f4f6' }}>Dashboard</Link>
+          <div className="row gap-05">
+            <Link href={`/shops/${s.slug}`} className="btn btn-white">View</Link>
+            <Link href={`/dashboard/${s.id}`} className="btn btn-secondary">Dashboard</Link>
           </div>
         </li>
       ))}

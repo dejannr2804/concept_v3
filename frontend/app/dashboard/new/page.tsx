@@ -31,7 +31,7 @@ export default function NewShopPage() {
     <main className="container">
       <div className="card">
         <h1>Create Shop</h1>
-        <form onSubmit={onSubmit} className="column" style={{ gap: '0.75rem' }}>
+        <form onSubmit={onSubmit} className="col gap-075">
           <label>
             <div>Shop Name</div>
             <input

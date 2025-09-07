@@ -12,12 +12,12 @@ export default function ExamplePage() {
         <p>This is an example homepage wired to a Django REST backend.</p>
         <div className="spacer" />
         {user ? (
-          <div className="row" style={{justifyContent: 'space-between'}}>
+          <div className="row row-between">
             <div>You're logged in.</div>
             <button onClick={logout}>Logout</button>
           </div>
         ) : (
-          <div className="row" style={{gap: '1rem'}}>
+          <div className="row gap-1">
             <Link href="/login">Login</Link>
             <Link href="/register">Register</Link>
           </div>
@@ -26,4 +26,3 @@ export default function ExamplePage() {
     </main>
   )
 }
-

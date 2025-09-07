@@ -23,19 +23,16 @@ export default function ProductDashboard({ params }: { params: { id: string; pro
   return (
     <main className="container">
       <div className="card">
-        <div className="row" style={{ justifyContent: 'space-between', alignItems: 'center' }}>
-          <div className="row" style={{ alignItems: 'center', gap: '0.75rem' }}>
-            <Link href={`/dashboard/${shopId}`} style={{ padding: '0.5rem 0.75rem', border: '1px solid #d1d5db', borderRadius: 6, background: '#f3f4f6' }}>
+        <div className="row row-between">
+          <div className="row">
+            <Link href={`/dashboard/${shopId}`} className="btn btn-secondary">
               Back
             </Link>
-            <h1 style={{ margin: 0 }}>Product</h1>
+            <h1 className="m-0">Product</h1>
           </div>
-          <div className="row" style={{ gap: '0.5rem', alignItems: 'center' }}>
+          <div className="row gap-05">
             {shop.data && updater.data?.slug && (
-              <Link
-                href={`/shops/${shop.data.slug}/products/${updater.data.slug}`}
-                style={{ padding: '0.5rem 0.75rem', border: '1px solid #d1d5db', borderRadius: 6, background: '#f3f4f6' }}
-              >
+              <Link href={`/shops/${shop.data.slug}/products/${updater.data.slug}`} className="btn btn-secondary">
                 View
               </Link>
             )}
@@ -47,7 +44,7 @@ export default function ProductDashboard({ params }: { params: { id: string; pro
         ) : updater.error ? (
           <div className="error">{updater.error}</div>
         ) : (
-          <div className="col" style={{ gap: '0.75rem' }}>
+          <div className="col gap-075">
             <label>
               <div>Name</div>
               <input
@@ -67,12 +64,12 @@ export default function ProductDashboard({ params }: { params: { id: string; pro
               />
               <small>Unique within this shop. Leave empty to auto-generate from name.</small>
             </label>
-            <div className="row" style={{ gap: '0.75rem' }}>
-              <label style={{ flex: 1 }}>
+            <div className="row gap-075">
+              <label className="flex-1">
                 <div>SKU</div>
                 <input value={updater.data?.sku || ''} onChange={(e) => updater.setField('sku', e.target.value)} />
               </label>
-              <label style={{ flex: 1 }}>
+              <label className="flex-1">
                 <div>Category</div>
                 <input value={updater.data?.category || ''} onChange={(e) => updater.setField('category', e.target.value)} />
               </label>
@@ -83,22 +80,18 @@ export default function ProductDashboard({ params }: { params: { id: string; pro
             </label>
             <label>
               <div>Long Description</div>
-              <textarea
-                rows={6}
-                value={updater.data?.long_description || ''}
-                onChange={(e) => updater.setField('long_description', e.target.value)}
-                style={{ padding: '0.6rem 0.8rem', borderRadius: 8, border: '1px solid #d1d5db' }}
-              />
+              <textarea rows={6} value={updater.data?.long_description || ''}
+                onChange={(e) => updater.setField('long_description', e.target.value)} />
             </label>
-            <div className="row" style={{ gap: '0.75rem' }}>
-              <label style={{ flex: 1 }}>
+            <div className="row gap-075">
+              <label className="flex-1">
                 <div>Status</div>
                 <select value={updater.data?.status || 'active'} onChange={(e) => updater.setField('status', e.target.value)}>
                   <option value="active">Active</option>
                   <option value="inactive">Inactive</option>
                 </select>
               </label>
-              <label style={{ flex: 1 }}>
+              <label className="flex-1">
                 <div>Stock Status</div>
                 <select value={updater.data?.stock_status || 'in_stock'} onChange={(e) => updater.setField('stock_status', e.target.value)}>
                   <option value="in_stock">In stock</option>
@@ -106,40 +99,40 @@ export default function ProductDashboard({ params }: { params: { id: string; pro
                 </select>
               </label>
             </div>
-            <div className="row" style={{ gap: '0.75rem' }}>
-              <label style={{ flex: 1 }}>
+            <div className="row gap-075">
+              <label className="flex-1">
                 <div>Base Price</div>
                 <input type="number" step="0.01" value={updater.data?.base_price ?? 0}
                   onChange={(e) => updater.setField('base_price', e.target.value === '' ? '' : Number(e.target.value))} />
               </label>
-              <label style={{ flex: 1 }}>
+              <label className="flex-1">
                 <div>Discounted Price</div>
                 <input type="number" step="0.01" value={updater.data?.discounted_price ?? ''}
                   onChange={(e) => updater.setField('discounted_price', e.target.value === '' ? null : Number(e.target.value))} />
               </label>
-              <label style={{ width: 120 }}>
+              <label className="w-120">
                 <div>Currency</div>
                 <input value={updater.data?.currency || 'USD'} onChange={(e) => updater.setField('currency', e.target.value.toUpperCase())} />
               </label>
             </div>
-            <div className="row" style={{ gap: '0.75rem' }}>
-              <label style={{ flex: 1 }}>
+            <div className="row gap-075">
+              <label className="flex-1">
                 <div>Stock Quantity</div>
                 <input type="number" value={updater.data?.stock_quantity ?? 0}
                   onChange={(e) => updater.setField('stock_quantity', Number(e.target.value))} />
               </label>
-              <label style={{ flex: 1 }}>
+              <label className="flex-1">
                 <div>Available From</div>
                 <input type="date" value={updater.data?.available_from || ''}
                   onChange={(e) => updater.setField('available_from', e.target.value || null)} />
               </label>
-              <label style={{ flex: 1 }}>
+              <label className="flex-1">
                 <div>Available To</div>
                 <input type="date" value={updater.data?.available_to || ''}
                   onChange={(e) => updater.setField('available_to', e.target.value || null)} />
               </label>
             </div>
-            <div className="row" style={{ gap: '0.5rem' }}>
+            <div className="row gap-05">
               <button
                 onClick={() => updater.save([
                   'name', 'slug', 'sku', 'category',
@@ -159,7 +152,7 @@ export default function ProductDashboard({ params }: { params: { id: string; pro
                   if (res.ok) { router.push(`/dashboard/${shopId}`); router.refresh() }
                 }}
                 disabled={updater.deleting}
-                style={{ background: '#fee2e2', borderColor: '#fecaca', color: '#991b1b' }}
+                className="btn btn-danger"
               >
                 {updater.deleting ? 'Deleting…' : 'Delete Product'}
               </button>

@@ -28,7 +28,7 @@ export default function LoginPage() {
         <div className="card">
           <h2>Already logged in</h2>
           <p>You are signed in as <strong>{user.username}</strong>.</p>
-          <div className="row" style={{ gap: 12 }}>
+          <div className="row gap-1">
             <button onClick={() => router.push('/')}>Go to Home</button>
             <button onClick={async () => { await logout(); router.refresh() }}>Logout</button>
           </div>
@@ -50,7 +50,7 @@ export default function LoginPage() {
             <span>Password</span>
             <input type="password" value={password} onChange={e => setPassword(e.target.value)} required />
           </label>
-          <div className="row" style={{justifyContent: 'space-between'}}>
+          <div className="row row-between">
             <button type="submit" disabled={loading}>{loading ? 'Signing in…' : 'Login'}</button>
             <Link href="/register">Need an account?</Link>
           </div>

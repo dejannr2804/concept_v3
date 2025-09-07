@@ -41,7 +41,7 @@ export default function NewProductPage({ params }: { params: { id: string } }) {
     <main className="container">
       <div className="card">
         <h1>Create Product</h1>
-        <form onSubmit={onSubmit} className="col" style={{ gap: '0.75rem' }}>
+        <form onSubmit={onSubmit} className="col gap-075">
           <label>
             <div>Name</div>
             <input
@@ -63,13 +63,13 @@ export default function NewProductPage({ params }: { params: { id: string } }) {
             />
             <small>Appears in the URL. Leave empty to auto-generate from name.</small>
           </label>
-          <div className="row" style={{ gap: '0.75rem' }}>
-            <label style={{ flex: 1 }}>
+          <div className="row gap-075">
+            <label className="flex-1">
               <div>SKU</div>
               <input value={creator.data?.sku || ''} onChange={(e) => creator.setField('sku', e.target.value)} placeholder="SKU"
               />
             </label>
-            <label style={{ flex: 1 }}>
+            <label className="flex-1">
               <div>Category</div>
               <input value={creator.data?.category || ''} onChange={(e) => creator.setField('category', e.target.value)} placeholder="Category"
               />
@@ -81,17 +81,17 @@ export default function NewProductPage({ params }: { params: { id: string } }) {
           </label>
           <label>
             <div>Long Description</div>
-            <textarea rows={6} value={creator.data?.long_description || ''} onChange={(e) => creator.setField('long_description', e.target.value)} style={{ padding: '0.6rem 0.8rem', borderRadius: 8, border: '1px solid #d1d5db' }} />
+            <textarea rows={6} value={creator.data?.long_description || ''} onChange={(e) => creator.setField('long_description', e.target.value)} />
           </label>
-          <div className="row" style={{ gap: '0.75rem' }}>
-            <label style={{ flex: 1 }}>
+          <div className="row gap-075">
+            <label className="flex-1">
               <div>Status</div>
               <select value={creator.data?.status || 'active'} onChange={(e) => creator.setField('status', e.target.value)}>
                 <option value="active">Active</option>
                 <option value="inactive">Inactive</option>
               </select>
             </label>
-            <label style={{ flex: 1 }}>
+            <label className="flex-1">
               <div>Stock Status</div>
               <select value={creator.data?.stock_status || 'in_stock'} onChange={(e) => creator.setField('stock_status', e.target.value)}>
                 <option value="in_stock">In stock</option>
@@ -99,35 +99,35 @@ export default function NewProductPage({ params }: { params: { id: string } }) {
               </select>
             </label>
           </div>
-          <div className="row" style={{ gap: '0.75rem' }}>
-            <label style={{ flex: 1 }}>
+          <div className="row gap-075">
+            <label className="flex-1">
               <div>Base Price</div>
               <input type="number" step="0.01" value={creator.data?.base_price ?? 0} onChange={(e) => creator.setField('base_price', e.target.value === '' ? '' : Number(e.target.value))} />
             </label>
-            <label style={{ flex: 1 }}>
+            <label className="flex-1">
               <div>Discounted Price</div>
               <input type="number" step="0.01" value={creator.data?.discounted_price ?? ''} onChange={(e) => creator.setField('discounted_price', e.target.value === '' ? null : Number(e.target.value))} />
             </label>
-            <label style={{ width: 120 }}>
+            <label className="w-120">
               <div>Currency</div>
               <input value={creator.data?.currency || 'USD'} onChange={(e) => creator.setField('currency', e.target.value.toUpperCase())} />
             </label>
           </div>
-          <div className="row" style={{ gap: '0.75rem' }}>
-            <label style={{ flex: 1 }}>
+          <div className="row gap-075">
+            <label className="flex-1">
               <div>Stock Quantity</div>
               <input type="number" value={creator.data?.stock_quantity ?? 0} onChange={(e) => creator.setField('stock_quantity', Number(e.target.value))} />
             </label>
-            <label style={{ flex: 1 }}>
+            <label className="flex-1">
               <div>Available From</div>
               <input type="date" value={creator.data?.available_from || ''} onChange={(e) => creator.setField('available_from', e.target.value || null)} />
             </label>
-            <label style={{ flex: 1 }}>
+            <label className="flex-1">
               <div>Available To</div>
               <input type="date" value={creator.data?.available_to || ''} onChange={(e) => creator.setField('available_to', e.target.value || null)} />
             </label>
           </div>
-          <div className="row" style={{ gap: '0.5rem' }}>
+          <div className="row gap-05">
             <button type="submit" disabled={creator.saving}>{creator.saving ? 'Creating...' : 'Create'}</button>
           </div>
         </form>
