@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.utils.text import slugify
 
-from .models import Shop, Product
+from .models import Shop, Product, ProductImage
 
 
 class ShopSerializer(serializers.ModelSerializer):
@@ -30,10 +30,39 @@ class ShopSerializer(serializers.ModelSerializer):
         return super().update(instance, validated_data)
 
 
+class ProductImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProductImage
+        fields = ["id", "url", "alt_text", "sort_order", "created_at"]
+        read_only_fields = ["id", "created_at"]
+
+
 class PublicProductSerializer(serializers.ModelSerializer):
+    images = ProductImageSerializer(many=True, read_only=True)
+    # Back-compat alias for older clients
+    description = serializers.CharField(source="long_description", read_only=True)
     class Meta:
         model = Product
-        fields = ["id", "name", "slug", "description", "created_at", "updated_at"]
+        fields = [
+            "id",
+            "name",
+            "slug",
+            "description",
+            "short_description",
+            "long_description",
+            "category",
+            "status",
+            "base_price",
+            "discounted_price",
+            "currency",
+            "stock_quantity",
+            "stock_status",
+            "available_from",
+            "available_to",
+            "images",
+            "created_at",
+            "updated_at",
+        ]
 
 
 class PublicShopSerializer(serializers.ModelSerializer):
@@ -45,10 +74,34 @@ class PublicShopSerializer(serializers.ModelSerializer):
 
 
 class ProductSerializer(serializers.ModelSerializer):
+    images = ProductImageSerializer(many=True, read_only=True)
+    # Back-compat alias for older clients
+    description = serializers.CharField(source="long_description", read_only=True)
     class Meta:
         model = Product
-        fields = ["id", "name", "slug", "description", "shop", "created_at", "updated_at"]
-        read_only_fields = ["shop", "created_at", "updated_at"]
+        fields = [
+            "id",
+            "shop",
+            "name",
+            "slug",
+            "sku",
+            "category",
+            "description",
+            "short_description",
+            "long_description",
+            "status",
+            "base_price",
+            "discounted_price",
+            "currency",
+            "stock_quantity",
+            "stock_status",
+            "available_from",
+            "available_to",
+            "images",
+            "created_at",
+            "updated_at",
+        ]
+        read_only_fields = ["shop", "created_at", "updated_at", "images"]
 
     def validate_slug(self, value: str) -> str:
         normalized = slugify(value or "")
