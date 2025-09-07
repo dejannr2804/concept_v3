@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.utils.text import slugify
 
-from .models import Shop, Product, ProductImage
+from .models import Shop, Product, ProductImage, Category
 
 
 class ShopSerializer(serializers.ModelSerializer):
@@ -41,6 +41,7 @@ class PublicProductSerializer(serializers.ModelSerializer):
     images = ProductImageSerializer(many=True, read_only=True)
     # Back-compat alias for older clients
     description = serializers.CharField(source="long_description", read_only=True)
+    category = serializers.CharField(source="category.name", read_only=True, allow_blank=True, default="")
     class Meta:
         model = Product
         fields = [
@@ -77,6 +78,8 @@ class ProductSerializer(serializers.ModelSerializer):
     images = ProductImageSerializer(many=True, read_only=True)
     # Back-compat alias for older clients
     description = serializers.CharField(source="long_description", read_only=True)
+    # Represent category as a simple name for simplicity/back-compat (read-only display)
+    category = serializers.CharField(source="category.name", read_only=True)
     class Meta:
         model = Product
         fields = [
@@ -103,6 +106,16 @@ class ProductSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ["shop", "created_at", "updated_at", "images"]
 
+    def _resolve_category(self, *, shop: Shop, name: str | None):
+        name = (name or "").strip()
+        if not name:
+            return None
+        # Find by name first; if missing, create with slug from name
+        slug = slugify(name)
+        # Ensure uniqueness per shop
+        cat, _ = Category.objects.get_or_create(shop=shop, name=name, defaults={"slug": slug})
+        return cat
+
     def validate_slug(self, value: str) -> str:
         normalized = slugify(value or "")
         if not normalized:
@@ -112,9 +125,18 @@ class ProductSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         if not validated_data.get("slug"):
             validated_data["slug"] = slugify(validated_data.get("name", ""))
+        # Map category name to FK
+        cat_name = self.initial_data.get("category") if isinstance(self.initial_data, dict) else None
+        shop = validated_data.get("shop")
+        if shop is not None:
+            validated_data["category"] = self._resolve_category(shop=shop, name=cat_name)
         return super().create(validated_data)
 
     def update(self, instance, validated_data):
         if "slug" in validated_data and not validated_data.get("slug"):
             validated_data["slug"] = slugify(validated_data.get("name", instance.name))
+        # Update category from provided name if present
+        if isinstance(self.initial_data, dict) and "category" in self.initial_data:
+            cat_name = self.initial_data.get("category")
+            validated_data["category"] = self._resolve_category(shop=instance.shop, name=cat_name)
         return super().update(instance, validated_data)

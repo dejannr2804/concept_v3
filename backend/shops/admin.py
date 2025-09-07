@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Shop, Product, ProductImage
+from .models import Shop, Product, ProductImage, Category
 
 
 @admin.register(Shop)
@@ -19,8 +19,15 @@ class ProductImageInline(admin.TabularInline):
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ("id", "name", "sku", "status", "shop")
+    list_display = ("id", "name", "sku", "status", "shop", "category")
     search_fields = ("name", "sku", "slug")
-    list_filter = ("status", "category", "currency")
+    list_filter = ("status", "currency")
     list_select_related = ("shop",)
     inlines = [ProductImageInline]
+
+
+@admin.register(Category)
+class CategoryAdmin(admin.ModelAdmin):
+    list_display = ("id", "name", "slug", "shop")
+    search_fields = ("name", "slug")
+    list_select_related = ("shop",)

@@ -4,16 +4,17 @@ import Link from 'next/link'
 import { useResourceItem, useResourceList } from '@/hooks/resource'
 
 type Shop = { id: number; name: string; slug: string }
-type Product = {
-  id: number
-  name: string
-  slug: string
-  sku: string
-  status: 'active' | 'inactive'
-  short_description?: string
-  description?: string
-  base_price?: number
-  discounted_price?: number | null
+  type Product = {
+    id: number
+    name: string
+    slug: string
+    sku: string
+    category?: string | null
+    status: 'active' | 'inactive'
+    short_description?: string
+    description?: string
+    base_price?: number
+    discounted_price?: number | null
   currency?: string
   stock_quantity?: number
   stock_status?: 'in_stock' | 'out_of_stock'
@@ -76,7 +77,11 @@ export default function ShopDashboardPage({ params }: { params: { id: string } }
               <li key={p.id} className="list-item row row-between gap-1">
                 <div>
                   <div className="fw-600">{p.name}</div>
-                  <div className="text-xs text-muted mt-2">SKU: {p.sku} • Status: {p.status}</div>
+                  <div className="text-xs text-muted mt-2">
+                    SKU: {p.sku}
+                    {p.category ? (<><span className="ml-6">Category: {p.category}</span></>) : null}
+                    <span className="ml-12">Status: {p.status}</span>
+                  </div>
                   {(p.short_description || p.description) && (
                     <div className="o-85 mt-4">{p.short_description || p.description}</div>
                   )}

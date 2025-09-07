@@ -16,6 +16,24 @@ class Shop(models.Model):
         return f"{self.name} (owner={self.user_id})"
 
 
+class Category(models.Model):
+    shop = models.ForeignKey(Shop, on_delete=models.CASCADE, related_name="categories")
+    name = models.CharField(max_length=255)
+    slug = models.SlugField(max_length=255)
+    description = models.TextField(blank=True, default="")
+
+    class Meta:
+        db_table = "cp_category"
+        ordering = ["id"]
+        constraints = [
+            models.UniqueConstraint(fields=["shop", "slug"], name="unique_category_slug_per_shop"),
+            models.UniqueConstraint(fields=["shop", "name"], name="unique_category_name_per_shop"),
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.name} (shop={self.shop_id})"
+
+
 class Product(models.Model):
     shop = models.ForeignKey(Shop, on_delete=models.CASCADE, related_name="products")
     name = models.CharField(max_length=255)
@@ -27,7 +45,7 @@ class Product(models.Model):
 
     # Identification
     sku = models.CharField(max_length=64)
-    category = models.CharField(max_length=255, blank=True, default="")
+    category = models.ForeignKey('Category', null=True, blank=True, on_delete=models.SET_NULL, related_name='products')
 
     # Status
     class Status(models.TextChoices):

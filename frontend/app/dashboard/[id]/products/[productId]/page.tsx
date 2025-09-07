@@ -72,6 +72,7 @@ export default function ProductDashboard({ params }: { params: { id: string; pro
               <label className="flex-1">
                 <div>Category</div>
                 <input value={updater.data?.category || ''} onChange={(e) => updater.setField('category', e.target.value)} />
+                <small className="text-muted">Enter a name; new categories are created for this shop.</small>
               </label>
             </div>
             <label>

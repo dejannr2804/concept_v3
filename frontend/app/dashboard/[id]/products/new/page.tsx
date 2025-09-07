@@ -73,6 +73,7 @@ export default function NewProductPage({ params }: { params: { id: string } }) {
               <div>Category</div>
               <input value={creator.data?.category || ''} onChange={(e) => creator.setField('category', e.target.value)} placeholder="Category"
               />
+              <small className="text-muted">Enter a name; new categories are created for this shop.</small>
             </label>
           </div>
           <label>
