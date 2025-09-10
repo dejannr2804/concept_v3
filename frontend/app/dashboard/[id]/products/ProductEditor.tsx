@@ -3,7 +3,6 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useResourceCreator, useResourceItem, useResourceUpdater } from '@/hooks/resource'
-import styles from './product-editor.module.css'
 import { api } from '@/lib/api'
 import { useNotifications } from '@/components/Notifications'
 import Modal from '@/components/Modal'
@@ -38,6 +37,8 @@ export default function ProductEditor({
   const [serverImages, setServerImages] = useState<{ id: number; url: string; alt_text?: string; sort_order?: number }[]>([])
   const [dragIndex, setDragIndex] = useState<number | null>(null)
   const [overIndex, setOverIndex] = useState<number | null>(null)
+  const [dragIndexPending, setDragIndexPending] = useState<number | null>(null)
+  const [overIndexPending, setOverIndexPending] = useState<number | null>(null)
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
 
   function reorder<T>(arr: T[], from: number, to: number): T[] {
@@ -69,7 +70,7 @@ export default function ProductEditor({
     : null
 
   const data = (mode === 'create' ? creator?.data : updater?.data) || {}
-  const canUpload = mode === 'update' && Boolean(productId)
+  const canImmediateUpload = mode === 'update' && Boolean(productId)
   const setField = (name: string, value: any) => {
     if (mode === 'create' && creator) creator.setField(name, value)
     else if (mode === 'update' && updater) updater.setField(name, value)
@@ -92,31 +93,33 @@ export default function ProductEditor({
       file: f,
       previewUrl: URL.createObjectURL(f),
       progress: 0,
-      uploading: true,
+      uploading: canImmediateUpload,
       error: null,
     }))
     setImages((prev) => [...prev, ...items])
 
     // Upload each file
-    items.forEach(async (item) => {
-      try {
-        const fd = new FormData()
-        fd.append('file', item.file)
-        fd.append('alt_text', item.file.name)
-        const created = await api.upload<{ id: number; url: string; alt_text?: string }>(
-          `shops/${shopId}/products/${productId}/images/upload`,
-          fd
-        )
-        setServerImages((prev) => [...prev, created])
-        setImages((prev) => prev.filter((x) => x.id !== item.id))
-        notify.success('Image uploaded')
-      } catch (e: any) {
-        const msg = e?.message || 'Upload failed'
-        setImages((prev) => prev.map((x) => x.id === item.id ? { ...x, uploading: false, error: msg } : x))
-        notify.error(msg)
-      }
-    })
-  }, [shopId, productId, notify])
+    if (canImmediateUpload) {
+      items.forEach(async (item) => {
+        try {
+          const fd = new FormData()
+          fd.append('file', item.file)
+          fd.append('alt_text', item.file.name)
+          const created = await api.upload<{ id: number; url: string; alt_text?: string }>(
+            `shops/${shopId}/products/${productId}/images/upload`,
+            fd
+          )
+          setServerImages((prev) => [...prev, created])
+          setImages((prev) => prev.filter((x) => x.id !== item.id))
+          notify.success('Image uploaded')
+        } catch (e: any) {
+          const msg = e?.message || 'Upload failed'
+          setImages((prev) => prev.map((x) => x.id === item.id ? { ...x, uploading: false, error: msg } : x))
+          notify.error(msg)
+        }
+      })
+    }
+  }, [shopId, productId, notify, canImmediateUpload])
 
   const onDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault()
@@ -153,7 +156,37 @@ export default function ProductEditor({
       const sku = String(creator.data?.sku || '').trim()
       if (!sku) return alert('SKU is required')
       const res = await creator.create(keys)
-      if (res.ok) { router.push(`/dashboard/${shopId}`); router.refresh() }
+      if (res.ok) {
+        const createdId = (res.data as any)?.id
+        if (createdId && images.length > 0) {
+          // Upload queued images to the newly created product
+          const createdImgs: { id: number }[] = []
+          for (const item of images) {
+            try {
+              setImages((prev) => prev.map((x) => x.id === item.id ? { ...x, uploading: true } : x))
+              const fd = new FormData()
+              fd.append('file', item.file)
+              fd.append('alt_text', item.file.name)
+              const created = await api.upload<{ id: number }>(`shops/${shopId}/products/${createdId}/images/upload`, fd)
+              if (created && (created as any).id) createdImgs.push({ id: (created as any).id })
+              setImages((prev) => prev.filter((x) => x.id !== item.id))
+            } catch (e: any) {
+              const msg = e?.message || 'Upload failed'
+              setImages((prev) => prev.map((x) => x.id === item.id ? { ...x, uploading: false, error: msg } : x))
+              notify.error(msg)
+            }
+          }
+          if (createdImgs.length > 0) {
+            try { await api.post(`shops/${shopId}/products/${createdId}/images/reorder`, { order: createdImgs.map((x) => x.id) }) } catch {}
+          }
+          // After creating and uploading images, go back to the shop dashboard
+          router.push(`/dashboard/${shopId}`)
+          router.refresh()
+        } else {
+          router.push(`/dashboard/${shopId}`)
+          router.refresh()
+        }
+      }
     } else if (mode === 'update' && updater) {
       await updater.save(keys)
     }
@@ -167,15 +200,15 @@ export default function ProductEditor({
   }
 
   return (
-    <main className={styles.page}>
-      <div className={styles.header}>
-        <div className={styles.titleGroup}>
-          <Link href={`/dashboard/${shopId}`} className={styles.btnSecondary}>Back</Link>
-          <h1 className={styles.title}>Product</h1>
+    <main className="pe-page">
+      <div className="pe-header">
+        <div className="pe-titleGroup">
+          <Link href={`/dashboard/${shopId}`} className="pe-btnSecondary">Back</Link>
+          <h1 className="pe-title">{mode === 'create' ? 'Create New Product' : 'Product Dashboard'}</h1>
         </div>
-        <div className={styles.actions}>
+        <div className="pe-actions">
           {mode === 'update' && shop.data && updater?.data?.slug && (
-            <Link href={`/shops/${shop.data.slug}/products/${updater.data.slug}`} className={styles.btnSecondary}>
+            <Link href={`/shops/${shop.data.slug}/products/${updater.data.slug}`} className="pe-btnSecondary">
               View
             </Link>
           )}
@@ -185,43 +218,37 @@ export default function ProductEditor({
       {loading ? (
         <div>Loading…</div>
       ) : error ? (
-        <div className={styles.error}>{error}</div>
+        <div className="pe-error">{error}</div>
       ) : (
-        <div className={styles.grid}>
+        <div className="pe-grid">
           {/* Left: Images */}
-          <section className={styles.panel}>
-            <h2 className={styles.sectionTitle}>Add Images</h2>
+          <section className="pe-panel">
+            <h2 className="pe-sectionTitle">Add Images</h2>
             <div
-              className={styles.dropZone}
-              onDrop={canUpload ? onDrop : undefined}
-              onDragOver={(e) => { if (!canUpload) return; e.preventDefault(); e.dataTransfer.dropEffect = 'copy' }}
-              onClick={canUpload ? onBrowse : undefined}
+              className="pe-dropZone"
+              onDrop={onDrop}
+              onDragOver={(e) => { e.preventDefault(); e.dataTransfer.dropEffect = 'copy' }}
+              onClick={onBrowse}
               role="button"
               aria-label="Drop files or click to browse"
             >
-              <div>
-                {canUpload ? (
-                  <>Drop your files here, or <span className={styles.link}>Browse</span></>
-                ) : (
-                  <>Save the product first to upload images.</>
-                )}
-              </div>
+              <div>Drop your files here, or <span className="pe-link">Browse</span></div>
               <input
                 ref={inputRef}
                 type="file"
                 accept="image/*"
                 multiple
-                className={styles.hiddenFile}
-                onChange={(e) => { if (canUpload && e.target.files) onFiles(e.target.files); e.currentTarget.value = '' }}
+                className="pe-hiddenFile"
+                onChange={(e) => { if (e.target.files) onFiles(e.target.files); e.currentTarget.value = '' }}
               />
             </div>
 
             {serverImages?.length > 0 && (
-              <div className={styles.imageGrid}>
+              <div className="pe-imageGrid">
                 {serverImages.map((im, i) => (
                   <div
                     key={`srv-${im.id ?? i}`}
-                    className={`${styles.imageCard} ${overIndex === i ? styles.dragOver : ''}`}
+                    className={`pe-imageCard ${overIndex === i ? 'pe-dragOver' : ''}`}
                     draggable
                     onDragStart={() => setDragIndex(i)}
                     onDragOver={(e) => { e.preventDefault(); setOverIndex(i) }}
@@ -235,10 +262,9 @@ export default function ProductEditor({
                     }}
                     title="Drag to reorder"
                   >
-                    <img src={im.url} alt="" className={styles.image} onClick={(e) => { e.stopPropagation(); setPreviewUrl(im.url) }} />
-                    <span className={styles.dragHandle}>⇅</span>
+                    <img src={im.url} alt="" className="pe-image" onClick={(e) => { e.stopPropagation(); setPreviewUrl(im.url) }} />
                     <button
-                      className={styles.removeBtn}
+                      className="pe-removeBtn"
                       onClick={async (e) => {
                         e.stopPropagation()
                         try {
@@ -258,27 +284,41 @@ export default function ProductEditor({
               </div>
             )}
 
-            <div className={styles.fileList}>
-              {images.map((it) => (
-                <div key={it.id} className={styles.fileItem}>
-                  <img src={it.previewUrl} alt="preview" className={styles.thumb} onClick={() => setPreviewUrl(it.previewUrl)} />
-                  <div className={styles.fileMeta}>
+            {images.length > 0 && (
+              <div className="pe-imageGrid">
+                {images.map((it, i) => (
+                  <div
+                    key={it.id}
+                    className={`pe-imageCard ${overIndexPending === i ? 'pe-dragOver' : ''}`}
+                    draggable
+                    onDragStart={() => setDragIndexPending(i)}
+                    onDragOver={(e) => { e.preventDefault(); setOverIndexPending(i) }}
+                    onDragEnd={() => { setDragIndexPending(null); setOverIndexPending(null) }}
+                    onDrop={() => {
+                      if (dragIndexPending === null || dragIndexPending === i) { setDragIndexPending(null); setOverIndexPending(null); return }
+                      const next = reorder(images, dragIndexPending, i)
+                      setImages(next)
+                      setDragIndexPending(null); setOverIndexPending(null)
+                    }}
+                    title="Drag to reorder"
+                  >
+                    <img src={it.previewUrl} alt="preview" className="pe-image" onClick={() => setPreviewUrl(it.previewUrl)} />
                     {it.uploading && (
-                      <div className={styles.progressBar} aria-label="Uploading">
-                        <div className={styles.progressInner} style={{ width: '60%' }} />
+                      <div className="pe-progressBar" aria-label="Uploading" style={{ position: 'absolute', left: 8, right: 8, bottom: 8 }}>
+                        <div className="pe-progressInner" style={{ width: '60%' }} />
                       </div>
                     )}
+                    <button
+                      className="pe-removeBtn"
+                      onClick={(e) => { e.stopPropagation(); setImages((prev) => prev.filter((x) => x.id !== it.id)) }}
+                      aria-label="Remove image"
+                    >
+                      ✕
+                    </button>
                   </div>
-                  <button
-                    className={styles.iconButton}
-                    onClick={() => setImages((prev) => prev.filter((x) => x.id !== it.id))}
-                    aria-label="Remove image"
-                  >
-                    ✕
-                  </button>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
 
             <Modal open={Boolean(previewUrl)} onClose={() => setPreviewUrl(null)}>
               {previewUrl ? (
@@ -288,12 +328,12 @@ export default function ProductEditor({
           </section>
 
           {/* Right: Fields */}
-          <section className={styles.panel}>
-            <form className={styles.form} onSubmit={(e) => e.preventDefault()}>
-              <label className={styles.formField}>
-                <span className={styles.label}>Product Name</span>
+          <section className="pe-panel">
+            <form className="pe-form" onSubmit={(e) => e.preventDefault()}>
+              <label className="pe-formField">
+                <span className="pe-label">Product Name</span>
                 <input
-                  className={styles.input}
+                  className="pe-input"
                   value={data?.name || ''}
                   onChange={(e) => {
                     const name = e.target.value
@@ -302,94 +342,94 @@ export default function ProductEditor({
                   }}
                 />
               </label>
-              <label className={styles.formField}>
-                <span className={styles.label}>Slug</span>
+              <label className="pe-formField">
+                <span className="pe-label">Slug</span>
                 <input
-                  className={styles.input}
+                  className="pe-input"
                   value={data?.slug || ''}
                   onChange={(e) => { setSlugTouched(true); setField('slug', toSlug(e.target.value)) }}
                 />
               </label>
 
-              <div className={styles.rowFields}>
-                <label className={styles.formField}>
-                  <span className={styles.label}>SKU</span>
-                  <input className={styles.input} value={data?.sku || ''} onChange={(e) => setField('sku', e.target.value)} />
+              <div className="pe-rowFields">
+                <label className="pe-formField">
+                  <span className="pe-label">SKU</span>
+                  <input className="pe-input" value={data?.sku || ''} onChange={(e) => setField('sku', e.target.value)} />
                 </label>
-                <label className={styles.formField}>
-                  <span className={styles.label}>Category</span>
-                  <input className={styles.input} value={data?.category || ''} onChange={(e) => setField('category', e.target.value)} />
+                <label className="pe-formField">
+                  <span className="pe-label">Category</span>
+                  <input className="pe-input" value={data?.category || ''} onChange={(e) => setField('category', e.target.value)} />
                 </label>
               </div>
 
-              <label className={styles.formField}>
-                <span className={styles.label}>Short Description</span>
-                <input className={styles.input} value={data?.short_description || ''} onChange={(e) => setField('short_description', e.target.value)} />
+              <label className="pe-formField">
+                <span className="pe-label">Short Description</span>
+                <input className="pe-input" value={data?.short_description || ''} onChange={(e) => setField('short_description', e.target.value)} />
               </label>
-              <label className={styles.formField}>
-                <span className={styles.label}>Description</span>
-                <textarea className={styles.textarea} rows={6} value={data?.long_description || ''}
+              <label className="pe-formField">
+                <span className="pe-label">Description</span>
+                <textarea className="pe-textarea" rows={6} value={data?.long_description || ''}
                   onChange={(e) => setField('long_description', e.target.value)} />
               </label>
 
-              <div className={styles.rowFields}>
-                <label className={styles.formField}>
-                  <span className={styles.label}>Status</span>
-                  <select className={styles.select} value={data?.status || 'active'} onChange={(e) => setField('status', e.target.value)}>
+              <div className="pe-rowFields">
+                <label className="pe-formField">
+                  <span className="pe-label">Status</span>
+                  <select className="pe-select" value={data?.status || 'active'} onChange={(e) => setField('status', e.target.value)}>
                     <option value="active">Active</option>
                     <option value="inactive">Inactive</option>
                   </select>
                 </label>
-                <label className={styles.formField}>
-                  <span className={styles.label}>Stock Status</span>
-                  <select className={styles.select} value={data?.stock_status || 'in_stock'} onChange={(e) => setField('stock_status', e.target.value)}>
+                <label className="pe-formField">
+                  <span className="pe-label">Stock Status</span>
+                  <select className="pe-select" value={data?.stock_status || 'in_stock'} onChange={(e) => setField('stock_status', e.target.value)}>
                     <option value="in_stock">In stock</option>
                     <option value="out_of_stock">Out of stock</option>
                   </select>
                 </label>
               </div>
 
-              <div className={styles.rowFields3}>
-                <label className={styles.formField}>
-                  <span className={styles.label}>Price</span>
-                  <input className={styles.input} type="number" step="0.01" value={data?.base_price ?? 0}
+              <div className="pe-rowFields3">
+                <label className="pe-formField">
+                  <span className="pe-label">Price</span>
+                  <input className="pe-input" type="number" step="0.01" value={data?.base_price ?? 0}
                     onChange={(e) => setField('base_price', e.target.value === '' ? '' : Number(e.target.value))} />
                 </label>
-                <label className={styles.formField}>
-                  <span className={styles.label}>Discounted Price</span>
-                  <input className={styles.input} type="number" step="0.01" value={data?.discounted_price ?? ''}
+                <label className="pe-formField">
+                  <span className="pe-label">Discounted Price</span>
+                  <input className="pe-input" type="number" step="0.01" value={data?.discounted_price ?? ''}
                     onChange={(e) => setField('discounted_price', e.target.value === '' ? null : Number(e.target.value))} />
                 </label>
-                <label className={styles.formField}>
-                  <span className={styles.label}>Currency</span>
-                  <input className={styles.input} value={data?.currency || 'USD'} onChange={(e) => setField('currency', e.target.value.toUpperCase())} />
+                <label className="pe-formField">
+                  <span className="pe-label">Currency</span>
+                  <input className="pe-input" value={data?.currency || 'USD'} onChange={(e) => setField('currency', e.target.value.toUpperCase())} />
                 </label>
               </div>
 
-              <div className={styles.rowFields}>
-                <label className={styles.formField}>
-                  <span className={styles.label}>Stock Quantity</span>
-                  <input className={styles.input} type="number" value={data?.stock_quantity ?? 0}
+              <div className="pe-rowFields">
+                <label className="pe-formField">
+                  <span className="pe-label">Stock Quantity</span>
+                  <input className="pe-input" type="number" value={data?.stock_quantity ?? 0}
                     onChange={(e) => setField('stock_quantity', Number(e.target.value))} />
                 </label>
-                <label className={styles.formField}>
-                  <span className={styles.label}>Available From</span>
-                  <input className={styles.input} type="date" value={data?.available_from || ''}
+                <label className="pe-formField">
+                  <span className="pe-label">Available From</span>
+                  <input className="pe-input" type="date" value={data?.available_from || ''}
                     onChange={(e) => setField('available_from', e.target.value || null)} />
                 </label>
-                <label className={styles.formField}>
-                  <span className={styles.label}>Available To</span>
-                  <input className={styles.input} type="date" value={data?.available_to || ''}
+                <label className="pe-formField">
+                  <span className="pe-label">Available To</span>
+                  <input className="pe-input" type="date" value={data?.available_to || ''}
                     onChange={(e) => setField('available_to', e.target.value || null)} />
                 </label>
               </div>
 
-              <div className={styles.formActions}>
-                <button type="button" className={styles.btnPrimary} onClick={onPrimary} disabled={primaryDisabled}>
+              <div className="pe-formActions">
+                <button type="button" className="pe-btnPrimary" onClick={onPrimary} disabled={primaryDisabled}>
                   {primaryLabel}
                 </button>
                 {mode === 'update' && (
-                  <button type="button" className={styles.btnDanger} disabled={Boolean(updater?.deleting)} onClick={onDelete}>
+                  <button type="button" className="pe-btnDanger" disabled={Boolean(updater?.deleting)} onClick={onDelete}>
                     {updater?.deleting ? 'Deleting…' : 'Delete Product'}
                   </button>
                 )}
