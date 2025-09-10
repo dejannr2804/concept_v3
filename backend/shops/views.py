@@ -1,8 +1,11 @@
-from rest_framework import generics, permissions
+from rest_framework import generics, permissions, status
+from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework.response import Response
 from rest_framework.generics import RetrieveAPIView
 
-from .models import Shop, Product
-from .serializers import ShopSerializer, ProductSerializer, PublicShopSerializer, PublicProductSerializer
+from .models import Shop, Product, ProductImage
+from .serializers import ShopSerializer, ProductSerializer, PublicShopSerializer, PublicProductSerializer, ProductImageSerializer
+from .spaces import upload_product_image, SpacesConfigError
 
 
 class ShopListCreateView(generics.ListCreateAPIView):
@@ -68,3 +71,29 @@ class PublicProductDetailView(RetrieveAPIView):
         shop_slug = self.kwargs.get("shop_slug")
         product_slug = self.kwargs.get("product_slug")
         return generics.get_object_or_404(Product, shop__slug=shop_slug, slug=product_slug)
+
+
+class ProductImageUploadView(generics.GenericAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+    parser_classes = [MultiPartParser, FormParser]
+
+    def post(self, request, shop_id: int, product_id: int):
+        # Validate ownership and product existence
+        shop = generics.get_object_or_404(Shop, pk=shop_id, user=request.user)
+        product = generics.get_object_or_404(Product, pk=product_id, shop=shop)
+
+        file_obj = request.FILES.get("file") or request.FILES.get("image")
+        if not file_obj:
+            return Response({"detail": "Missing file under 'file' or 'image'"}, status=status.HTTP_400_BAD_REQUEST)
+
+        alt_text = request.data.get("alt_text", "")
+        try:
+            url = upload_product_image(file_obj, getattr(file_obj, "name", "image"))
+        except SpacesConfigError as e:
+            return Response({"detail": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        except Exception as e:
+            return Response({"detail": "Upload failed", "error": str(e)}, status=status.HTTP_502_BAD_GATEWAY)
+
+        image = ProductImage.objects.create(product=product, url=url, alt_text=alt_text)
+        data = ProductImageSerializer(image).data
+        return Response(data, status=status.HTTP_201_CREATED)

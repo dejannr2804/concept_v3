@@ -1,6 +1,7 @@
 from django.contrib import admin
 
 from .models import Shop, Product, ProductImage, Category
+from .forms import ProductImageAdminForm
 
 
 @admin.register(Shop)
@@ -12,8 +13,10 @@ class ShopAdmin(admin.ModelAdmin):
 
 class ProductImageInline(admin.TabularInline):
     model = ProductImage
+    form = ProductImageAdminForm
     extra = 0
-    fields = ("url", "alt_text", "sort_order")
+    fields = ("file", "alt_text", "sort_order", "url")
+    readonly_fields = ("url",)
     ordering = ("sort_order", "id")
 
 
