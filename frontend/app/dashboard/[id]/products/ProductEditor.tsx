@@ -1,9 +1,11 @@
 "use client"
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { useCallback, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useResourceCreator, useResourceItem, useResourceUpdater } from '@/hooks/resource'
 import styles from './product-editor.module.css'
+import { api } from '@/lib/api'
+import { useNotifications } from '@/components/Notifications'
 
 type Mode = 'create' | 'update'
 
@@ -29,6 +31,10 @@ export default function ProductEditor({
   const [slugTouched, setSlugTouched] = useState(false)
   const [images, setImages] = useState<ImageItem[]>([])
   const inputRef = useRef<HTMLInputElement | null>(null)
+  const notify = useNotifications()
+
+  // Local mirror of server images so we can append after upload
+  const [serverImages, setServerImages] = useState<{ id: number; url: string; alt_text?: string; sort_order?: number }[]>([])
 
   const shop = useResourceItem<{ id: number; name: string; slug: string }>(`shops/${shopId}`)
 
@@ -41,6 +47,7 @@ export default function ProductEditor({
     : null
 
   const data = (mode === 'create' ? creator?.data : updater?.data) || {}
+  const canUpload = mode === 'update' && Boolean(productId)
   const setField = (name: string, value: any) => {
     if (mode === 'create' && creator) creator.setField(name, value)
     else if (mode === 'update' && updater) updater.setField(name, value)
@@ -67,17 +74,27 @@ export default function ProductEditor({
       error: null,
     }))
     setImages((prev) => [...prev, ...items])
-    // Simulated progress; replace with real upload integration.
-    items.forEach((item, idx) => {
-      const start = Date.now() + idx * 120
-      const timer = setInterval(() => {
-        const elapsed = Date.now() - start
-        const pct = Math.min(100, Math.round((elapsed / 900) * 100))
-        setImages((prev) => prev.map((it) => (it.id === item.id ? { ...it, progress: pct, uploading: pct < 100 } : it)))
-        if (pct >= 100) clearInterval(timer)
-      }, 120)
+
+    // Upload each file
+    items.forEach(async (item) => {
+      try {
+        const fd = new FormData()
+        fd.append('file', item.file)
+        fd.append('alt_text', item.file.name)
+        const created = await api.upload<{ id: number; url: string; alt_text?: string }>(
+          `shops/${shopId}/products/${productId}/images/upload`,
+          fd
+        )
+        setServerImages((prev) => [...prev, created])
+        setImages((prev) => prev.filter((x) => x.id !== item.id))
+        notify.success('Image uploaded')
+      } catch (e: any) {
+        const msg = e?.message || 'Upload failed'
+        setImages((prev) => prev.map((x) => x.id === item.id ? { ...x, uploading: false, error: msg } : x))
+        notify.error(msg)
+      }
     })
-  }, [])
+  }, [shopId, productId, notify])
 
   const onDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault()
@@ -85,9 +102,9 @@ export default function ProductEditor({
   }, [onFiles])
   const onBrowse = useCallback(() => inputRef.current?.click(), [])
 
-  const existingImages = useMemo(() => {
-    const list = (updater?.data?.images || []) as { url: string }[]
-    return list
+  useEffect(() => {
+    const list = (updater?.data?.images || []) as { id: number; url: string; alt_text?: string; sort_order?: number }[]
+    setServerImages(list)
   }, [updater?.data])
 
   const loading = updater ? updater.loading : false
@@ -153,26 +170,32 @@ export default function ProductEditor({
             <h2 className={styles.sectionTitle}>Add Images</h2>
             <div
               className={styles.dropZone}
-              onDrop={onDrop}
-              onDragOver={(e) => { e.preventDefault(); e.dataTransfer.dropEffect = 'copy' }}
-              onClick={onBrowse}
+              onDrop={canUpload ? onDrop : undefined}
+              onDragOver={(e) => { if (!canUpload) return; e.preventDefault(); e.dataTransfer.dropEffect = 'copy' }}
+              onClick={canUpload ? onBrowse : undefined}
               role="button"
               aria-label="Drop files or click to browse"
             >
-              <div>Drop your files here, or <span className={styles.link}>Browse</span></div>
+              <div>
+                {canUpload ? (
+                  <>Drop your files here, or <span className={styles.link}>Browse</span></>
+                ) : (
+                  <>Save the product first to upload images.</>
+                )}
+              </div>
               <input
                 ref={inputRef}
                 type="file"
                 accept="image/*"
                 multiple
                 className={styles.hiddenFile}
-                onChange={(e) => { if (e.target.files) onFiles(e.target.files); e.currentTarget.value = '' }}
+                onChange={(e) => { if (canUpload && e.target.files) onFiles(e.target.files); e.currentTarget.value = '' }}
               />
             </div>
 
-            {existingImages?.length > 0 && (
+            {serverImages?.length > 0 && (
               <div className={styles.fileList}>
-                {existingImages.map((im, i) => (
+                {serverImages.map((im, i) => (
                   <div key={`srv-${i}`} className={styles.fileItem}>
                     <img src={im.url} alt="" className={styles.thumb} />
                     <div className={styles.fileMeta}>
@@ -320,4 +343,3 @@ export default function ProductEditor({
     </main>
   )
 }
-

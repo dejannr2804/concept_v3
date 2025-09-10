@@ -54,6 +54,31 @@ export async function apiFetch<T = any>(path: string, opts: ApiRequestOptions = 
   return (extract ? extract(raw) : raw) as T
 }
 
+// Multipart/form-data upload. Do not set Content-Type so the browser adds boundary.
+export async function apiUpload<T = any>(path: string, formData: FormData, opts: Omit<ApiRequestOptions, 'body' | 'method'> = {}): Promise<T> {
+  const { headers, extract, params } = opts
+  const url = new URL(apiUrl(path))
+  if (params) {
+    Object.entries(params).forEach(([k, v]) => {
+      if (v === undefined || v === null) return
+      url.searchParams.set(k, String(v))
+    })
+  }
+  const res = await fetch(url.toString(), {
+    method: 'POST',
+    credentials: 'include',
+    headers: {
+      ...headers,
+    },
+    body: formData,
+    cache: 'no-store',
+  })
+  if (!res.ok) throw new Error(await extractError(res))
+  if (res.status === 204) return undefined as unknown as T
+  const raw = await safeJson(res)
+  return (extract ? extract(raw) : raw) as T
+}
+
 export const api = {
   get: <T = any>(path: string, opts: Omit<ApiRequestOptions, 'method' | 'body'> = {}) =>
     apiFetch<T>(path, { ...opts, method: 'GET' }),
@@ -63,6 +88,8 @@ export const api = {
     apiFetch<T>(path, { ...opts, method: 'PATCH', body }),
   delete: <T = any>(path: string, opts: Omit<ApiRequestOptions, 'method' | 'body'> = {}) =>
     apiFetch<T>(path, { ...opts, method: 'DELETE' }),
+  upload: <T = any>(path: string, formData: FormData, opts: Omit<ApiRequestOptions, 'body' | 'method'> = {}) =>
+    apiUpload<T>(path, formData, opts),
 }
 
 async function safeJson(res: Response) {
@@ -92,4 +119,3 @@ function flattenErrors(data: Record<string, any>): string {
     return parts.join(' | ')
   } catch { return '' }
 }
-
