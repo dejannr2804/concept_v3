@@ -6,6 +6,7 @@ import { useResourceCreator, useResourceItem, useResourceUpdater } from '@/hooks
 import styles from './product-editor.module.css'
 import { api } from '@/lib/api'
 import { useNotifications } from '@/components/Notifications'
+import Modal from '@/components/Modal'
 
 type Mode = 'create' | 'update'
 
@@ -35,6 +36,27 @@ export default function ProductEditor({
 
   // Local mirror of server images so we can append after upload
   const [serverImages, setServerImages] = useState<{ id: number; url: string; alt_text?: string; sort_order?: number }[]>([])
+  const [dragIndex, setDragIndex] = useState<number | null>(null)
+  const [overIndex, setOverIndex] = useState<number | null>(null)
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null)
+
+  function reorder<T>(arr: T[], from: number, to: number): T[] {
+    const next = arr.slice()
+    const [moved] = next.splice(from, 1)
+    next.splice(to, 0, moved)
+    return next
+  }
+
+  async function persistOrder(list: { id: number }[]) {
+    try {
+      const ids = list.map((x) => x.id)
+      const updated = await api.post<{ id: number; url: string }[]>(`shops/${shopId}/products/${productId}/images/reorder`, { order: ids })
+      setServerImages(updated as any)
+      notify.success('Order saved')
+    } catch (e: any) {
+      notify.error(e?.message || 'Failed to save order')
+    }
+  }
 
   const shop = useResourceItem<{ id: number; name: string; slug: string }>(`shops/${shopId}`)
 
@@ -106,6 +128,7 @@ export default function ProductEditor({
     const list = (updater?.data?.images || []) as { id: number; url: string; alt_text?: string; sort_order?: number }[]
     setServerImages(list)
   }, [updater?.data])
+
 
   const loading = updater ? updater.loading : false
   const error = updater ? updater.error : null
@@ -194,14 +217,42 @@ export default function ProductEditor({
             </div>
 
             {serverImages?.length > 0 && (
-              <div className={styles.fileList}>
+              <div className={styles.imageGrid}>
                 {serverImages.map((im, i) => (
-                  <div key={`srv-${i}`} className={styles.fileItem}>
-                    <img src={im.url} alt="" className={styles.thumb} />
-                    <div className={styles.fileMeta}>
-                      <div className={styles.fileName}>{im.url.split('/').pop()}</div>
-                      <div className={styles.progressBar}><div className={styles.progressInner} style={{ width: '100%' }} /></div>
-                    </div>
+                  <div
+                    key={`srv-${im.id ?? i}`}
+                    className={`${styles.imageCard} ${overIndex === i ? styles.dragOver : ''}`}
+                    draggable
+                    onDragStart={() => setDragIndex(i)}
+                    onDragOver={(e) => { e.preventDefault(); setOverIndex(i) }}
+                    onDragEnd={() => { setDragIndex(null); setOverIndex(null) }}
+                    onDrop={() => {
+                      if (dragIndex === null || dragIndex === i) { setDragIndex(null); setOverIndex(null); return }
+                      const next = reorder(serverImages, dragIndex, i)
+                      setServerImages(next)
+                      setDragIndex(null); setOverIndex(null)
+                      persistOrder(next)
+                    }}
+                    title="Drag to reorder"
+                  >
+                    <img src={im.url} alt="" className={styles.image} onClick={(e) => { e.stopPropagation(); setPreviewUrl(im.url) }} />
+                    <span className={styles.dragHandle}>⇅</span>
+                    <button
+                      className={styles.removeBtn}
+                      onClick={async (e) => {
+                        e.stopPropagation()
+                        try {
+                          await api.delete(`shops/${shopId}/products/${productId}/images/${im.id}`)
+                          setServerImages((prev) => prev.filter((x) => x.id !== im.id))
+                          notify.success('Image removed')
+                        } catch (e: any) {
+                          notify.error(e?.message || 'Failed to remove image')
+                        }
+                      }}
+                      aria-label="Remove image"
+                    >
+                      ✕
+                    </button>
                   </div>
                 ))}
               </div>
@@ -210,12 +261,13 @@ export default function ProductEditor({
             <div className={styles.fileList}>
               {images.map((it) => (
                 <div key={it.id} className={styles.fileItem}>
-                  <img src={it.previewUrl} alt="preview" className={styles.thumb} />
+                  <img src={it.previewUrl} alt="preview" className={styles.thumb} onClick={() => setPreviewUrl(it.previewUrl)} />
                   <div className={styles.fileMeta}>
-                    <div className={styles.fileName}>{it.file.name}</div>
-                    <div className={styles.progressBar} aria-label={`Upload ${it.progress}%`}>
-                      <div className={styles.progressInner} style={{ width: `${it.progress}%` }} />
-                    </div>
+                    {it.uploading && (
+                      <div className={styles.progressBar} aria-label="Uploading">
+                        <div className={styles.progressInner} style={{ width: '60%' }} />
+                      </div>
+                    )}
                   </div>
                   <button
                     className={styles.iconButton}
@@ -227,6 +279,12 @@ export default function ProductEditor({
                 </div>
               ))}
             </div>
+
+            <Modal open={Boolean(previewUrl)} onClose={() => setPreviewUrl(null)}>
+              {previewUrl ? (
+                <img src={previewUrl} alt="preview" style={{ display: 'block', maxWidth: '90vw', maxHeight: '90vh', objectFit: 'contain' }} />
+              ) : null}
+            </Modal>
           </section>
 
           {/* Right: Fields */}

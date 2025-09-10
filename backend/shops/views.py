@@ -2,10 +2,11 @@ from rest_framework import generics, permissions, status
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.response import Response
 from rest_framework.generics import RetrieveAPIView
+from rest_framework.views import APIView
 
 from .models import Shop, Product, ProductImage
 from .serializers import ShopSerializer, ProductSerializer, PublicShopSerializer, PublicProductSerializer, ProductImageSerializer
-from .spaces import upload_product_image, SpacesConfigError
+from .spaces import upload_product_image, delete_product_image_by_url, SpacesConfigError
 
 
 class ShopListCreateView(generics.ListCreateAPIView):
@@ -97,3 +98,47 @@ class ProductImageUploadView(generics.GenericAPIView):
         image = ProductImage.objects.create(product=product, url=url, alt_text=alt_text)
         data = ProductImageSerializer(image).data
         return Response(data, status=status.HTTP_201_CREATED)
+
+
+class ProductImageDestroyView(generics.GenericAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def delete(self, request, shop_id: int, product_id: int, image_id: int):
+        shop = generics.get_object_or_404(Shop, pk=shop_id, user=request.user)
+        product = generics.get_object_or_404(Product, pk=product_id, shop=shop)
+        image = generics.get_object_or_404(ProductImage, pk=image_id, product=product)
+        # Best-effort delete from Spaces
+        try:
+            delete_product_image_by_url(image.url)
+        except Exception:
+            pass
+        image.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class ProductImageReorderView(generics.GenericAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, shop_id: int, product_id: int):
+        shop = generics.get_object_or_404(Shop, pk=shop_id, user=request.user)
+        product = generics.get_object_or_404(Product, pk=product_id, shop=shop)
+        order = request.data.get("order")
+        if not isinstance(order, list) or not all(isinstance(x, int) for x in order):
+            return Response({"detail": "Body must include 'order': [image_id, ...]"}, status=status.HTTP_400_BAD_REQUEST)
+        # Constrain to product's images only
+        imgs = list(ProductImage.objects.filter(product=product, id__in=order).only("id").values_list("id", flat=True))
+        # Preserve only valid ids and set sort_order by index
+        sort_map = {img_id: idx for idx, img_id in enumerate([i for i in order if i in imgs])}
+        if not sort_map:
+            return Response({"detail": "No valid images to reorder"}, status=status.HTTP_400_BAD_REQUEST)
+        # Update in bulk
+        to_update = []
+        for img in ProductImage.objects.filter(product=product, id__in=sort_map.keys()).all():
+            img.sort_order = sort_map[img.id]
+            to_update.append(img)
+        if to_update:
+            ProductImage.objects.bulk_update(to_update, ["sort_order"]) 
+        # Return updated list ordered by new sort_order then id
+        images = ProductImage.objects.filter(product=product).order_by("sort_order", "id")
+        data = ProductImageSerializer(images, many=True).data
+        return Response(data, status=status.HTTP_200_OK)

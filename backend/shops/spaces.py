@@ -85,3 +85,33 @@ def upload_product_image(file_obj, original_name: str) -> str:
     base_url = _public_base_url(endpoint_url, bucket)
     return f"{base_url}/{key}"
 
+
+def _key_from_url(url: str) -> str | None:
+    try:
+        bucket = _get_env("SPACES_BUCKET_NAME")
+        endpoint_url = _get_env("SPACES_ENDPOINT_URL")
+        base_candidates = []
+        pub = os.environ.get("SPACES_PUBLIC_BASE_URL")
+        if pub:
+            base_candidates.append(pub.rstrip("/"))
+        base_candidates.append(_public_base_url(endpoint_url, bucket))
+        for base in base_candidates:
+            if url.startswith(base + "/"):
+                return url[len(base) + 1 :]
+    except Exception:
+        return None
+    return None
+
+
+def delete_product_image_by_url(url: str) -> None:
+    """Best-effort delete of an object in Spaces given its public URL."""
+    key = _key_from_url(url)
+    if not key:
+        return
+    bucket = _get_env("SPACES_BUCKET_NAME")
+    client = _client()
+    try:
+        client.delete_object(Bucket=bucket, Key=key)
+    except Exception:
+        # Ignore errors to keep API idempotent
+        pass

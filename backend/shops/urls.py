@@ -7,6 +7,8 @@ from .views import (
     PublicShopDetailView,
     PublicProductDetailView,
     ProductImageUploadView,
+    ProductImageDestroyView,
+    ProductImageReorderView,
 )
 
 urlpatterns = [
@@ -17,4 +19,6 @@ urlpatterns = [
     path('<int:shop_id>/products/', ProductListCreateView.as_view(), name='product-list-create'),
     path('<int:shop_id>/products/<int:pk>/', ProductRetrieveUpdateDestroyView.as_view(), name='product-detail'),
     path('<int:shop_id>/products/<int:product_id>/images/upload/', ProductImageUploadView.as_view(), name='product-image-upload'),
+    path('<int:shop_id>/products/<int:product_id>/images/<int:image_id>/', ProductImageDestroyView.as_view(), name='product-image-destroy'),
+    path('<int:shop_id>/products/<int:product_id>/images/reorder/', ProductImageReorderView.as_view(), name='product-image-reorder'),
 ]
