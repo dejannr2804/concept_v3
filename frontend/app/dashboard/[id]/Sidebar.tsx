@@ -14,6 +14,11 @@ export default function Sidebar({ shopId }: { shopId: string }) {
 
   return (
     <aside className="pe-sidebar">
+      <nav className="pe-sidebar-nav" style={{ marginBottom: 8 }}>
+        <Link href={`/dashboard`} className={`pe-sidebar-link`}>
+          All Shops
+        </Link>
+      </nav>
       <div className="pe-sidebar-header">
         <div className="pe-sidebar-title">{shop.data?.name || 'Shop'}</div>
       </div>

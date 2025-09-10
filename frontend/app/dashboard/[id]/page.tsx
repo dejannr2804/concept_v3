@@ -34,9 +34,6 @@ export default function ShopDashboardPage({ params }: { params: { id: string } }
       <div className="card">
         <div className="row row-between">
           <div className="row">
-            <Link href="/dashboard" className="btn btn-secondary">
-              Back
-            </Link>
             <h1 className="m-0">{shop.data ? shop.data.name : 'Shop'}</h1>
           </div>
           {shop.data && (
