@@ -1,6 +1,7 @@
 import './styles/base.css'
 import './styles/utilities.css'
 import './styles/header.css'
+import './styles/sidebar.css'
 import './styles/notifications.css'
 import './styles/auth.css'
 import './styles/dashboard.css'

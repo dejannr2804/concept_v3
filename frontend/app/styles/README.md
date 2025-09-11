@@ -10,6 +10,7 @@ This directory contains the organized CSS files for the application, split from 
 
 ### Component-Specific Styles
 - **`header.css`** - Header and navigation component styles
+- **`sidebar.css`** - Sidebar component styles
 - **`notifications.css`** - Toast/notification component styles
 
 ### Page-Specific Styles
