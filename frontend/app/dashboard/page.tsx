@@ -49,9 +49,13 @@ export default async function DashboardPage() {
               {s.profile_image_url ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={s.profile_image_url} alt="" />
-              ) : null}
+              ) : (
+                  <div className="image-placeholder" aria-hidden="true">
+                    <img src="/img/image-03.svg" alt="" className="nav-icon"/>
+                  </div>
+              )}
               <div className="left">
-                <div className="top">
+              <div className="top">
                   <h2>{s.name}</h2>
                 </div>
                 <div className="bot">

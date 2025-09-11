@@ -66,6 +66,25 @@
 
 }
 
+.dashboard-container .shops .shop .image-placeholder {
+
+    width: 200px;
+    height: 200px;
+    border-radius: 14px;
+    background: #fff;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+}
+
+.dashboard-container .shops .shop .image-placeholder img {
+
+    width: 100px;
+    height: 100px;
+
+}
 .dashboard-container .shops .shop .left {
 
     width: calc(100% - 260px);
