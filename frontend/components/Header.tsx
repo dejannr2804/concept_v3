@@ -24,6 +24,19 @@ export default function Header() {
   const hide = mounted && pathname?.startsWith('/shops/')
   if (hide) return null
 
+  const displayName = user
+    ? ((user.first_name || user.last_name)
+        ? `${user.first_name ?? ''} ${user.last_name ?? ''}`.trim()
+        : (user.username || user.email))
+    : ''
+  const initials = (() => {
+    if (!user) return ''
+    const src = displayName || user.username || user.email || ''
+    const parts = src.trim().split(/\s+/)
+    if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase()
+    return (src[0] || '?').toUpperCase()
+  })()
+
   return (
     <header className="app-header">
       <div className="row gap-1">
@@ -34,12 +47,20 @@ export default function Header() {
         {user ? (
           <div ref={menuRef} className="relative">
             <button className="user-btn" onClick={() => setOpen((v) => !v)}>
-              {user.username || user.email}
-              <span aria-hidden className="ml-6">▾</span>
+              <span className="user-avatar" aria-hidden>
+                {user.profile_image_url ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={user.profile_image_url} alt=""/>
+                ) : (
+                    <span className="name">{initials}</span>
+                )}
+              </span>
+              <span className="name">{displayName}</span>
+              <img src="/img/chevron-down.svg" alt="" className="icon"/>
             </button>
             {open && (
-              <div className="menu" role="menu">
-                <Link href="/profile" className="menu-item" role="menuitem">Profile</Link>
+                <div className="menu" role="menu">
+                  <Link href="/profile" className="menu-item" role="menuitem">Profile</Link>
                 <button className="menu-item menu-item-button" role="menuitem" onClick={() => logout()}>Logout</button>
               </div>
             )}
