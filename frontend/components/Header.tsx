@@ -40,8 +40,16 @@ export default function Header() {
   return (
     <header className="app-header">
       <div className="row gap-1">
-        <Link href="/" className="brand">Concept</Link>
-        {user && <Link href="/dashboard">Dashboard</Link>}
+        <Link href="/" className="brand">
+          <img src="/img/logo.svg" alt=""/>
+        </Link>
+      </div>
+      <div className="row gap-1">
+        <div className="links">
+            {user && <Link href="/dashboard">Dashboard</Link>}
+            {user && <Link href="/dashboard">Profile</Link>}
+            {user && <Link href="/dashboard">Settings</Link>}
+        </div>
       </div>
       <div className="row gap-1">
         {user ? (
@@ -59,9 +67,23 @@ export default function Header() {
               <img src="/img/chevron-down.svg" alt="" className="icon"/>
             </button>
             {open && (
-                <div className="menu" role="menu">
-                  <Link href="/profile" className="menu-item" role="menuitem">Profile</Link>
-                <button className="menu-item menu-item-button" role="menuitem" onClick={() => logout()}>Logout</button>
+              <div className="menu" role="menu">
+                <Link
+                  href="/profile"
+                  className="menu-item"
+                  role="menuitem"
+                  onClick={() => setOpen(false)}
+                >
+                  Profile
+                </Link>
+                <a
+                  href="#"
+                  className="menu-item"
+                  role="menuitem"
+                  onClick={(e) => { e.preventDefault(); setOpen(false); logout(); }}
+                >
+                  Logout
+                </a>
               </div>
             )}
           </div>
