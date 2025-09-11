@@ -14,15 +14,17 @@
   font-size: 18px;
   color: #282A37;
   padding: 0 16px 8px;
+    font-family: 'Aptos Narrow', sans-serif;
 }
 
 .pe-sidebar-subtitle {
   font-weight: bold;
-  font-size: 10px;
+  font-size: 12px;
   color: #282A37;
   padding: 24px 16px 8px;
   text-transform: uppercase;
   letter-spacing: 2px;
+  font-family: 'Aptos Narrow', sans-serif;
 }
 
 .pe-sidebar-nav { 

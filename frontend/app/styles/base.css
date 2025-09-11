@@ -1,3 +1,232 @@
+/* Aptos Font Face Declarations */
+@font-face {
+  font-family: 'Aptos';
+  src: url('/fonts/aptos/Aptos.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Aptos';
+  src: url('/fonts/aptos/Aptos-Italic.ttf') format('truetype');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Aptos';
+  src: url('/fonts/aptos/Aptos-Light.ttf') format('truetype');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Aptos';
+  src: url('/fonts/aptos/Aptos-Light-Italic.ttf') format('truetype');
+  font-weight: 300;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Aptos';
+  src: url('/fonts/aptos/Aptos-SemiBold.ttf') format('truetype');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Aptos';
+  src: url('/fonts/aptos/Aptos-SemiBold-Italic.ttf') format('truetype');
+  font-weight: 600;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Aptos';
+  src: url('/fonts/aptos/Aptos-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Aptos';
+  src: url('/fonts/aptos/Aptos-Bold-Italic.ttf') format('truetype');
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Aptos';
+  src: url('/fonts/aptos/Aptos-ExtraBold.ttf') format('truetype');
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Aptos';
+  src: url('/fonts/aptos/Aptos-ExtraBold-Italic.ttf') format('truetype');
+  font-weight: 800;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Aptos';
+  src: url('/fonts/aptos/Aptos-Black.ttf') format('truetype');
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Aptos';
+  src: url('/fonts/aptos/Aptos-Black-Italic.ttf') format('truetype');
+  font-weight: 900;
+  font-style: italic;
+  font-display: swap;
+}
+
+/* Aptos Display variants */
+@font-face {
+  font-family: 'Aptos Display';
+  src: url('/fonts/aptos/Aptos-Display.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Aptos Display';
+  src: url('/fonts/aptos/Aptos-Display-Italic.ttf') format('truetype');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Aptos Display';
+  src: url('/fonts/aptos/Aptos-Display-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Aptos Display';
+  src: url('/fonts/aptos/Aptos-Display-Bold-Italic.ttf') format('truetype');
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+}
+
+/* Aptos Mono variants */
+@font-face {
+  font-family: 'Aptos Mono';
+  src: url('/fonts/aptos/Aptos-Mono.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Aptos Mono';
+  src: url('/fonts/aptos/Aptos-Mono-Italic.ttf') format('truetype');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Aptos Mono';
+  src: url('/fonts/aptos/Aptos-Mono-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Aptos Mono';
+  src: url('/fonts/aptos/Aptos-Mono-Bold-Italic.ttf') format('truetype');
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+}
+
+/* Aptos Narrow variants */
+@font-face {
+  font-family: 'Aptos Narrow';
+  src: url('/fonts/aptos/Aptos-Narrow.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Aptos Narrow';
+  src: url('/fonts/aptos/Aptos-Narrow-Italic.ttf') format('truetype');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Aptos Narrow';
+  src: url('/fonts/aptos/Aptos-Narrow-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Aptos Narrow';
+  src: url('/fonts/aptos/Aptos-Narrow-Bold-Italic.ttf') format('truetype');
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+}
+
+/* Aptos Serif variants */
+@font-face {
+  font-family: 'Aptos Serif';
+  src: url('/fonts/aptos/Aptos-Serif.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Aptos Serif';
+  src: url('/fonts/aptos/Aptos-Serif-Italic.ttf') format('truetype');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Aptos Serif';
+  src: url('/fonts/aptos/Aptos-Serif-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Aptos Serif';
+  src: url('/fonts/aptos/Aptos-Serif-Bold-Italic.ttf') format('truetype');
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+}
+
 :root {
   --bg: #E4E8F1;
   --fg: #111827;
@@ -36,7 +265,12 @@ time, mark, audio, video {
 
 body {
     line-height:1;
-    font-family: Arial;
+}
+
+body {
+    font-family: 'Aptos', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+    font-style: normal;
+    font-weight: 400;
 }
 
 article,aside,details,figcaption,figure,
