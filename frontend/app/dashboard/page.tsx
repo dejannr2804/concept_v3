@@ -39,7 +39,7 @@ export default async function DashboardPage() {
       ) : !shops ? (
         <p>Loading shops...</p>
       ) : shops.length === 0 ? (
-        <p>You have no shops yet.</p>
+        <p className="no-shops-message">You have no shops yet.</p>
       ) : (
         <div className="shops">
           {shops.map((s) => (
@@ -48,10 +48,21 @@ export default async function DashboardPage() {
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={s.profile_image_url} alt="" />
               ) : null}
-              <span>{s.name}</span> — <Link href={`/shops/${s.slug}`}>View</Link> |{' '}
-              <Link href={`/dashboard/${s.id}`}>Dashboard</Link>
+              <div className="left">
+                <div className="top">
+                  <h2>{s.name}</h2>
+                </div>
+                <div className="bot">
+
+                </div>
+              </div>
+              <div className="right">
+                <Link href={`/shops/${s.slug}`}></Link>
+                <Link href={`/dashboard/${s.id}`}></Link>
+              </div>
             </div>
           ))}
+
         </div>
       )}
       <p>
