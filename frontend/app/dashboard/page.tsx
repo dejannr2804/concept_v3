@@ -39,9 +39,11 @@ export default async function DashboardPage() {
       ) : !shops ? (
         <p>Loading shops...</p>
       ) : shops.length === 0 ? (
-        <p className="no-shops-message">You have no shops yet.</p>
+          <div className="no-shops-message">
+            <p>You don’t have any shops yet.</p>
+          </div>
       ) : (
-        <div className="shops">
+          <div className="shops">
           {shops.map((s) => (
             <div className="shop">
               {s.profile_image_url ? (
@@ -57,11 +59,11 @@ export default async function DashboardPage() {
                 </div>
               </div>
               <div className="right">
-                <Link href={`/shops/${s.slug}`}>
+                <Link href={`/dashboard/${s.id}`}>
                   <img src="/img/layout-grid-02.svg" alt="" className="nav-icon"/>
                   Dashboard
                 </Link>
-                <Link href={`/dashboard/${s.id}`}>
+                <Link href={`/shops/${s.slug}`}>
                   <img src="/img/arrow-narrow-up-right-d.svg" alt="" className="nav-icon"/>
                   Preview
                 </Link>
@@ -71,9 +73,10 @@ export default async function DashboardPage() {
 
         </div>
       )}
-      <p>
-        <Link href="/dashboard/new" className="create-new-shop">Create a new shop</Link>
-      </p>
+      <Link href="/dashboard/new" className="create-new-shop">
+        <img src="/img/plus.svg" alt="" className="nav-icon"/>
+        Create a new shop
+      </Link>
     </div>
   )
 }
