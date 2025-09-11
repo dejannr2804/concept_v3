@@ -53,7 +53,7 @@
 
 .dashboard-container .shops .shop .left {
 
-    width: calc(100% - 310px);
+    width: calc(100% - 260px);
     box-sizing: border-box;
     padding: 10px 0;
 
@@ -83,7 +83,7 @@
 
 .dashboard-container .shops .shop .right {
 
-    width: 250px;
+    width: 200px;
     height: 100%;
     display: flex;
     flex-direction: column;
@@ -91,12 +91,36 @@
 
 }
 
-.dashboard-container .shops .shop .right a{
+.dashboard-container .shops .shop .right a {
 
     width: 100%;
     height: calc(100% - 15px);
     background: #fff;
     border-radius: 12px;
+    color: #282A37;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    font-size: 18px;
+    border: 3px solid transparent;
+    transition-duration: 0.2s;
+    box-sizing: border-box;
+
+}
+
+.dashboard-container .shops .shop .right a:hover {
+
+    background: transparent;
+    border: 3px solid #fff;
+
+}
+
+.dashboard-container .shops .shop .right a img {
+
+    width: 30px;
+    height: 30px;
 
 }
 

@@ -57,8 +57,14 @@ export default async function DashboardPage() {
                 </div>
               </div>
               <div className="right">
-                <Link href={`/shops/${s.slug}`}></Link>
-                <Link href={`/dashboard/${s.id}`}></Link>
+                <Link href={`/shops/${s.slug}`}>
+                  <img src="/img/layout-grid-02.svg" alt="" className="nav-icon"/>
+                  Dashboard
+                </Link>
+                <Link href={`/dashboard/${s.id}`}>
+                  <img src="/img/arrow-narrow-up-right-d.svg" alt="" className="nav-icon"/>
+                  Preview
+                </Link>
               </div>
             </div>
           ))}
