@@ -15,27 +15,21 @@ export default function Sidebar({ shopId }: { shopId: string }) {
   const isSettings = pathname.startsWith(`/dashboard/${shopId}/manage`)
 
   return (
-    <aside className="pe-sidebar">
-      <nav className="pe-sidebar-nav" style={{ marginBottom: 8 }}>
-        <Link href={`/dashboard`} className={`pe-sidebar-link`}>
-          All Shops
-        </Link>
-      </nav>
-      <div className="pe-sidebar-header">
-        <div className="pe-sidebar-title">{shop.data?.name || 'Shop'}</div>
-      </div>
-
-      <nav className="pe-sidebar-nav">
-        <Link href={dashboardHref} className={`pe-sidebar-link ${isDashboard ? 'is-active' : ''}`}>
-          Dashboard
-        </Link>
-        <Link href={productsHref} className={`pe-sidebar-link ${isProducts ? 'is-active' : ''}`}>
-          Products
-        </Link>
-        <Link href={settingsHref} className={`pe-sidebar-link ${isSettings ? 'is-active' : ''}`}>
-          Settings
-        </Link>
-      </nav>
-    </aside>
+      <aside className="pe-sidebar">
+          <h2 className="pe-sidebar-title">{shop.data?.name || 'Shop'}</h2>
+          <Link href={`/dashboard`} className={`pe-sidebar-link`}>
+              All Shops
+          </Link>
+          <h3 className="pe-sidebar-subtitle">Overview</h3>
+          <Link href={dashboardHref} className={`pe-sidebar-link ${isDashboard ? 'is-active' : ''}`}>
+              Dashboard
+          </Link>
+          <Link href={productsHref} className={`pe-sidebar-link ${isProducts ? 'is-active' : ''}`}>
+              Products
+          </Link>
+          <Link href={settingsHref} className={`pe-sidebar-link ${isSettings ? 'is-active' : ''}`}>
+              Settings
+          </Link>
+      </aside>
   )
 }
