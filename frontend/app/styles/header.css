@@ -52,6 +52,16 @@
   padding: 0 10px;
   font-family: 'Aptos', sans-serif;
   font-size: 18px;
+  box-sizing: border-box;
+  border-top: 2px solid transparent;
+  border-bottom: 2px solid transparent;
+  transition-duration: 0.1s;
+}
+
+.app-header .links .nav-link:hover {
+
+  border-bottom: 2px solid #fff;
+
 }
 
 .app-header .nav-icon {
@@ -72,6 +82,16 @@
   background: transparent;
   color: #fff;
   gap: 4px;
+  height: 58px;
+  border-top: 2px solid transparent;
+  border-bottom: 2px solid transparent;
+  transition-duration: 0.1s;
+}
+
+.user-btn:hover {
+
+  border-bottom: 2px solid #fff;
+
 }
 
 .menu {

@@ -22,22 +22,23 @@ export default function ProfilePage() {
   return (
     <main className="container">
       <div className="card">
-        <h1>Profile</h1>
+        <h1 className="pe-title" style={{ marginBottom: 12 }}>Profile</h1>
         {!user ? null : (
-          <div className="col gap-075 mt-8">
-            <div className="row gap-1 items-center">
-              <div style={{ width: 72, height: 72, borderRadius: '50%', overflow: 'hidden', background: '#eee' }}>
+          <div className="col gap-075 mt-8 pe-form">
+            <div className="row gap-1 items-center" style={{ alignItems: 'center' }}>
+              <div style={{ width: 72, height: 72, borderRadius: '50%', overflow: 'hidden', background: '#eee', border: '1px solid #e5e7eb' }}>
                 {imgUrl ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={imgUrl} alt="Profile" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 ) : (
-                  <div className="row center" style={{ width: '100%', height: '100%', fontSize: 12, color: '#777' }}>No image</div>
+                  <div style={{ width: '100%', height: '100%', fontSize: 12, color: '#777', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>No image</div>
                 )}
               </div>
               <div className="col gap-05">
                 <button
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
+                  className="pe-btnSecondary"
                 >
                   {imgUrl ? 'Change image' : 'Upload image'}
                 </button>
@@ -68,31 +69,33 @@ export default function ProfilePage() {
                 />
               </div>
             </div>
-            <label>
-              <div>Username</div>
-              <input value={user.username} readOnly disabled />
+            <label className="pe-formField">
+              <span className="pe-label">Username</span>
+              <input className="pe-input" value={user.username} readOnly disabled />
             </label>
-            <label>
-              <div>Email</div>
-              <input type="email" value={user.email} readOnly disabled />
+            <label className="pe-formField">
+              <span className="pe-label">Email</span>
+              <input className="pe-input" type="email" value={user.email} readOnly disabled />
             </label>
-            {updater.error && <div className="error">{updater.error}</div>}
-            <label>
-              <div>First name</div>
+            {updater.error && <div className="pe-error">{updater.error}</div>}
+            <label className="pe-formField">
+              <span className="pe-label">First name</span>
               <input
+                className="pe-input"
                 value={updater.data?.first_name || ''}
                 onChange={(e) => updater.setField('first_name', e.target.value)}
               />
             </label>
-            <label>
-              <div>Last name</div>
+            <label className="pe-formField">
+              <span className="pe-label">Last name</span>
               <input
+                className="pe-input"
                 value={updater.data?.last_name || ''}
                 onChange={(e) => updater.setField('last_name', e.target.value)}
               />
             </label>
             <div className="row gap-075">
-              <button onClick={() => updater.save(['first_name', 'last_name'])} disabled={updater.saving}>
+              <button className="pe-btnPrimary" onClick={() => updater.save(['first_name', 'last_name'])} disabled={updater.saving}>
                 {updater.saving ? 'Saving…' : 'Save changes'}
               </button>
             </div>
