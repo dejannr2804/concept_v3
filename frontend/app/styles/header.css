@@ -9,7 +9,8 @@
   background: #282A37;
   z-index: 10;
   height: 58px;
-  padding: 0 30px;
+  padding: 0 100px;
+  box-sizing: border-box;
 }
 
 .app-header a {
