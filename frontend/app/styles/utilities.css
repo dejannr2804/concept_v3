@@ -1,0 +1,192 @@
+/* Layout utilities */
+.container { 
+  max-width: 720px; 
+  margin: 2rem auto; 
+  padding: 0 1rem; 
+}
+
+.card { 
+  border: 1px solid #e5e7eb; 
+  border-radius: 12px; 
+  padding: 1.25rem; 
+  background: #F7F8FC; 
+}
+
+.row { 
+  display: flex; 
+  gap: 0.75rem; 
+  align-items: center; 
+}
+
+.col { 
+  display: flex; 
+  flex-direction: column; 
+  gap: 0.5rem; 
+}
+
+.spacer { 
+  height: 1rem; 
+}
+
+/* Flexbox utilities */
+.row-between { 
+  justify-content: space-between; 
+}
+
+.row-center-between { 
+  display: flex; 
+  align-items: center; 
+  justify-content: space-between; 
+}
+
+.flex-1 { 
+  flex: 1; 
+}
+
+/* Gap utilities */
+.gap-05 { 
+  gap: 0.5rem; 
+}
+
+.gap-075 { 
+  gap: 0.75rem; 
+}
+
+.gap-1 { 
+  gap: 1rem; 
+}
+
+/* Margin utilities */
+.m-0 { 
+  margin: 0; 
+}
+
+.mt-2 { 
+  margin-top: 2px; 
+}
+
+.mt-4 { 
+  margin-top: 4px; 
+}
+
+.mt-8 { 
+  margin-top: 0.5rem; 
+}
+
+.ml-6 { 
+  margin-left: 6px; 
+}
+
+.ml-12 { 
+  margin-left: 12px; 
+}
+
+/* Padding utilities */
+.p-4 { 
+  padding: 1rem; 
+}
+
+/* Typography utilities */
+.fw-600 { 
+  font-weight: 600; 
+}
+
+.text-xs { 
+  font-size: 12px; 
+}
+
+.text-sm { 
+  font-size: 0.8125rem; 
+}
+
+.text-muted { 
+  color: var(--muted); 
+}
+
+.text-secondary { 
+  color: #374151; 
+}
+
+.line-through { 
+  text-decoration: line-through; 
+}
+
+.o-85 { 
+  opacity: 0.85; 
+}
+
+/* Width/Height utilities */
+.w-10 { 
+  width: 10px; 
+}
+
+.h-10 { 
+  height: 10px; 
+}
+
+.w-120 { 
+  width: 120px; 
+}
+
+/* Position utilities */
+.relative { 
+  position: relative; 
+}
+
+/* Text utilities */
+.pre-wrap { 
+  white-space: pre-wrap; 
+}
+
+/* Border utilities */
+.rounded-full { 
+  border-radius: 9999px; 
+}
+
+/* Divider */
+.divider { 
+  height: 1px; 
+  background: #e5e7eb; 
+  margin: 0.5rem 0 1rem; 
+}
+
+/* Button utilities */
+.btn { 
+  display: inline-block; 
+  padding: 0.5rem 0.75rem; 
+  border-radius: 6px; 
+  border: 1px solid #d1d5db; 
+  text-decoration: none; 
+  color: var(--fg); 
+}
+
+.btn-secondary { 
+  background: #fff; 
+}
+
+.btn-white { 
+  background: #ffffff; 
+}
+
+.btn-danger { 
+  background: #fee2e2; 
+  border-color: #fecaca; 
+  color: #991b1b; 
+}
+
+/* List utilities */
+.list { 
+  list-style: none; 
+  padding: 0; 
+  margin: 0; 
+  display: flex; 
+  flex-direction: column; 
+  gap: 0.5rem; 
+}
+
+.list-item { 
+  border: 1px solid #e5e7eb; 
+  border-radius: 8px; 
+  padding: 0.5rem 0.75rem; 
+  background: #ffffff; 
+}
