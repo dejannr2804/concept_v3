@@ -44,13 +44,7 @@ export default function Header() {
           <img src="/img/logo.svg" alt=""/>
         </Link>
       </div>
-      <div className="row gap-1">
-        <div className="links">
-            {user && <Link href="/dashboard">Dashboard</Link>}
-            {user && <Link href="/dashboard">Profile</Link>}
-            {user && <Link href="/dashboard">Settings</Link>}
-        </div>
-      </div>
+      {/* Removed middle links (Profile/Settings) as requested */}
       <div className="row gap-1">
         {user ? (
           <div ref={menuRef} className="relative">
@@ -69,20 +63,36 @@ export default function Header() {
             {open && (
               <div className="menu" role="menu">
                 <Link
-                  href="/profile"
+                  href="/dashboard"
                   className="menu-item"
                   role="menuitem"
                   onClick={() => setOpen(false)}
                 >
-                  Profile
+                  {/* Dashboard icon inside dropdown */}
+                  <img src="/img/layout-grid-02.svg"/>
+                  <span>Dashboard</span>
+                </Link>
+                <Link
+                    href="/profile"
+                    className="menu-item"
+                    role="menuitem"
+                    onClick={() => setOpen(false)}
+                >
+                  <img src="/img/user-02.svg"/>
+                  <span>Profile</span>
                 </Link>
                 <a
-                  href="#"
-                  className="menu-item"
-                  role="menuitem"
-                  onClick={(e) => { e.preventDefault(); setOpen(false); logout(); }}
+                    href="#"
+                    className="menu-item"
+                    role="menuitem"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setOpen(false);
+                      logout();
+                    }}
                 >
-                  Logout
+                  <img src="/img/log-out-02.svg"/>
+                  <span>Logout</span>
                 </a>
               </div>
             )}

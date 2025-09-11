@@ -9,7 +9,7 @@
   background: #282A37;
   z-index: 10;
   height: 58px;
-  padding: 0 20px;
+  padding: 0 30px;
 }
 
 .app-header a {
@@ -67,7 +67,7 @@
 .menu-item {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 6px;
   width: 100%;
   padding: 8px 10px;
   text-decoration: none;
@@ -82,6 +82,13 @@
 }
 .menu-item:active {
   background: #eef2ff;
+}
+
+.menu-item img {
+
+  width: 20px;
+  height: 20px;
+
 }
 
 .menu-item-button { 
