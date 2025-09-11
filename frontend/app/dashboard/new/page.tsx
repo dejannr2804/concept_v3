@@ -24,7 +24,10 @@ export default function NewShopPage() {
     const currentSlug = String(creator.data?.slug || '').trim()
     if (!currentSlug) creator.setField('slug', toSlug(name))
     const res = await creator.create(['name', 'slug'])
-    if (res.ok) router.push('/dashboard')
+    if (res.ok) {
+      router.replace('/dashboard?created=1')
+      setTimeout(() => router.refresh(), 0)
+    }
   }
 
   return (

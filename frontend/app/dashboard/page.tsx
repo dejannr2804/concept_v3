@@ -59,7 +59,11 @@ export default async function DashboardPage() {
                   <h2>{s.name}</h2>
                 </div>
                 <div className="bot">
-
+                  <div></div>
+                  <div></div>
+                  <div></div>
+                  <div></div>
+                  <div></div>
                 </div>
               </div>
               <div className="right">
