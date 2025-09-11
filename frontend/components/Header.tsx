@@ -44,11 +44,21 @@ export default function Header() {
           <img src="/img/logo.svg" alt=""/>
         </Link>
       </div>
-      {/* Removed middle links (Profile/Settings) as requested */}
       <div className="row gap-1">
+        <div className="links">
+          {user && (
+              <Link
+                  href="/dashboard"
+                  className={`nav-link ${pathname?.startsWith('/dashboard') ? 'active' : ''}`}
+              >
+                <span>My Shops</span>
+                <img src="/img/arrow-narrow-up-right.svg" alt="" className="nav-icon"/>
+              </Link>
+          )}
+        </div>
         {user ? (
-          <div ref={menuRef} className="relative">
-            <button className="user-btn" onClick={() => setOpen((v) => !v)}>
+            <div ref={menuRef} className="relative">
+              <button className="user-btn" onClick={() => setOpen((v) => !v)}>
               <span className="user-avatar" aria-hidden>
                 {user.profile_image_url ? (
                     // eslint-disable-next-line @next/next/no-img-element
@@ -57,51 +67,69 @@ export default function Header() {
                     <span className="name">{initials}</span>
                 )}
               </span>
-              <span className="name">{displayName}</span>
-              <img src="/img/chevron-down.svg" alt="" className="icon"/>
-            </button>
-            {open && (
-              <div className="menu" role="menu">
-                <Link
-                  href="/dashboard"
-                  className="menu-item"
-                  role="menuitem"
-                  onClick={() => setOpen(false)}
-                >
-                  {/* Dashboard icon inside dropdown */}
-                  <img src="/img/layout-grid-02.svg"/>
-                  <span>Dashboard</span>
-                </Link>
-                <Link
-                    href="/profile"
-                    className="menu-item"
-                    role="menuitem"
-                    onClick={() => setOpen(false)}
-                >
-                  <img src="/img/user-02.svg"/>
-                  <span>Profile</span>
-                </Link>
-                <a
-                    href="#"
-                    className="menu-item"
-                    role="menuitem"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      setOpen(false);
-                      logout();
-                    }}
-                >
-                  <img src="/img/log-out-02.svg"/>
-                  <span>Logout</span>
-                </a>
-              </div>
-            )}
-          </div>
+                <span className="name">{displayName}</span>
+                <img src="/img/chevron-down.svg" alt="" className="icon"/>
+              </button>
+              {open && (
+                  <div className="menu" role="menu">
+                    <Link
+                        href="/profile"
+                        className="menu-item"
+                        role="menuitem"
+                        onClick={() => setOpen(false)}
+                    >
+                      {/* Profile icon */}
+                      <svg
+                          className="menu-icon"
+                          width="18"
+                          height="18"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z" stroke="#111827" strokeWidth="1.8"
+                              strokeLinecap="round" strokeLinejoin="round"/>
+                        <path d="M4 20a8 8 0 0 1 16 0" stroke="#111827" strokeWidth="1.8" strokeLinecap="round"
+                              strokeLinejoin="round"/>
+                      </svg>
+                      <span>Profile</span>
+                    </Link>
+                    <a
+                        href="#"
+                        className="menu-item"
+                        role="menuitem"
+                        onClick={(e) => {
+                          e.preventDefault()
+                          setOpen(false)
+                          logout()
+                        }}
+                    >
+                      {/* Logout icon */}
+                      <svg
+                          className="menu-icon"
+                          width="18"
+                          height="18"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path d="M15 17l5-5-5-5" stroke="#111827" strokeWidth="1.8" strokeLinecap="round"
+                              strokeLinejoin="round"/>
+                        <path d="M20 12H9" stroke="#111827" strokeWidth="1.8" strokeLinecap="round"
+                              strokeLinejoin="round"/>
+                        <path d="M11 20H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h5" stroke="#111827" strokeWidth="1.8"
+                              strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                      <span>Logout</span>
+                    </a>
+                  </div>
+              )}
+            </div>
         ) : (
-          <div className="row gap-1">
-            <Link href="/login">Login</Link>
-            <Link href="/register">Register</Link>
-          </div>
+            <div className="row gap-1">
+              <Link href="/login">Login</Link>
+              <Link href="/register">Register</Link>
+            </div>
         )}
       </div>
     </header>
