@@ -179,11 +179,11 @@ export default function ProductEditor({
           if (createdImgs.length > 0) {
             try { await api.post(`shops/${shopId}/products/${createdId}/images/reorder`, { order: createdImgs.map((x) => x.id) }) } catch {}
           }
-          // After creating and uploading images, go back to the shop dashboard
-          router.push(`/dashboard/${shopId}`)
+          // After creating and uploading images, go to the products page
+          router.push(`/dashboard/${shopId}/products`)
           router.refresh()
         } else {
-          router.push(`/dashboard/${shopId}`)
+          router.push(`/dashboard/${shopId}/products`)
           router.refresh()
         }
       }
