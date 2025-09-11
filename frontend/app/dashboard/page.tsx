@@ -59,11 +59,52 @@ export default async function DashboardPage() {
                   <h2>{s.name}</h2>
                 </div>
                 <div className="bot">
-                  <div></div>
-                  <div></div>
-                  <div></div>
-                  <div></div>
-                  <div></div>
+
+                  <div className="stat-card">
+                    <div className="left">
+                      A
+                    </div>
+                    <div className="right">
+                      <span className="stat-value">24</span>
+                      <span className="stat-label">Products</span>
+                    </div>
+                  </div>
+                  <div className="stat-card">
+                    <div className="left">
+                      B
+                    </div>
+                    <div className="right">
+                      <span className="stat-value">156</span>
+                      <span className="stat-label">Customers</span>
+                    </div>
+                  </div>
+                  <div className="stat-card">
+                    <div className="left">
+                      C
+                    </div>
+                    <div className="right">
+                      <span className="stat-value">$2.4K</span>
+                      <span className="stat-label">Revenue</span>
+                    </div>
+                  </div>
+                  <div className="stat-card">
+                    <div className="left">
+                      D
+                    </div>
+                    <div className="right">
+                      <span className="stat-value">4.8</span>
+                      <span className="stat-label">Rating</span>
+                    </div>
+                  </div>
+                  <div className="stat-card">
+                    <div className="left">
+                      E
+                    </div>
+                    <div className="right">
+                      <span className="stat-value">+12%</span>
+                      <span className="stat-label">Growth</span>
+                    </div>
+                  </div>
                 </div>
               </div>
               <div className="right">
