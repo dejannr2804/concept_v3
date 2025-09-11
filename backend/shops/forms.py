@@ -1,7 +1,7 @@
 from django import forms
 
-from .models import ProductImage
-from .spaces import upload_product_image
+from .models import ProductImage, Shop
+from .spaces import upload_product_image, upload_shop_image, delete_object_by_url
 
 
 class ProductImageAdminForm(forms.ModelForm):
@@ -29,3 +29,26 @@ class ProductImageAdminForm(forms.ModelForm):
             instance.save()
         return instance
 
+
+class ShopAdminForm(forms.ModelForm):
+    profile_image_file = forms.ImageField(required=False, help_text="Upload profile image; URL will be set automatically.")
+
+    class Meta:
+        model = Shop
+        fields = ["name", "slug", "description", "profile_image_file", "profile_image_url", "user"]
+
+    def save(self, commit=True):
+        shop = super().save(commit=False)
+        f = self.cleaned_data.get("profile_image_file")
+        if f:
+            # best-effort delete previous
+            if shop.profile_image_url:
+                try:
+                    delete_object_by_url(shop.profile_image_url)
+                except Exception:
+                    pass
+            url = upload_shop_image(f, getattr(f, "name", "image"))
+            shop.profile_image_url = url
+        if commit:
+            shop.save()
+        return shop

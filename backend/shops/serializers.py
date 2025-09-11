@@ -7,7 +7,7 @@ from .models import Shop, Product, ProductImage, Category
 class ShopSerializer(serializers.ModelSerializer):
     class Meta:
         model = Shop
-        fields = ["id", "name", "slug", "description"]
+        fields = ["id", "name", "slug", "description", "profile_image_url"]
 
     def validate_slug(self, value: str) -> str:
         # Normalize slug to slug-case
@@ -71,7 +71,7 @@ class PublicShopSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Shop
-        fields = ["id", "name", "slug", "description", "products"]
+        fields = ["id", "name", "slug", "description", "profile_image_url", "products"]
 
 
 class ProductSerializer(serializers.ModelSerializer):

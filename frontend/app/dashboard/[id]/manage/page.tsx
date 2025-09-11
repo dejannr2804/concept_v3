@@ -1,9 +1,10 @@
 "use client"
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { useRef, useState } from 'react'
 import { useResourceItem, useResourceUpdater } from '@/hooks/resource'
 
-type Shop = { id: number; name: string; slug: string; description?: string }
+type Shop = { id: number; name: string; slug: string; description?: string; profile_image_url?: string }
 
 export default function ShopSettingsPage({ params }: { params: { id: string } }) {
   const { id } = params
@@ -12,6 +13,8 @@ export default function ShopSettingsPage({ params }: { params: { id: string } })
   const updater = useResourceUpdater(`shops/${id}`, { load: true })
 
   const data = updater.data || shop.data || {}
+  const [imgUrl, setImgUrl] = useState<string | undefined>(data?.profile_image_url || shop.data?.profile_image_url)
+  const fileInputRef = useRef<HTMLInputElement | null>(null)
 
   return (
     <main className="container">
@@ -34,6 +37,46 @@ export default function ShopSettingsPage({ params }: { params: { id: string } })
           <div className="error">{shop.error}</div>
         ) : (
           <form onSubmit={(e) => e.preventDefault()} className="col gap-075">
+            <div className="row gap-1" style={{ alignItems: 'center' }}>
+              <div style={{ width: 72, height: 72, borderRadius: '50%', overflow: 'hidden', background: '#eee', border: '1px solid #e5e7eb' }}>
+                {imgUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={imgUrl} alt="Shop" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                ) : (
+                  <div style={{ width: '100%', height: '100%', fontSize: 12, color: '#777', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>No image</div>
+                )}
+              </div>
+              <div className="col gap-05">
+                <button type="button" className="btn btn-white" onClick={() => fileInputRef.current?.click()}>
+                  {imgUrl ? 'Change image' : 'Upload image'}
+                </button>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  style={{ display: 'none' }}
+                  onChange={async (e) => {
+                    const inputEl = e.currentTarget as HTMLInputElement
+                    const f = inputEl.files?.[0]
+                    if (!f) return
+                    const fd = new FormData()
+                    fd.append('file', f)
+                    try {
+                      const updated = await (await import('@/lib/api')).api.upload<{ shop: Shop }>(
+                        `shops/${id}/profile-image`,
+                        fd,
+                        { extract: (raw) => (raw && (raw as any).shop) || raw }
+                      )
+                      setImgUrl((updated as any)?.profile_image_url)
+                    } catch (e) {
+                      // toast handled globally by api util
+                    } finally {
+                      if (inputEl) inputEl.value = ''
+                    }
+                  }}
+                />
+              </div>
+            </div>
             <label className="col">
               <span className="text-secondary text-sm">Name</span>
               <input value={data?.name || ''} onChange={(e) => updater.setField('name', e.target.value)} />
@@ -64,4 +107,3 @@ export default function ShopSettingsPage({ params }: { params: { id: string } })
     </main>
   )
 }
-

@@ -10,7 +10,7 @@ export default async function DashboardPage() {
   if (!user) redirect('/login')
   const token = getTokenFromCookies()
 
-  type Shop = { id: number; name: string; slug: string }
+  type Shop = { id: number; name: string; slug: string; profile_image_url?: string }
 
   let shops: Shop[] | null = null
   let error: string | null = null
@@ -44,7 +44,15 @@ export default async function DashboardPage() {
           <ul className="list">
             {shops.map((s) => (
               <li key={s.id} className="list-item row row-between gap-1">
-                <div>{s.name}</div>
+                <div className="row gap-05" style={{ alignItems: 'center' }}>
+                  <div style={{ width: 32, height: 32, borderRadius: '50%', overflow: 'hidden', background: '#eee', border: '1px solid #e5e7eb' }}>
+                    {s.profile_image_url ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={s.profile_image_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    ) : null}
+                  </div>
+                  <div>{s.name}</div>
+                </div>
                 <div className="row gap-05">
                   <Link href={`/shops/${s.slug}`} className="btn btn-white">View</Link>
                   <Link href={`/dashboard/${s.id}`} className="btn btn-secondary">Dashboard</Link>

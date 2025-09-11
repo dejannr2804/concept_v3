@@ -7,6 +7,7 @@ class Shop(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="shops")
     slug = models.SlugField(max_length=255, unique=True)
     description = models.TextField(blank=True, default="")
+    profile_image_url = models.URLField(blank=True, null=True)
 
     class Meta:
         db_table = "cp_shop"

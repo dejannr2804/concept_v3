@@ -96,6 +96,43 @@ def generate_profile_image_key(root_folder: str, filename: str) -> str:
     return f"{root}/profile_images/{unique}{ext}"
 
 
+# Shop profile image helpers (stored under shop_images/)
+def generate_shop_image_key(root_folder: str, filename: str) -> str:
+    root = root_folder.strip("/")
+    ext = ""
+    if "." in filename:
+        ext = filename[filename.rfind(".") :].lower()
+    unique = uuid.uuid4().hex
+    return f"{root}/shop_images/{unique}{ext}"
+
+
+def upload_shop_image(file_obj, original_name: str) -> str:
+    """
+    Upload to Spaces under `{SPACES_ROOT_FOLDER}/shop_images/` and return public URL.
+    """
+    bucket = _get_env("SPACES_BUCKET_NAME")
+    endpoint_url = _get_env("SPACES_ENDPOINT_URL")
+    root_folder = _get_env("SPACES_ROOT_FOLDER", "uploads")
+
+    key = generate_shop_image_key(root_folder, original_name or "image")
+    content_type = mimetypes.guess_type(original_name or "")[0] or "application/octet-stream"
+
+    client = _client()
+    client.upload_fileobj(
+        Fileobj=file_obj,
+        Bucket=bucket,
+        Key=key,
+        ExtraArgs={
+            "ACL": "public-read",
+            "ContentType": content_type,
+            "CacheControl": os.environ.get("SPACES_CACHE_CONTROL", "public, max-age=86400"),
+        },
+    )
+
+    base_url = _public_base_url(endpoint_url, bucket)
+    return f"{base_url}/{key}"
+
+
 def upload_profile_image(file_obj, original_name: str) -> str:
     """
     Upload to Spaces under `{SPACES_ROOT_FOLDER}/profile_images/` and return public URL.

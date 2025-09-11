@@ -6,7 +6,7 @@ from rest_framework.views import APIView
 
 from .models import Shop, Product, ProductImage
 from .serializers import ShopSerializer, ProductSerializer, PublicShopSerializer, PublicProductSerializer, ProductImageSerializer
-from .spaces import upload_product_image, delete_product_image_by_url, SpacesConfigError
+from .spaces import upload_product_image, delete_product_image_by_url, SpacesConfigError, upload_shop_image
 
 
 class ShopListCreateView(generics.ListCreateAPIView):
@@ -142,3 +142,34 @@ class ProductImageReorderView(generics.GenericAPIView):
         images = ProductImage.objects.filter(product=product).order_by("sort_order", "id")
         data = ProductImageSerializer(images, many=True).data
         return Response(data, status=status.HTTP_200_OK)
+
+
+class ShopProfileImageUploadView(generics.GenericAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+    parser_classes = [MultiPartParser, FormParser]
+
+    def post(self, request, shop_id: int):
+        shop = generics.get_object_or_404(Shop, pk=shop_id, user=request.user)
+        file_obj = request.FILES.get("file") or request.FILES.get("image")
+        if not file_obj:
+            return Response({"detail": "Missing file under 'file' or 'image'"}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            url = upload_shop_image(file_obj, getattr(file_obj, "name", "image"))
+        except SpacesConfigError as e:
+            return Response({"detail": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        except Exception as e:
+            return Response({"detail": "Upload failed", "error": str(e)}, status=status.HTTP_502_BAD_GATEWAY)
+
+        # Delete previous image best-effort
+        prev = shop.profile_image_url
+        if prev:
+            try:
+                from .spaces import delete_object_by_url
+                delete_object_by_url(prev)
+            except Exception:
+                pass
+        shop.profile_image_url = url
+        shop.save(update_fields=["profile_image_url"]) 
+
+        data = ShopSerializer(shop).data
+        return Response({"shop": data}, status=status.HTTP_200_OK)

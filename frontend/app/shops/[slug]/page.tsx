@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import { api } from '@/lib/api'
 
 type Product = { id: number; name: string; slug: string; description?: string }
-type Shop = { id: number; name: string; slug: string; description?: string; products: Product[] }
+type Shop = { id: number; name: string; slug: string; description?: string; profile_image_url?: string; products: Product[] }
 
 export default function PublicShopPage({ params }: { params: { slug: string } }) {
   const { slug } = params
@@ -36,7 +36,15 @@ export default function PublicShopPage({ params }: { params: { slug: string } })
   return (
     <main className="container">
       <div className="col gap-075">
-        <h1 className="m-0">{shop.name}</h1>
+        <div className="row gap-05" style={{ alignItems: 'center' }}>
+          <div style={{ width: 64, height: 64, borderRadius: '50%', overflow: 'hidden', background: '#eee', border: '1px solid #e5e7eb' }}>
+            {shop.profile_image_url ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={shop.profile_image_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            ) : null}
+          </div>
+          <h1 className="m-0">{shop.name}</h1>
+        </div>
         {shop.description ? (
           <p className="pre-wrap m-0">{shop.description}</p>
         ) : (

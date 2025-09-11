@@ -1,11 +1,12 @@
 from django.contrib import admin
 
 from .models import Shop, Product, ProductImage, Category
-from .forms import ProductImageAdminForm
+from .forms import ProductImageAdminForm, ShopAdminForm
 
 
 @admin.register(Shop)
 class ShopAdmin(admin.ModelAdmin):
+    form = ShopAdminForm
     list_display = ("id", "name", "slug", "user")
     search_fields = ("name", "slug")
     list_select_related = ("user",)
