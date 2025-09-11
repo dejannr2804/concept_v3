@@ -3,6 +3,10 @@
   padding: 24px; 
 }
 
+.pe-content {
+  background: #E4E8F1;
+}
+
 .pe-header { 
   display: flex; 
   align-items: center; 

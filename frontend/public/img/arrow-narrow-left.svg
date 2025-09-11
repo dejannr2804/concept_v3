@@ -1,0 +1,7 @@
+<svg version="1.2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+	<title>arrow-narrow-left</title>
+	<style>
+		.s0 { fill: #282a37;stroke: #000000;stroke-linecap: round;stroke-linejoin: round;stroke-width: 2 } 
+	</style>
+	<path class="s0" d="m20 12h-16m0 0l6 6m-6-6l6-6"/>
+</svg>
