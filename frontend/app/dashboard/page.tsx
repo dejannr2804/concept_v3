@@ -9,6 +9,7 @@ export default async function DashboardPage() {
   const user = await getCurrentUser()
   if (!user) redirect('/login')
   const token = getTokenFromCookies()
+  const displayName = (user.first_name && user.first_name.trim()) || user.username || user.email
 
   type Shop = { id: number; name: string; slug: string; profile_image_url?: string }
 
@@ -30,40 +31,32 @@ export default async function DashboardPage() {
   }
 
   return (
-    <main className="container">
-      <div className="card">
-        <h1>Your Shops</h1>
-        <div className="spacer" />
-        {error ? (
-          <div className="error">{error}</div>
-        ) : !shops ? (
-          <div>Loading shops...</div>
-        ) : shops.length === 0 ? (
-          <div>You have no shops yet.</div>
-        ) : (
-          <ul className="list">
-            {shops.map((s) => (
-              <li key={s.id} className="list-item row row-between gap-1">
-                <div className="row gap-05" style={{ alignItems: 'center' }}>
-                  <div style={{ width: 32, height: 32, borderRadius: '50%', overflow: 'hidden', background: '#eee', border: '1px solid #e5e7eb' }}>
-                    {s.profile_image_url ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img src={s.profile_image_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                    ) : null}
-                  </div>
-                  <div>{s.name}</div>
-                </div>
-                <div className="row gap-05">
-                  <Link href={`/shops/${s.slug}`} className="btn btn-white">View</Link>
-                  <Link href={`/dashboard/${s.id}`} className="btn btn-secondary">Dashboard</Link>
-                </div>
-              </li>
-            ))}
-          </ul>
-        )}
-        <div className="spacer" />
-        <Link href="/dashboard/new">Create a new shop</Link>
-      </div>
-    </main>
+    <div className="dashboard-container">
+      <h2 className="name">Hello, {displayName}</h2>
+      <p className="subname">Here is the portfolio of your shops.</p>
+      {error ? (
+        <p>{error}</p>
+      ) : !shops ? (
+        <p>Loading shops...</p>
+      ) : shops.length === 0 ? (
+        <p>You have no shops yet.</p>
+      ) : (
+        <div className="shops">
+          {shops.map((s) => (
+            <div className="shop">
+              {s.profile_image_url ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={s.profile_image_url} alt="" />
+              ) : null}
+              <span>{s.name}</span> — <Link href={`/shops/${s.slug}`}>View</Link> |{' '}
+              <Link href={`/dashboard/${s.id}`}>Dashboard</Link>
+            </div>
+          ))}
+        </div>
+      )}
+      <p>
+        <Link href="/dashboard/new" className="create-new-shop">Create a new shop</Link>
+      </p>
+    </div>
   )
 }

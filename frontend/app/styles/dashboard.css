@@ -1,74 +1,53 @@
-/* Dashboard specific styles */
 .dashboard-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 1rem;
+
+    width: 100%;
+    box-sizing: border-box;
+    padding: 50px 100px;
+
 }
 
-.dashboard-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 1.5rem;
-  margin-top: 1rem;
+.dashboard-container .name {
+
+    font-size: 48px;
+    font-family: 'Aptos Narrow', sans-serif;
+    color: #282A37;
+
 }
 
-.dashboard-card {
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
-  padding: 1.5rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+.dashboard-container .subname {
+
+    font-size: 20px;
+    color: #282A37;
+    padding-top: 10px;
+
 }
 
-.dashboard-card:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  transition: box-shadow 0.2s ease-in-out;
+.dashboard-container .shops {
+
+    margin: 20px 0;
+
 }
 
-.dashboard-title {
-  font-size: 1.5rem;
-  font-weight: 600;
-  margin-bottom: 1rem;
-  color: #111827;
+.dashboard-container .shops .shop {
+
+    background: #F7F8FC;
+    border-radius: 20px;
+    padding: 20px;
+    height: 200px;
+    display: flex;
+
 }
 
-.dashboard-subtitle {
-  font-size: 1rem;
-  color: #6b7280;
-  margin-bottom: 1.5rem;
+.dashboard-container .shops .shop img {
+
+    width: 200px;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 14px;
+
 }
 
-.dashboard-actions {
-  display: flex;
-  gap: 0.75rem;
-  margin-top: 1rem;
-}
-
-.dashboard-stats {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1rem;
-  margin-bottom: 2rem;
-}
-
-.stat-card {
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  padding: 1rem;
-  text-align: center;
-}
-
-.stat-value {
-  font-size: 2rem;
-  font-weight: 700;
-  color: #1e293b;
-  margin-bottom: 0.25rem;
-}
-
-.stat-label {
-  font-size: 0.875rem;
-  color: #64748b;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+.dashboard-container .create-new-shop {
+    color: #282A37;
+    font-size: 20px;
 }
