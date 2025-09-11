@@ -95,7 +95,7 @@
 .dashboard-container .shops .shop .left .top {
 
     width: 100%;
-    height: 30%;
+    height: 40%;
     display: flex;
     align-items: center;
     box-sizing: border-box;
@@ -114,7 +114,7 @@
 .dashboard-container .shops .shop .left .bot {
 
     width: 100%;
-    height: 70%;
+    height: 60%;
     display: flex;
     gap: 10px;
 
