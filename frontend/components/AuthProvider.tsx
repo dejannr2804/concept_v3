@@ -2,7 +2,7 @@
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react'
 import { useNotifications } from '@/components/Notifications'
 
-export type User = { id: number; username: string; email: string; first_name?: string; last_name?: string }
+export type User = { id: number; username: string; email: string; first_name?: string; last_name?: string; profile_image_url?: string }
 
 type AuthContextShape = {
   user: User | null

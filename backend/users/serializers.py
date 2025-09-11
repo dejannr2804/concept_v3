@@ -11,7 +11,7 @@ from .models import User
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ["id", "username", "email", "first_name", "last_name"]
+        fields = ["id", "username", "email", "first_name", "last_name", "profile_image_url"]
 
 
 class UserUpdateSerializer(serializers.ModelSerializer):
@@ -36,7 +36,7 @@ class UserUpdateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ["username", "email", "first_name", "last_name"]
+        fields = ["username", "email", "first_name", "last_name", "profile_image_url"]
 
 
 class RegisterSerializer(serializers.ModelSerializer):

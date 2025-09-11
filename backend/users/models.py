@@ -4,7 +4,7 @@ from django.db import models
 
 class User(AbstractUser):
     email = models.EmailField(unique=True)
+    profile_image_url = models.URLField(blank=True, null=True)
 
     def __str__(self) -> str:
         return self.username or self.email
-

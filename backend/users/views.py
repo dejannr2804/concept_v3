@@ -5,6 +5,7 @@ from rest_framework.views import APIView
 from rest_framework.decorators import api_view, permission_classes
 
 from .serializers import RegisterSerializer, LoginSerializer, UserSerializer, UserUpdateSerializer
+from shops.spaces import upload_profile_image, delete_object_by_url, SpacesConfigError
 
 
 class RegisterView(APIView):
@@ -79,3 +80,27 @@ class LogoutView(APIView):
         except Token.DoesNotExist:
             pass
         return Response({"detail": "Logged out"})
+
+
+class ProfileImageUploadView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        file = request.FILES.get('file') or request.FILES.get('image')
+        if not file:
+            return Response({'detail': 'Missing file'}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            url = upload_profile_image(file, getattr(file, 'name', 'image'))
+        except SpacesConfigError as e:
+            return Response({'detail': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        # Delete previous image best-effort
+        prev = request.user.profile_image_url
+        if prev:
+            try:
+                delete_object_by_url(prev)
+            except Exception:
+                pass
+        request.user.profile_image_url = url
+        request.user.save(update_fields=['profile_image_url'])
+        return Response({'user': UserSerializer(request.user).data}, status=status.HTTP_200_OK)

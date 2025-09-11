@@ -2,7 +2,7 @@ import { cookies } from 'next/headers'
 import { API_BASE_URL, AUTH_COOKIE } from '@/lib/config'
 import 'server-only'
 
-export type User = { id: number; username: string; email: string; first_name?: string; last_name?: string }
+export type User = { id: number; username: string; email: string; first_name?: string; last_name?: string; profile_image_url?: string }
 
 export function getTokenFromCookies(): string | null {
   try {
@@ -29,4 +29,3 @@ export async function getCurrentUser(): Promise<User | null> {
     return null
   }
 }
-
