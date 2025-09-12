@@ -4,7 +4,7 @@
 }
 
 .pe-content {
-  background: #E4E8F1;
+  /*background: #E4E8F1;*/
 }
 
 .pe-header { 
@@ -81,7 +81,7 @@
 }
 
 .pe-panel { 
-  background: #F7F8FC; 
+  background: #f5f5f5;
   border: 1px solid #e5e7eb; 
   border-radius: 12px; 
   padding: 16px; 
@@ -96,7 +96,7 @@
 .pe-dropZone {
   border: 2px dashed #cbd5e1;
   border-radius: 12px;
-  background: #f8fafc;
+  background: #f0f0f0;
   height: 180px;
   display: flex;
   align-items: center;
@@ -198,11 +198,12 @@
 }
 
 .pe-input, .pe-select, .pe-textarea { 
-  border: 1px solid #d1d5db; 
-  border-radius: 8px; 
+  border-radius: 8px;
   padding: 8px 10px; 
   font-size: 14px; 
   background: #fff;
+  border: none;
+  outline: none;
 }
 
 .pe-textarea { 

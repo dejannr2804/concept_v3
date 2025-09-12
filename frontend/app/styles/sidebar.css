@@ -1,6 +1,6 @@
 /* Sidebar component styles */
 .pe-sidebar {
-  background: #F7F8FC;
+  background: #f5f5f5;
   padding: 10px 0 20px;
   position: sticky;
   top: 12px;
@@ -13,7 +13,7 @@
 .pe-sidebar-title { 
   font-weight: 600;
   font-size: 20px;
-  color: #282A37;
+  color: #121212;
   padding: 16px 16px;
   font-family: 'Aptos Narrow', sans-serif;
 }
@@ -21,7 +21,7 @@
 .pe-sidebar-subtitle {
   font-weight: 600;
   font-size: 12px;
-  color: #282A37;
+  color: #121212;
   padding: 16px 16px 8px;
   text-transform: uppercase;
   letter-spacing: 2px;
@@ -38,7 +38,7 @@
 .pe-sidebar-link { 
   display: block; 
   padding: 12px 16px;
-  color: #282A37;
+  color: #121212;
   text-decoration: none; 
 }
 
@@ -65,7 +65,7 @@
   display: block; 
   padding: 6px 8px; 
   border-radius: 8px; 
-  color: #282A37; 
+  color: #121212;
   text-decoration: none; 
   white-space: nowrap; 
   overflow: hidden; 
