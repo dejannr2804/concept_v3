@@ -36,10 +36,49 @@
 }
 
 .pe-sidebar-link { 
-  display: block; 
+  display: flex;
   padding: 12px 16px;
   color: #121212;
-  text-decoration: none; 
+  text-decoration: none;
+  justify-content: space-between;
+  height: 25px;
+  align-items: center;
+}
+
+.pe-sidebar-link .text {
+
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+}
+
+.pe-sidebar-link .soon {
+
+  height: 20px;
+  width: 40px;
+  font-size: 12px;
+  background: #121212;
+  border-radius: 100px;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  will-change: opacity, transform;
+
+}
+
+/* Fade in for ~0.5s, hold, then fade out at the end */
+.soon.soon--fade {
+  animation: pe-fade-in-out 5s ease-out forwards;
+}
+
+/* Faster fades (~150ms each) with long hold */
+@keyframes pe-fade-in-out {
+  0% { opacity: 0; transform: translateY(-2px); }
+  3% { opacity: 1; transform: translateY(0); }
+  97% { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(-2px); }
 }
 
 .pe-sidebar-link:hover { 
