@@ -54,68 +54,44 @@ export default async function DashboardPage() {
                     <img src="/img/image-03.svg" alt="" className="nav-icon"/>
                   </div>
               )}
-              <div className="left">
-              <div className="top">
+              <div className="right">
+                <div className="one">
                   <h2>{s.name}</h2>
                 </div>
-                <div className="bot">
-
-                  <div className="stat-card">
-                    <div className="left">
-                      A
-                    </div>
-                    <div className="right">
-                      <span className="stat-value">24</span>
-                      <span className="stat-label">Products</span>
-                    </div>
+                <div className="two">
+                  <div className="rating">
+                    <img src="/img/star-01.svg" alt="" className="nav-icon"/>
+                    <span>4.8</span>
+                    <span className="brackets">(1,134)</span>
                   </div>
-                  <div className="stat-card">
-                    <div className="left">
-                      B
+                  <div className="info">
+                    <div className="info-part">
+                      <img src="/img/shopping-bag-02-g.svg" alt="" className="nav-icon"/>
+                      <span className="count">3</span>
+                      <span className="text">Products</span>
                     </div>
-                    <div className="right">
-                      <span className="stat-value">156</span>
-                      <span className="stat-label">Customers</span>
+                    <div className="info-part">
+                      <img src="/img/shopping-cart-01-g.svg" alt="" className="nav-icon"/>
+                      <span className="count">51</span>
+                      <span className="text">Orders</span>
                     </div>
-                  </div>
-                  <div className="stat-card">
-                    <div className="left">
-                      C
-                    </div>
-                    <div className="right">
-                      <span className="stat-value">$2.4K</span>
-                      <span className="stat-label">Revenue</span>
-                    </div>
-                  </div>
-                  <div className="stat-card">
-                    <div className="left">
-                      D
-                    </div>
-                    <div className="right">
-                      <span className="stat-value">4.8</span>
-                      <span className="stat-label">Rating</span>
-                    </div>
-                  </div>
-                  <div className="stat-card">
-                    <div className="left">
-                      E
-                    </div>
-                    <div className="right">
-                      <span className="stat-value">+12%</span>
-                      <span className="stat-label">Growth</span>
+                    <div className="info-part">
+                      <img src="/img/coins-stacked-02-g.svg" alt="" className="nav-icon"/>
+                      <span className="count">$124</span>
+                      <span className="text">Revenue</span>
                     </div>
                   </div>
                 </div>
-              </div>
-              <div className="right">
-                <Link href={`/dashboard/${s.id}`}>
-                  <img src="/img/layout-grid-02.svg" alt="" className="nav-icon"/>
-                  Dashboard
-                </Link>
-                <Link href={`/shops/${s.slug}`}>
-                  <img src="/img/arrow-narrow-up-right-d.svg" alt="" className="nav-icon"/>
-                  Preview
-                </Link>
+                <div className="three">
+                  <Link href={`/dashboard/${s.id}`}>
+                    <img src="/img/layout-grid-02.svg" alt="" className="nav-icon"/>
+                    Dashboard
+                  </Link>
+                  <Link href={`/shops/${s.slug}`}>
+                    <img src="/img/arrow-narrow-up-right-d.svg" alt="" className="nav-icon"/>
+                    Preview
+                  </Link>
+                </div>
               </div>
             </div>
           ))}

@@ -26,7 +26,6 @@
 
     margin: 20px 0;
     display: flex;
-    flex-direction: column;
     gap: 20px;
 
 }
@@ -48,16 +47,18 @@
 
 .dashboard-container .shops .shop {
 
+    width: calc(50% - 10px);
     background: #f5f5f5;
     border-radius: 20px;
     padding: 10px;
     height: 200px;
     display: flex;
-    gap: 40px;
+    align-items: center;
+    gap: 20px;
 
 }
 
-.dashboard-container .shops .shop img {
+.dashboard-container .shops .shop > img {
 
     width: 200px;
     height: 200px;
@@ -85,25 +86,24 @@
     height: 100px;
 
 }
-.dashboard-container .shops .shop .left {
 
-    width: calc(100% - 240px);
-    box-sizing: border-box;
-
-}
-
-.dashboard-container .shops .shop .left .top {
+.dashboard-container .shops .shop .right {
 
     width: 100%;
-    height: 40%;
     display: flex;
-    align-items: center;
-    box-sizing: border-box;
-    padding-bottom: 6px;
+    flex-direction: column;
+    gap: 20px;
 
 }
 
-.dashboard-container .shops .shop .left .top h2 {
+.dashboard-container .shops .shop .right .one {
+
+    width: 100%;
+    overflow: hidden;
+
+}
+
+.dashboard-container .shops .shop .right .one h2 {
 
     font-size: 32px;
     font-family: 'Aptos Narrow';
@@ -111,161 +111,130 @@
 
 }
 
-.dashboard-container .shops .shop .left .bot {
+.dashboard-container .shops .shop .right .two {
 
     width: 100%;
-    height: 60%;
-    display: flex;
-    gap: 10px;
+    overflow: hidden;
 
 }
 
-.dashboard-container .shops .shop .left .bot .stat-card {
+.dashboard-container .shops .shop .right .two .rating {
 
-    width: calc(100% / 5 - 40px / 5);
     display: flex;
     align-items: center;
-    justify-content: center;
-    text-align: left;
-    transition: all 0.2s ease;
-    background: #fff;
-    border-radius: 14px;
-    gap: 12px;
-
-}
-
-.dashboard-container .shops .shop .left .bot .stat-card .left {
-
-    width: 50px;
-    height: 50px;
-    border-radius: 100px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 20px;
-    font-weight: bold;
-
-}
-
-.dashboard-container .shops .shop .left .bot .stat-card .right {
-
-    display: flex;
-    justify-content: center;
-    width: auto;
+    margin-bottom: 10px;
     gap: 4px;
 
 }
 
-.dashboard-container .shops .shop .left .bot .stat-card .stat-value {
+.dashboard-container .shops .shop .right .two .rating img {
 
-    font-size: 28px;
-    font-weight: 600;
-    color: #121212;
-    font-family: 'Aptos Narrow', sans-serif;
-    line-height: 1;
+    width: 20px;
+    height: 20px;
 
 }
 
-.dashboard-container .shops .shop .left .bot .stat-card:nth-child(1) .left {
+.dashboard-container .shops .shop .right .two .rating .brackets {
 
-    background: #E0EAFF;
-    color: #6172F3;
-
-
-}
-
-.dashboard-container .shops .shop .left .bot .stat-card:nth-child(2) .left {
-
-    background: #CCFBEF;
-    color: #29BFA6;
-
+    color: #808080;
+    font-size: 12px;
 
 }
 
-.dashboard-container .shops .shop .left .bot .stat-card:nth-child(4) .left {
+.dashboard-container .shops .shop .right .two .info {
 
-    background: #FEF7C3;
-    color: #F89E22;
-
-
-}
-
-.dashboard-container .shops .shop .left .bot .stat-card:nth-child(3) .left {
-
-    background: #FEE6E2;
-    color: #F89E22;
-
-
-}
-.dashboard-container .shops .shop .left .bot .stat-card:nth-child(5) .left {
-
-    background: #ECE9FE;
-    color: #875BF7;
-
-}
-
-
-.dashboard-container .shops .shop .left .bot .stat-card .stat-label {
-
-    font-size: 11px;
-    color: #6B7280;
-    text-transform: uppercase;
-    letter-spacing: 0.8px;
-    font-weight: 500;
-    line-height: 1;
-    font-family: 'Aptos Narrow', sans-serif;
-
-}
-
-.dashboard-container .shops .shop .right {
-
-    width: 200px;
-    height: 100%;
+    /*background: red;*/
     display: flex;
-    flex-direction: column;
-    gap: 10px;
+    gap: 20px;
 
 }
 
-.dashboard-container .shops .shop .right a {
+.dashboard-container .shops .shop .right .two .info .info-part {
+
+    display: flex;
+    gap: 4px;
+    align-items: center;
+
+}
+
+.dashboard-container .shops .shop .right .two .info .info-part img {
+
+    width: 20px;
+    height: 20px;
+
+}
+
+.dashboard-container .shops .shop .right .two .info .info-part .count {
+
+    font-size: 16px;
+    font-family: 'Aptos Narrow', sans-serif;
+    color: #808080;
+
+}
+
+.dashboard-container .shops .shop .right .two .info .info-part .text {
+
+    font-family: 'Aptos Narrow', sans-serif;
+    color: #808080;
+    font-size: 14px;
+    font-weight: 500;
+
+}
+
+.dashboard-container .shops .shop .right .three {
 
     width: 100%;
-    height: calc(100% - 15px);
-    background: #fff;
-    border-radius: 14px;
-    color: #121212;
     display: flex;
-    flex-direction: column;
+    gap: 15px;
+
+}
+
+.dashboard-container .shops .shop .right .three a {
+
+    background: #121212;
+    color: #fff;
+    padding: 10px 15px;
+    border-radius: 100px;
+    display: flex;
     align-items: center;
     justify-content: center;
-    gap: 6px;
-    font-size: 18px;
-    border: 3px solid transparent;
-    transition-duration: 0.2s;
+    gap: 4px;
     box-sizing: border-box;
+    border: 2px solid #121212;
+    transition-duration: 0.2s;
+
 
 }
 
-.dashboard-container .shops .shop .right a:hover {
+.dashboard-container .shops .shop .right .three a:hover {
 
     background: transparent;
-    border: 3px solid #fff;
+    color: #121212;
 
 }
 
-.dashboard-container .shops .shop .right a img {
+.dashboard-container .shops .shop .right .three a:hover img {
 
-    width: 30px;
-    height: 30px;
+    filter: invert(0);
 
 }
+
+.dashboard-container .shops .shop .right .three a img {
+
+    width: 20px;
+    height: 20px;
+    filter: invert(1);
+
+}
+
+
 
 .dashboard-container .create-new-shop {
     color: #121212;
     font-size: 20px;
     background: #f5f5f5;
     padding: 10px 15px;
-    border-radius: 10px;
+    border-radius: 100px;
     transition-duration: 0.2s;
     border: 2px solid transparent;
     box-sizing: border-box;
