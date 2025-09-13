@@ -17,6 +17,7 @@ type Product = {
   currency?: string
   stock_quantity?: number
   stock_status?: 'in_stock' | 'out_of_stock'
+  images?: { id: number; url: string; alt_text?: string; sort_order: number }[]
 }
 
 export default function ProductsPage({ params }: { params: { id: string } }) {
@@ -45,48 +46,60 @@ export default function ProductsPage({ params }: { params: { id: string } }) {
       ) : products.data.length === 0 ? (
         <div className="no-products-message">No products yet.</div>
       ) : (
-        <ul>
-          {products.data.map((p) => (
-            <li key={p.id}>
-              <p>
-                <strong>{p.name}</strong>
-              </p>
-              <p>
-                SKU: {p.sku}
-                {p.category ? <> | Category: {p.category}</> : null}
-                {' '}| Status: {p.status}
-              </p>
-              {(p.short_description || p.description) && (
-                <p>{p.short_description || p.description}</p>
-              )}
-              <p>
-                Price:{' '}
-                {p.discounted_price != null && p.discounted_price !== undefined ? (
-                  <>
-                    <strong>
-                      {(p.currency || 'USD')} {Number(p.discounted_price).toFixed(2)}
-                    </strong>
-                    {' '}({(p.currency || 'USD')} {Number(p.base_price || 0).toFixed(2)} original)
-                  </>
-                ) : (
-                  <strong>
-                    {(p.currency || 'USD')} {Number(p.base_price || 0).toFixed(2)}
-                  </strong>
-                )}
-                {' '}| Stock: {p.stock_quantity ?? 0} ({p.stock_status === 'out_of_stock' ? 'Out of stock' : 'In stock'})
-              </p>
-              <p>
-                {shop.data && (
-                  <>
-                    <Link href={`/shops/${shop.data.slug}/products/${p.slug}`}>View</Link>
-                    {' '}
-                  </>
-                )}
-                <Link href={`/dashboard/${id}/products/${p.id}`}>Manage</Link>
-              </p>
-            </li>
-          ))}
-        </ul>
+          <>
+            <div className="filters"></div>
+            <div className="products-table-wrapper">
+              <table className="products-table">
+                <thead>
+                <tr>
+                  <th>Image</th>
+                  <th>Name</th>
+                  <th>SKU</th>
+                  <th>Category</th>
+                  <th>Status</th>
+                  <th>Price</th>
+                  <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                {products.data.map((p) => {
+                  const img = (p.images || []).find((i) => i.sort_order === 1) || (p.images || [])[0]
+                  return (
+                      <tr key={p.id}>
+                        <td className="product-image-cell">
+                          {img ? (
+                              <img className="product-thumb" src={img.url} alt={img.alt_text || p.name}/>
+                          ) : (
+                              <div className="product-thumb placeholder"/>
+                          )}
+                        </td>
+                        <td className="product-name">
+                          <strong>{p.name}</strong>
+                        </td>
+                        <td>{p.sku}</td>
+                        <td>{p.category || '-'}</td>
+                        <td className={p.status === 'active' ? 'status-active' : 'status-inactive'}>
+                          {p.status === 'active' ? 'Active' : 'Inactive'}
+                        </td>
+                        <td>
+                          <strong>
+                            {(p.currency || 'USD')} {Number((p.discounted_price ?? p.base_price ?? 0)).toFixed(2)}
+                          </strong>
+                        </td>
+                        <td className="actions">
+                          {shop.data && (
+                              <Link href={`/shops/${shop.data.slug}/products/${p.slug}`}>View</Link>
+                          )}
+                          <span> </span>
+                          <Link href={`/dashboard/${id}/products/${p.id}`}>Manage</Link>
+                        </td>
+                      </tr>
+                  )
+                })}
+                </tbody>
+              </table>
+            </div>
+          </>
       )}
     </div>
   )
