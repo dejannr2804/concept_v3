@@ -17,11 +17,12 @@
 .pe-titleGroup { 
   display: flex; 
   align-items: center; 
-  gap: 12px; 
+  gap: 6px;
 }
 
 .pe-title { 
-  font-size: 22px; 
+  font-size: 32px;
+  font-family: 'Aptos Narrow', sans-serif;
   font-weight: 600; 
   margin: 0; 
 }
@@ -31,42 +32,85 @@
   gap: 8px; 
 }
 
-.pe-btnSecondary, .pe-btnPrimary, .pe-btnDanger, .pe-iconButton {
+.pe-back {
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  gap: 4px;
+  color: #121212;
+  /*border: 2px solid #121212;*/
+  border-radius: 100px;
+  transition-duration: 0.2s;
+  padding: 8px 12px 8px 12px;
+  font-weight: 600;
+
+}
+
+.pe-back:hover {
+
+  background: #d4d4d4;
+
+}
+
+.pe-back img {
+
+  width: 16px;
+  height: 16px;
+
+}
+
+.pe-preview {
+
   appearance: none;
-  border: 1px solid #d1d5db;
-  background: #fff;
-  color: #111827;
+  border: 2px solid #121212;
+  background: #121212;
+  color: #fff;
   padding: 8px 12px;
-  border-radius: 8px;
-  font-size: 14px;
   text-decoration: none;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  border-radius: 100px;
+  font-size: 16px;
+  transition-duration: 0.2s;
+
 }
 
-.pe-btnSecondary:hover { 
-  background: #f9fafb; 
+.pe-preview:hover {
+
+  background: transparent;
+  color: #121212;
+
 }
 
-.pe-btnPrimary { 
-  background: #2563eb; 
-  border-color: #2563eb; 
-  color: #fff; 
+.pe-preview:hover img {
+
+  filter: invert(1);
+
 }
 
-.pe-btnPrimary:hover { 
-  background: #1d4ed8; 
-  border-color: #1d4ed8; 
+.pe-preview.pe-down {
+
+  padding: 10px 16px;
+
 }
 
-.pe-btnDanger { 
-  background: #ef4444; 
-  border-color: #ef4444; 
-  color: #fff; 
+.pe-preview.pe-red {
+
+  border-color: #a20000;
+  background-color: #a20000;
+
 }
 
-.pe-btnDanger:hover { 
-  background: #dc2626; 
-  border-color: #dc2626; 
+.pe-preview.pe-red:hover {
+
+  background-color: transparent;
+  color: #a20000;
+
 }
 
 .pe-iconButton { 
@@ -89,7 +133,7 @@
 
 .pe-sectionTitle { 
   font-size: 16px; 
-  margin: 0 0 12px; 
+  margin: 0 0 12px;
   color: #111827; 
 }
 
@@ -117,7 +161,7 @@
 }
 
 .pe-link { 
-  color: #2563eb; 
+  color: #121212;
 }
 
 .pe-fileList { 

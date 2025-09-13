@@ -203,20 +203,24 @@ export default function ProductEditor({
     <main className="pe-page">
       <div className="pe-header">
         <div className="pe-titleGroup">
-          <Link href={`/dashboard/${shopId}/products`} className="pe-btnSecondary">Back</Link>
+          <Link href={`/dashboard/${shopId}/products`} className="pe-back">
+            <img src="/img/arrow-narrow-left.svg" alt=""/>
+            <span>Go back</span>
+          </Link>
           <h1 className="pe-title">{mode === 'create' ? 'Create New Product' : 'Product Dashboard'}</h1>
         </div>
         <div className="pe-actions">
           {mode === 'update' && shop.data && updater?.data?.slug && (
-            <Link href={`/shops/${shop.data.slug}/products/${updater.data.slug}`} className="pe-btnSecondary">
-              View
-            </Link>
+              <Link href={`/shops/${shop.data.slug}/products/${updater.data.slug}`} className="pe-preview">
+                <img src="/img/arrow-narrow-up-right.svg" alt=""/>
+                <span>Preview</span>
+              </Link>
           )}
         </div>
       </div>
 
       {loading ? (
-        <div>Loading…</div>
+          <div>Loading…</div>
       ) : error ? (
         <div className="pe-error">{error}</div>
       ) : (
@@ -425,12 +429,12 @@ export default function ProductEditor({
               </div>
 
               <div className="pe-formActions">
-                <button type="button" className="pe-btnPrimary" onClick={onPrimary} disabled={primaryDisabled}>
-                  {primaryLabel}
+                <button type="button" className="pe-preview pe-down" onClick={onPrimary} disabled={primaryDisabled}>
+                  <span>{primaryLabel}</span>
                 </button>
                 {mode === 'update' && (
-                  <button type="button" className="pe-btnDanger" disabled={Boolean(updater?.deleting)} onClick={onDelete}>
-                    {updater?.deleting ? 'Deleting…' : 'Delete Product'}
+                  <button type="button" className="pe-preview pe-down pe-red" disabled={Boolean(updater?.deleting)} onClick={onDelete}>
+                    {updater?.deleting ? 'Deleting…' : 'Delete'}
                   </button>
                 )}
               </div>
