@@ -83,8 +83,8 @@
 .pe-panel { 
   background: #f5f5f5;
   border: 1px solid #e5e7eb; 
-  border-radius: 12px; 
-  padding: 16px; 
+  border-radius: 18px;
+  padding: 20px;
 }
 
 .pe-sectionTitle { 
@@ -193,14 +193,24 @@
 }
 
 .pe-label { 
-  font-size: 13px; 
+  font-size: 14px;
+  padding-left: 6px;
   color: #374151; 
 }
 
-.pe-input, .pe-select, .pe-textarea { 
-  border-radius: 8px;
-  padding: 8px 10px; 
+.pe-input, .pe-select {
+  border-radius: 100px;
+  padding: 12px 16px;
   font-size: 14px; 
+  background: #fff;
+  border: none;
+  outline: none;
+}
+
+.pe-textarea {
+  border-radius: 8px;
+  padding: 12px 16px;
+  font-size: 14px;
   background: #fff;
   border: none;
   outline: none;
