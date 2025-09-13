@@ -58,7 +58,23 @@ export default function ProductsPage({ params }: { params: { id: string } }) {
         <div className="no-products-message">No products yet.</div>
       ) : (
           <>
-            <div className="filters"></div>
+            <div className="filters">
+              <div className="filter">
+                <input type="text" placeholder='Search here...'/>
+              </div>
+              <div className="filter">
+                <span>Category</span>
+                <img src="/img/chevron-down.svg" alt="" className="nav-icon"/>
+              </div>
+              <div className="filter">
+                <span>Status</span>
+                <img src="/img/chevron-down.svg" alt="" className="nav-icon"/>
+              </div>
+              <div className="filter">
+                <span>Discount</span>
+                <img src="/img/chevron-down.svg" alt="" className="nav-icon"/>
+              </div>
+            </div>
             <div className="products-table-wrapper">
               <table className="products-table">
                 <thead>
