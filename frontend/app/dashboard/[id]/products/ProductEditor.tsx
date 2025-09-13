@@ -203,7 +203,7 @@ export default function ProductEditor({
     <main className="pe-page">
       <div className="pe-header">
         <div className="pe-titleGroup">
-          <Link href={`/dashboard/${shopId}`} className="pe-btnSecondary">Back</Link>
+          <Link href={`/dashboard/${shopId}/products`} className="pe-btnSecondary">Back</Link>
           <h1 className="pe-title">{mode === 'create' ? 'Create New Product' : 'Product Dashboard'}</h1>
         </div>
         <div className="pe-actions">
