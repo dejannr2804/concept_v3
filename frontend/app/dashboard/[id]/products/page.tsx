@@ -1,6 +1,7 @@
 "use client"
 import Link from 'next/link'
 import { useResourceItem, useResourceList } from '@/hooks/resource'
+import { api } from '@/lib/api'
 
 type Shop = { id: number; name: string; slug: string }
 type Product = {
@@ -24,6 +25,16 @@ export default function ProductsPage({ params }: { params: { id: string } }) {
   const { id } = params
   const shop = useResourceItem<Shop>(`shops/${id}`)
   const products = useResourceList<Product>(`shops/${id}/products`)
+  async function toggleStatus(productId: number, current: Product['status']) {
+    const next = current === 'active' ? 'inactive' : 'active'
+    try {
+      await api.patch(`shops/${id}/products/${productId}`, { status: next })
+      products.notify.success('Status updated')
+      products.refresh()
+    } catch (e: any) {
+      products.notify.error(e?.message || 'Failed to update status')
+    }
+  }
 
   return (
     <div className="products-page-container">
@@ -78,9 +89,17 @@ export default function ProductsPage({ params }: { params: { id: string } }) {
                         </td>
                         <td>{p.sku}</td>
                         <td>{p.category || '-'}</td>
-                        <td className={p.status === 'active' ? 'status-active' : 'status-inactive'}>
-                          {p.status === 'active' ? 'Active' : 'Inactive'}
-                        </td>
+                    <td>
+                      <button
+                        type="button"
+                        className={`toggle-switch ${p.status === 'active' ? 'on' : 'off'}`}
+                        aria-pressed={p.status === 'active'}
+                        aria-label={p.status === 'active' ? 'Set inactive' : 'Set active'}
+                        onClick={() => toggleStatus(p.id, p.status)}
+                      >
+                        <span className="toggle-knob" />
+                      </button>
+                    </td>
                         <td>
                           <strong>
                             {(p.currency || 'USD')} {Number((p.discounted_price ?? p.base_price ?? 0)).toFixed(2)}
