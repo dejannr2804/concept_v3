@@ -106,11 +106,16 @@ export default function ProductsPage({ params }: { params: { id: string } }) {
                           </strong>
                         </td>
                         <td className="actions">
+                          <Link href={`/dashboard/${id}/products/${p.id}`}>
+                            <img src="/img/settings-01-l.svg" alt="" className="nav-icon"/>
+                            <span>Manage</span>
+                          </Link>
                           {shop.data && (
-                              <Link href={`/shops/${shop.data.slug}/products/${p.slug}`}>View</Link>
+                              <Link href={`/shops/${shop.data.slug}/products/${p.slug}`}>
+                                <img src="/img/arrow-narrow-up-right.svg" alt="" className="nav-icon"/>
+                                <span>View</span>
+                              </Link>
                           )}
-                          <span> </span>
-                          <Link href={`/dashboard/${id}/products/${p.id}`}>Manage</Link>
                         </td>
                       </tr>
                   )

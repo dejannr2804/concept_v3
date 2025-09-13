@@ -125,6 +125,18 @@
 
 }
 
+.products-table thead th:nth-child(2) {
+
+    width: 300px;
+
+}
+
+.products-table thead th:last-child {
+
+    width: 200px;
+
+}
+
 .products-table tbody td {
     padding: 6px 12px;
     border-bottom: 1px solid #fff;
@@ -180,27 +192,6 @@
     margin-left: 6px;
 }
 
-.products-table .status-active {
-    color: #0a7b3f;
-}
-
-.products-table .status-inactive {
-    color: #a00;
-}
-
-.products-table .status-in {
-    color: #0a7b3f;
-}
-
-.products-table .status-out {
-    color: #a00;
-}
-
-.products-table .actions a {
-    color: #121212;
-    text-decoration: underline;
-}
-
 /* Toggle switch for active status */
 .products-table .toggle-switch {
     position: relative;
@@ -236,4 +227,47 @@
 
 .products-table .toggle-switch.on .toggle-knob {
     left: 23px;
+}
+
+.products-table .actions {
+
+    display: flex;
+    gap: 16px;
+    align-items: center;
+
+}
+
+.products-table .actions a {
+    color: #fff;
+    background: #121212;
+    border-radius: 100px;
+    padding: 0 12px;
+    display: flex;
+    gap: 4px;
+    align-items: center;
+    justify-content: center;
+    height: 40px;
+    box-sizing: border-box;
+    border: 2px solid #121212;
+    transition-duration: 0.2s;
+}
+
+.products-table .actions a:hover {
+
+    background: transparent;
+    color: #121212;
+
+}
+
+.products-table .actions a img {
+
+    width: 16px;
+    height: 16px;
+
+}
+
+.products-table .actions a:hover img {
+
+    filter: invert(1);
+
 }
