@@ -43,7 +43,7 @@ export default function ProductsPage({ params }: { params: { id: string } }) {
       {products.loading || !products.data ? (
         <p>Loading products...</p>
       ) : products.data.length === 0 ? (
-        <p>No products yet.</p>
+        <div className="no-products-message">No products yet.</div>
       ) : (
         <ul>
           {products.data.map((p) => (
