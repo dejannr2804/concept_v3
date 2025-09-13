@@ -277,7 +277,7 @@ export default function ProductEditor({
                       }}
                       aria-label="Remove image"
                     >
-                      ✕
+                      <img src="/img/trash-01-r.svg" alt=""/>
                     </button>
                   </div>
                 ))}
