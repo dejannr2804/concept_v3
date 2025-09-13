@@ -5,15 +5,15 @@
 
 }
 
-.shop-overview-container .top-line a {
+.shop-overview-container .top-line {
 
     display: flex;
     align-items: center;
-    gap: 6px;
+    justify-content: space-between;
 
 }
 
-.shop-overview-container .top-line > a > h1 {
+.shop-overview-container .top-line > h1 {
 
     font-size: 48px;
     font-family: 'Aptos Narrow';
@@ -22,28 +22,33 @@
 
 }
 
-/* Hover underline animation for shop name */
-.shop-overview-container .top-line > a > h1::after {
-    content: "";
-    position: absolute;
-    left: 0;
-    bottom: -8px;
-    height: 2px;
-    width: 100%;
+.shop-overview-container .top-line .preview {
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
     background: #121212;
-    transform: scaleX(0);
-    transform-origin: left center;
-    transition: transform 0.2s ease;
+    padding: 10px 15px;
+    border-radius: 100px;
+    gap: 6px;
+    color: #fff;
+    font-size: 20px;
+    border: 2px solid #121212;
+    box-sizing: border-box;
+    transition-duration: 0.2s;
+
 }
 
-.shop-overview-container .top-line > a:hover > h1::after {
-    transform: scaleX(1);
+.shop-overview-container .top-line .preview:hover {
+
+    background: transparent;
+    color: #121212;
+
 }
 
-.shop-overview-container .top-line img {
+.shop-overview-container .top-line .preview:hover img {
 
-    width: 42px;
-    height: 42px;
+    filter: invert(1);
 
 }
 

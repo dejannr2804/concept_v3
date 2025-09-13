@@ -18,10 +18,11 @@ export default function ShopDashboardPage({ params }: { params: { id: string } }
             <div className="top-line">
               {shop.data && (
                   <>
-                    <Link href={`/shops/${shop.data.slug}`}>
-                      <h1>{shop.data ? shop.data.name : 'Shop'}</h1>
-                      <img src="/img/arrow-narrow-up-right-d.svg" alt="" className="nav-icon"/>
-                    </Link>{' '}
+                    <h1>{shop.data ? shop.data.name : 'Shop'}</h1>
+                    <Link href={`/shops/${shop.data.slug}`} className="preview">
+                      <img src="/img/arrow-narrow-up-right.svg" alt="" className="nav-icon"/>
+                      <span>Preview</span>
+                    </Link>
                   </>
               )}
             </div>
