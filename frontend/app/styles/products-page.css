@@ -1,0 +1,67 @@
+.products-page-container {
+
+    box-sizing: border-box;
+    padding: 40px;
+
+}
+
+.products-page-container .top-line {
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+}
+
+.products-page-container .top-line .heading {
+
+    font-size: 48px;
+    font-family: 'Aptos Narrow';
+    color: #121212;
+    position: relative;
+
+}
+
+.products-page-container .top-line .buttons {
+
+    display: flex;
+    gap: 20px;
+
+}
+
+.products-page-container .top-line .buttons a {
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #121212;
+    padding: 10px 15px;
+    border-radius: 100px;
+    gap: 6px;
+    color: #fff;
+    font-size: 20px;
+    border: 2px solid #121212;
+    box-sizing: border-box;
+    transition-duration: 0.2s;
+
+}
+
+.products-page-container .top-line .buttons a:hover {
+
+    background: transparent;
+    color: #121212;
+
+}
+
+.products-page-container .top-line .buttons a:hover img {
+
+    filter: invert(1);
+
+}
+
+.products-page-container .top-line .buttons a img {
+
+    width: 20px;
+    height: 20px;
+
+}
