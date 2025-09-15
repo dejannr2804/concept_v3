@@ -98,6 +98,34 @@
 .ss-button--danger:hover { background: transparent; color: #a20000; }
 
 .ss-error { color: #b91c1c; }
+.ss-helper { color: #6b7280; font-size: 13px; }
+
+/* Delete modal */
+.ss-modal { background: #fff; color: #111; padding: 24px; min-width: 380px; border-radius: 12px; }
+.ss-modalTitle { display: flex; align-items: center; gap: 8px; margin: 6px 0 12px; font-size: 18px; font-weight: 600; }
+.ss-modalIcon { width: 18px; height: 18px; }
+.ss-modalText { margin: 0 0 24px; color: #6b7280; font-size: 14px;}
+.ss-modalField { margin-bottom: 16px; }
+.ss-modalField .ss-label { padding-left: 0; margin-bottom: 6px; }
+.ss-modalField .ss-input {
+  width: 100%;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  box-sizing: border-box;
+  padding: 12px 14px;
+  font-size: 14px;
+  min-height: 44px;
+}
+.ss-modalField .ss-input:focus {
+  background: #ffffff;
+  border-color: #94a3b8;
+  box-shadow: 0 0 0 3px rgba(148, 163, 184, 0.25);
+}
+.ss-modalHelp { margin-top: 8px; color: #6b7280; font-size: 13px; }
+.ss-code { background: #f3f4f6; border-radius: 6px; padding: 2px 6px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace; }
+.ss-modalActions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 16px; }
+.ss-button:disabled { opacity: 0.6; cursor: not-allowed; }
 
 @media (max-width: 820px) {
   .ss-fieldRow { grid-template-columns: 1fr; }

@@ -1,6 +1,6 @@
 "use client"
 import { useRouter } from 'next/navigation'
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useResourceItem, useResourceUpdater } from '@/hooks/resource'
 import Modal from '@/components/Modal'
 import { api } from '@/lib/api'
@@ -17,9 +17,16 @@ export default function ShopSettingsPage({ params }: { params: { id: string } })
   const [imgUrl, setImgUrl] = useState<string | undefined>(data?.profile_image_url || shop.data?.profile_image_url)
   const fileInputRef = useRef<HTMLInputElement | null>(null)
 
+  // Keep local image URL in sync when shop data loads or changes
+  useEffect(() => {
+    const next = (updater?.data as any)?.profile_image_url || (shop.data as any)?.profile_image_url
+    if (next && next !== imgUrl) setImgUrl(next)
+  }, [updater?.data, shop.data])
+
   // Delete confirmation UI
   const [deleteOpen, setDeleteOpen] = useState(false)
   const [deleting, setDeleting] = useState(false)
+  const [confirmText, setConfirmText] = useState('')
   async function onConfirmDelete() {
     setDeleting(true)
     try {
@@ -109,7 +116,11 @@ export default function ShopSettingsPage({ params }: { params: { id: string } })
               <button type="button" className="ss-button" onClick={() => updater.save(['name', 'slug', 'description'])} disabled={updater.saving}>
                 {updater.saving ? 'Saving…' : 'Save Changes'}
               </button>
-              <button type="button" className="ss-button ss-button--danger" onClick={() => setDeleteOpen(true)}>
+              <button
+                type="button"
+                className="ss-button ss-button--danger"
+                onClick={() => { setConfirmText(''); setDeleteOpen(true) }}
+              >
                 Delete Shop
               </button>
             </div>
@@ -117,13 +128,32 @@ export default function ShopSettingsPage({ params }: { params: { id: string } })
         </section>
       )}
 
-      <Modal open={deleteOpen} onClose={() => (!deleting && setDeleteOpen(false))}>
-        <div style={{ background: '#fff', color: '#111', padding: 20, minWidth: 320 }}>
-          <h3 style={{ margin: '4px 0 12px 0' }}>Delete shop?</h3>
-          <p style={{ marginBottom: 16, color: '#6b7280', fontSize: 14 }}>This action cannot be undone.</p>
-          <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
-            <button type="button" className="ss-button" onClick={() => setDeleteOpen(false)} disabled={deleting}>Cancel</button>
-            <button type="button" className="ss-button ss-button--danger" onClick={onConfirmDelete} disabled={deleting}>
+      <Modal open={deleteOpen} onClose={() => { if (!deleting) { setDeleteOpen(false); setConfirmText('') } }}>
+        <div className="ss-modal">
+          <div className="ss-modalTitle">
+            <img src="/img/trash-01-r.svg" alt="" className="ss-modalIcon" />
+            <span>Delete shop?</span>
+          </div>
+          <p className="ss-modalText">This action cannot be undone.</p>
+            <div className="ss-modalField">
+              <div className="ss-label">Type the shop slug to confirm</div>
+              <input
+                className="ss-input"
+              placeholder="Type slug here"
+                value={confirmText}
+                onChange={(e) => setConfirmText(e.target.value)}
+                autoFocus
+              />
+              <div className="ss-modalHelp">Slug: <span className="ss-code">{shop.data?.slug || ''}</span></div>
+            </div>
+          <div className="ss-modalActions">
+            <button type="button" className="ss-button" onClick={() => { setDeleteOpen(false); setConfirmText('') }} disabled={deleting}>Cancel</button>
+            <button
+              type="button"
+              className="ss-button ss-button--danger"
+              onClick={onConfirmDelete}
+              disabled={deleting || confirmText.trim() !== (shop.data?.slug || '')}
+            >
               {deleting ? 'Deleting…' : 'Delete'}
             </button>
           </div>
