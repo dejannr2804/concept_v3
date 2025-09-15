@@ -5,6 +5,7 @@ from rest_framework.generics import RetrieveAPIView
 from rest_framework.views import APIView
 
 from .models import Shop, Product, ProductImage, Category
+from django.db.models import Max
 from .serializers import ShopSerializer, ProductSerializer, PublicShopSerializer, PublicProductSerializer, ProductImageSerializer, CategorySerializer
 from .spaces import upload_product_image, delete_product_image_by_url, SpacesConfigError, upload_shop_image
 
@@ -95,7 +96,9 @@ class ProductImageUploadView(generics.GenericAPIView):
         except Exception as e:
             return Response({"detail": "Upload failed", "error": str(e)}, status=status.HTTP_502_BAD_GATEWAY)
 
-        image = ProductImage.objects.create(product=product, url=url, alt_text=alt_text)
+        # Append new image at the end (1-based sort_order)
+        current_max = ProductImage.objects.filter(product=product).aggregate(m=Max("sort_order")).get("m") or 0
+        image = ProductImage.objects.create(product=product, url=url, alt_text=alt_text, sort_order=current_max + 1)
         data = ProductImageSerializer(image).data
         return Response(data, status=status.HTTP_201_CREATED)
 
@@ -127,8 +130,8 @@ class ProductImageReorderView(generics.GenericAPIView):
             return Response({"detail": "Body must include 'order': [image_id, ...]"}, status=status.HTTP_400_BAD_REQUEST)
         # Constrain to product's images only
         imgs = list(ProductImage.objects.filter(product=product, id__in=order).only("id").values_list("id", flat=True))
-        # Preserve only valid ids and set sort_order by index
-        sort_map = {img_id: idx for idx, img_id in enumerate([i for i in order if i in imgs])}
+        # Preserve only valid ids and set sort_order by index (1-based)
+        sort_map = {img_id: (idx + 1) for idx, img_id in enumerate([i for i in order if i in imgs])}
         if not sort_map:
             return Response({"detail": "No valid images to reorder"}, status=status.HTTP_400_BAD_REQUEST)
         # Update in bulk
