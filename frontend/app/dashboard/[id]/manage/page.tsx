@@ -1,8 +1,9 @@
 "use client"
-import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useRef, useState } from 'react'
 import { useResourceItem, useResourceUpdater } from '@/hooks/resource'
+import Modal from '@/components/Modal'
+import { api } from '@/lib/api'
 
 type Shop = { id: number; name: string; slug: string; description?: string; profile_image_url?: string }
 
@@ -16,38 +17,49 @@ export default function ShopSettingsPage({ params }: { params: { id: string } })
   const [imgUrl, setImgUrl] = useState<string | undefined>(data?.profile_image_url || shop.data?.profile_image_url)
   const fileInputRef = useRef<HTMLInputElement | null>(null)
 
+  // Delete confirmation UI
+  const [deleteOpen, setDeleteOpen] = useState(false)
+  const [deleting, setDeleting] = useState(false)
+  async function onConfirmDelete() {
+    setDeleting(true)
+    try {
+      await api.delete(`shops/${id}`)
+      setDeleteOpen(false)
+      router.push('/dashboard')
+      router.refresh()
+    } catch (e) {
+      // notifications handled globally
+    } finally {
+      setDeleting(false)
+    }
+  }
+
   return (
-    <main className="container">
-      <div className="card">
-        <div className="row row-between">
-          <div className="row gap-05">
-            <Link href={`/dashboard/${id}`} className="btn btn-secondary">Back</Link>
-            <h1 className="m-0">Shop Settings</h1>
-          </div>
-          {shop.data && (
-            <Link href={`/shops/${shop.data.slug}`} className="btn btn-secondary">View Shop</Link>
-          )}
+    <main className="shop-settings-root">
+      <div className="shop-settings-header">
+        <div className="shop-settings-top">
+          <h1 className="shop-settings-title">Shop Settings</h1>
         </div>
+      </div>
 
-        <div className="spacer" />
-
-        {shop.loading ? (
-          <div>Loading…</div>
-        ) : shop.error ? (
-          <div className="error">{shop.error}</div>
-        ) : (
-          <form onSubmit={(e) => e.preventDefault()} className="col gap-075">
-            <div className="row gap-1" style={{ alignItems: 'center' }}>
-              <div style={{ width: 72, height: 72, borderRadius: '50%', overflow: 'hidden', background: '#eee', border: '1px solid #e5e7eb' }}>
+      {shop.loading ? (
+        <div>Loading…</div>
+      ) : shop.error ? (
+        <div className="ss-error">{shop.error}</div>
+      ) : (
+        <section className="shop-settings-panel">
+          <form className="ss-form" onSubmit={(e) => e.preventDefault()}>
+            <div className="ss-row">
+              <div className="ss-avatar">
                 {imgUrl ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={imgUrl} alt="Shop" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 ) : (
-                  <div style={{ width: '100%', height: '100%', fontSize: 12, color: '#777', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>No image</div>
+                  <div>No image</div>
                 )}
               </div>
-              <div className="col gap-05">
-                <button type="button" className="btn btn-white" onClick={() => fileInputRef.current?.click()}>
+              <div>
+                <button type="button" className="ss-button" onClick={() => fileInputRef.current?.click()}>
                   {imgUrl ? 'Change image' : 'Upload image'}
                 </button>
                 <input
@@ -77,33 +89,46 @@ export default function ShopSettingsPage({ params }: { params: { id: string } })
                 />
               </div>
             </div>
-            <label className="col">
-              <span className="text-secondary text-sm">Name</span>
-              <input value={data?.name || ''} onChange={(e) => updater.setField('name', e.target.value)} />
-            </label>
-            <label className="col">
-              <span className="text-secondary text-sm">Slug</span>
-              <input value={data?.slug || ''} onChange={(e) => updater.setField('slug', e.target.value)} />
-            </label>
-            <label className="col">
-              <span className="text-secondary text-sm">Description</span>
-              <textarea rows={5} value={data?.description || ''} onChange={(e) => updater.setField('description', e.target.value)} />
+
+            <div className="ss-fieldRow">
+              <label className="ss-field">
+                <span className="ss-label">Name</span>
+                <input className="ss-input" value={data?.name || ''} onChange={(e) => updater.setField('name', e.target.value)} />
+              </label>
+              <label className="ss-field">
+                <span className="ss-label">Slug</span>
+                <input className="ss-input" value={data?.slug || ''} onChange={(e) => updater.setField('slug', e.target.value)} />
+              </label>
+            </div>
+            <label className="ss-field">
+              <span className="ss-label">Description</span>
+              <textarea className="ss-textarea" rows={5} value={data?.description || ''} onChange={(e) => updater.setField('description', e.target.value)} />
             </label>
 
-            <div className="row gap-05">
-              <button className="btn btn-white" onClick={() => updater.save(['name', 'slug', 'description'])} disabled={updater.saving}>
+            <div className="ss-actions">
+              <button type="button" className="ss-button" onClick={() => updater.save(['name', 'slug', 'description'])} disabled={updater.saving}>
                 {updater.saving ? 'Saving…' : 'Save Changes'}
               </button>
-              <button className="btn btn-danger" onClick={async () => {
-                const res = await updater.deleteResource()
-                if (res.ok) { router.push('/dashboard'); router.refresh() }
-              }} disabled={updater.deleting}>
-                {updater.deleting ? 'Deleting…' : 'Delete Shop'}
+              <button type="button" className="ss-button ss-button--danger" onClick={() => setDeleteOpen(true)}>
+                Delete Shop
               </button>
             </div>
           </form>
-        )}
-      </div>
+        </section>
+      )}
+
+      <Modal open={deleteOpen} onClose={() => (!deleting && setDeleteOpen(false))}>
+        <div style={{ background: '#fff', color: '#111', padding: 20, minWidth: 320 }}>
+          <h3 style={{ margin: '4px 0 12px 0' }}>Delete shop?</h3>
+          <p style={{ marginBottom: 16, color: '#6b7280', fontSize: 14 }}>This action cannot be undone.</p>
+          <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
+            <button type="button" className="ss-button" onClick={() => setDeleteOpen(false)} disabled={deleting}>Cancel</button>
+            <button type="button" className="ss-button ss-button--danger" onClick={onConfirmDelete} disabled={deleting}>
+              {deleting ? 'Deleting…' : 'Delete'}
+            </button>
+          </div>
+        </div>
+      </Modal>
     </main>
   )
 }

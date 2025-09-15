@@ -1,0 +1,123 @@
+.shop-settings-panel {
+  margin-top: 16px;
+  background: #f5f5f5;
+  border-radius: 16px;
+  padding: 16px;
+}
+
+.ss-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ss-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.ss-avatar {
+  width: 84px;
+  height: 84px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #eee;
+  border: 1px solid #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #777;
+  font-size: 12px;
+}
+
+.ss-fieldRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.ss-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ss-label {
+  font-size: 14px;
+  color: #374151;
+  padding-left: 6px;
+}
+
+.ss-input {
+  border-radius: 100px;
+  padding: 12px 16px;
+  font-size: 14px;
+  background: #fff;
+  border: none;
+  outline: none;
+}
+
+.ss-textarea {
+  border-radius: 12px;
+  padding: 12px 16px;
+  font-size: 14px;
+  background: #fff;
+  border: none;
+  outline: none;
+  resize: vertical;
+}
+
+.ss-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 4px;
+}
+
+.ss-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #121212;
+  color: #fff;
+  padding: 10px 16px;
+  border-radius: 100px;
+  gap: 6px;
+  font-size: 16px;
+  border: 2px solid #121212;
+  box-sizing: border-box;
+  cursor: pointer;
+  transition-duration: 0.2s;
+}
+
+.ss-button:hover { background: transparent; color: #121212; }
+.ss-button:hover img { filter: invert(1); }
+
+.ss-button--danger { background: #a20000; border-color: #a20000; }
+.ss-button--danger:hover { background: transparent; color: #a20000; }
+
+.ss-error { color: #b91c1c; }
+
+@media (max-width: 820px) {
+  .ss-fieldRow { grid-template-columns: 1fr; }
+}
+.shop-settings-root {
+  box-sizing: border-box;
+  padding: 40px;
+}
+
+.shop-settings-header { box-sizing: border-box; }
+
+.shop-settings-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.shop-settings-title {
+  font-size: 48px;
+  font-family: 'Aptos Narrow';
+  color: #121212;
+  margin: 0;
+}
