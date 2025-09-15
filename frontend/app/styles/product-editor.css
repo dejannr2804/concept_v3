@@ -266,7 +266,9 @@
   border: none;
   outline: none;
   cursor: pointer;
+  text-align: left; /* avoid centered label on some browsers */
 }
+.pe-selectControl span { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .pe-selectControl .pe-icon { width: 18px; height: 18px; }
 .pe-selectList {
   position: absolute;
@@ -287,6 +289,10 @@
   border-radius: 8px;
   cursor: pointer;
   font-size: 14px;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .pe-option:hover { background: #f3f4f6; }
 /* Use grayscale for selected state */
