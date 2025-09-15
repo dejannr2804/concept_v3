@@ -2,7 +2,7 @@
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { useResourceCreator, useResourceItem, useResourceUpdater } from '@/hooks/resource'
+import { useResourceCreator, useResourceItem, useResourceUpdater, useResourceList } from '@/hooks/resource'
 import { api } from '@/lib/api'
 import { useNotifications } from '@/components/Notifications'
 import Modal from '@/components/Modal'
@@ -60,6 +60,28 @@ export default function ProductEditor({
   }
 
   const shop = useResourceItem<{ id: number; name: string; slug: string }>(`shops/${shopId}`)
+  const categoryList = useResourceList<{ id: number; name: string }>(`shops/${shopId}/categories`)
+  const [catOpen, setCatOpen] = useState(false)
+  const catMenuRef = useRef<HTMLDivElement | null>(null)
+  const catBtnRef = useRef<HTMLButtonElement | null>(null)
+
+  useEffect(() => {
+    if (!catOpen) return
+    function onDown(e: MouseEvent) {
+      const el = catMenuRef.current
+      if (!el) return
+      if (!el.contains(e.target as Node)) setCatOpen(false)
+    }
+    function onKey(e: KeyboardEvent) {
+      if (e.key === 'Escape') setCatOpen(false)
+    }
+    document.addEventListener('mousedown', onDown)
+    window.addEventListener('keydown', onKey)
+    return () => {
+      document.removeEventListener('mousedown', onDown)
+      window.removeEventListener('keydown', onKey)
+    }
+  }, [catOpen])
 
   const updater = mode === 'update' && productId
     ? useResourceUpdater(`shops/${shopId}/products/${productId}`)
@@ -362,7 +384,55 @@ export default function ProductEditor({
                 </label>
                 <label className="pe-formField">
                   <span className="pe-label">Category</span>
-                  <input className="pe-input" value={data?.category || ''} onChange={(e) => setField('category', e.target.value)} />
+                  <div className="pe-selectMenu" ref={catMenuRef}>
+                    <button
+                      type="button"
+                      className="pe-selectControl"
+                      onClick={() => setCatOpen((v) => !v)}
+                      aria-haspopup="listbox"
+                      aria-expanded={catOpen}
+                      ref={catBtnRef}
+                    >
+                      <span>{data?.category || 'Select category'}</span>
+                      <img src="/img/chevron-down.svg" alt="" className="pe-icon"/>
+                    </button>
+                    {catOpen && (
+                      <ul className="pe-selectList" role="listbox">
+                        <li
+                          role="option"
+                          aria-selected={!data?.category}
+                          className={`pe-option ${!data?.category ? 'is-selected' : ''}`}
+                          onMouseDown={(e) => {
+                            e.preventDefault()
+                            setField('category', '')
+                            setCatOpen(false)
+                            requestAnimationFrame(() => catBtnRef.current?.blur())
+                          }}
+                        >
+                          No category
+                        </li>
+                        {categoryList.data?.map((c) => (
+                          <li
+                            key={c.id}
+                            role="option"
+                            aria-selected={data?.category === c.name}
+                            className={`pe-option ${data?.category === c.name ? 'is-selected' : ''}`}
+                            onMouseDown={(e) => {
+                              e.preventDefault()
+                              setField('category', c.name)
+                              setCatOpen(false)
+                              requestAnimationFrame(() => catBtnRef.current?.blur())
+                            }}
+                          >
+                            {c.name}
+                          </li>
+                        ))}
+                        {(!categoryList.data || categoryList.data.length === 0) && (
+                          <li className="pe-option is-empty">No categories yet</li>
+                        )}
+                      </ul>
+                    )}
+                  </div>
                 </label>
               </div>
 

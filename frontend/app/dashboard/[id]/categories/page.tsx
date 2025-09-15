@@ -78,7 +78,7 @@ export default function CategoriesPage({ params }: { params: { id: string } }) {
             {categories.data.map((c) => (
               <li key={c.id} className="category-item">
                 <div className="info">
-                  <strong>{c.name}</strong>
+                  <span>{c.name}</span>
                   {c.description ? <div className="muted">{c.description}</div> : null}
                 </div>
                 {confirmId === c.id ? (
