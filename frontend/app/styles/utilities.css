@@ -157,7 +157,8 @@
   border-radius: 6px; 
   border: 1px solid #d1d5db;
   text-decoration: none; 
-  color: var(--fg); 
+  color: var(--fg);
+  cursor: pointer;
 }
 
 .btn-secondary { 
@@ -171,7 +172,7 @@
 .btn-danger { 
   background: #fee2e2; 
   border-color: #fecaca;
-  color: #991b1b; 
+  color: #991b1b;
 }
 
 /* List utilities */

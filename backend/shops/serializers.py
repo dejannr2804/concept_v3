@@ -140,3 +140,34 @@ class ProductSerializer(serializers.ModelSerializer):
             cat_name = self.initial_data.get("category")
             validated_data["category"] = self._resolve_category(shop=instance.shop, name=cat_name)
         return super().update(instance, validated_data)
+
+
+class CategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Category
+        fields = ["id", "shop", "name", "slug", "description"]
+        read_only_fields = ["shop"]
+        extra_kwargs = {
+            # Allow clients to omit slug; we'll generate from name
+            "slug": {"required": False, "allow_blank": True},
+        }
+
+    def validate_slug(self, value: str) -> str:
+        # Allow blank/missing slug; create() will generate from name
+        value = (value or "").strip()
+        if not value:
+            return ""
+        normalized = slugify(value)
+        if not normalized:
+            raise serializers.ValidationError("Slug cannot be empty")
+        return normalized
+
+    def create(self, validated_data):
+        if not validated_data.get("slug"):
+            validated_data["slug"] = slugify(validated_data.get("name", ""))
+        return super().create(validated_data)
+
+    def update(self, instance, validated_data):
+        if "slug" in validated_data and not validated_data.get("slug"):
+            validated_data["slug"] = slugify(validated_data.get("name", instance.name))
+        return super().update(instance, validated_data)

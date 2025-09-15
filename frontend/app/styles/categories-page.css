@@ -1,0 +1,208 @@
+.categories-page-container {
+    box-sizing: border-box;
+    padding: 40px;
+}
+
+.categories-page-container .top-line {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* Match Products heading styling */
+.categories-page-container .top-line .heading {
+    font-size: 48px;
+    font-family: 'Aptos Narrow';
+    color: #121212;
+    position: relative;
+}
+
+.categories-page-container .top-line .create-form {
+    display: flex;
+    gap: 12px;
+}
+
+.categories-page-container .top-line .create-form input {
+    height: 44px;
+    border-radius: 999px;
+    border: 1px solid #e5e5e5;
+    padding: 0 14px;
+    font-size: 16px;
+    min-width: 240px;
+}
+
+.categories-page-container .top-line .create-form button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #121212;
+    padding: 10px 16px;
+    border-radius: 100px;
+    gap: 6px;
+    color: #fff;
+    font-size: 16px;
+    border: 2px solid #121212;
+    box-sizing: border-box;
+    transition-duration: 0.2s;
+}
+
+.categories-page-container .top-line .create-form button:hover:not(:disabled) {
+    background: transparent;
+    color: #121212;
+}
+
+.categories-page-container .top-line .create-form button:hover img {
+    filter: invert(1);
+}
+
+.categories-page-container .top-line .create-form button img {
+    width: 18px;
+    height: 18px;
+}
+
+.categories-page-container .no-categories-message {
+    width: 100%;
+    height: 60px;
+    background: #f5f5f5;
+    border-radius: 12px;
+    margin: 24px 0;
+    display: flex;
+    align-items: center;
+    box-sizing: border-box;
+    padding-left: 20px;
+    font-size: 18px;
+}
+
+/* Filters-like controls bar (matching products page) */
+.categories-page-container .filters {
+    width: 100%;
+    height: 80px;
+    background: #f5f5f5;
+    margin-top: 24px;
+    border-radius: 16px;
+    display: flex;
+    gap: 20px;
+    box-sizing: border-box;
+    padding: 16px;
+}
+
+.categories-page-container input {
+    width: 100%;
+    height: 100%;
+    border: none;
+    outline: none;
+    font-size: 16px;
+}
+
+.categories-page-container .filters .filter {
+    width: 100%;
+    background: #fff;
+    border-radius: 100px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-sizing: border-box;
+    padding: 0 0 0 16px;
+    overflow: hidden;
+}
+
+.categories-page-container .filters .filter.create .create-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #121212;
+    padding: 10px 16px;
+    border-radius: 100px;
+    gap: 6px;
+    color: #fff;
+    font-size: 16px;
+    border: 2px solid #121212;
+    box-sizing: border-box;
+    transition-duration: 0.2s;
+    cursor: pointer;
+}
+
+.categories-page-container .filters .filter.create .create-btn:hover:not(:disabled) {
+    background: transparent;
+    color: #121212;
+}
+
+.categories-page-container .filters .filter.create .create-btn:hover img {
+    filter: invert(1);
+}
+
+.categories-list-wrapper {
+    margin-top: 24px;
+    box-sizing: border-box;
+    padding: 12px;
+    background: #f5f5f5;
+    border-radius: 16px;
+}
+
+.categories-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.categories-list .category-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #fff;
+    border-radius: 12px;
+    padding: 0 16px;
+    height: 60px;
+}
+
+.categories-list .category-item .info .muted {
+    color: #777;
+    font-size: 12px;
+    margin-top: 4px;
+}
+
+.categories-list .category-item .actions {
+    display: flex;
+    gap: 12px;
+}
+
+.categories-list .category-item .actions button {
+    color: #fff;
+    background: #121212;
+    border-radius: 100px;
+    padding: 0 12px;
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    justify-content: center;
+    height: 36px;
+    box-sizing: border-box;
+    border: 2px solid #121212;
+    transition-duration: 0.2s;
+    cursor: pointer;
+}
+
+.categories-list .category-item .actions button:hover {
+    background: transparent;
+    color: #121212;
+}
+
+.categories-list .category-item .actions button img {
+    width: 16px;
+    height: 16px;
+}
+
+.categories-list .category-item .actions button:hover img {
+    filter: invert(1);
+}
+
+/* Inline delete confirmation */
+.categories-list .category-item .confirm-inline {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}

@@ -4,8 +4,8 @@ from rest_framework.response import Response
 from rest_framework.generics import RetrieveAPIView
 from rest_framework.views import APIView
 
-from .models import Shop, Product, ProductImage
-from .serializers import ShopSerializer, ProductSerializer, PublicShopSerializer, PublicProductSerializer, ProductImageSerializer
+from .models import Shop, Product, ProductImage, Category
+from .serializers import ShopSerializer, ProductSerializer, PublicShopSerializer, PublicProductSerializer, ProductImageSerializer, CategorySerializer
 from .spaces import upload_product_image, delete_product_image_by_url, SpacesConfigError, upload_shop_image
 
 
@@ -173,3 +173,28 @@ class ShopProfileImageUploadView(generics.GenericAPIView):
 
         data = ShopSerializer(shop).data
         return Response({"shop": data}, status=status.HTTP_200_OK)
+
+
+class CategoryListCreateView(generics.ListCreateAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = CategorySerializer
+
+    def get_shop(self):
+        return generics.get_object_or_404(Shop, pk=self.kwargs.get("shop_id"), user=self.request.user)
+
+    def get_queryset(self):
+        shop = self.get_shop()
+        return Category.objects.filter(shop=shop).order_by("id")
+
+    def perform_create(self, serializer):
+        shop = self.get_shop()
+        serializer.save(shop=shop)
+
+
+class CategoryRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = CategorySerializer
+
+    def get_queryset(self):
+        # Constrain to categories within the user's shops
+        return Category.objects.filter(shop__user=self.request.user)
