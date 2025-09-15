@@ -214,10 +214,22 @@ export default function ProductEditor({
     }
   }
 
-  async function onDelete() {
-    if (mode === 'update' && updater) {
-      const res = await updater.deleteResource()
-      if (res.ok) { router.push(`/dashboard/${shopId}`); router.refresh() }
+  // Custom delete confirmation UI
+  const [deleteOpen, setDeleteOpen] = useState(false)
+  const [deleting, setDeleting] = useState(false)
+  async function onConfirmDelete() {
+    if (!(mode === 'update' && updater && productId)) return
+    setDeleting(true)
+    try {
+      await api.delete(`shops/${shopId}/products/${productId}`)
+      notify.success('Product deleted')
+      setDeleteOpen(false)
+      router.push(`/dashboard/${shopId}/products`)
+      router.refresh()
+    } catch (e: any) {
+      notify.error(e?.message || 'Failed to delete product')
+    } finally {
+      setDeleting(false)
     }
   }
 
@@ -503,8 +515,8 @@ export default function ProductEditor({
                   <span>{primaryLabel}</span>
                 </button>
                 {mode === 'update' && (
-                  <button type="button" className="pe-preview pe-down pe-red" disabled={Boolean(updater?.deleting)} onClick={onDelete}>
-                    {updater?.deleting ? 'Deleting…' : 'Delete'}
+                  <button type="button" className="pe-preview pe-down pe-red" onClick={() => setDeleteOpen(true)}>
+                    Delete
                   </button>
                 )}
               </div>
@@ -512,6 +524,20 @@ export default function ProductEditor({
           </section>
         </div>
       )}
+
+      {/* Delete confirmation modal */}
+      <Modal open={deleteOpen} onClose={() => (!deleting && setDeleteOpen(false))}>
+        <div style={{ background: '#fff', color: '#111', padding: 20, minWidth: 320 }}>
+          <h3 style={{ margin: '4px 0 12px 0' }}>Delete product?</h3>
+          <p className="pe-muted" style={{ marginBottom: 16 }}>This action cannot be undone.</p>
+          <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
+            <button type="button" className="pe-preview pe-down" onClick={() => setDeleteOpen(false)} disabled={deleting}>Cancel</button>
+            <button type="button" className="pe-preview pe-down pe-red" onClick={onConfirmDelete} disabled={deleting}>
+              {deleting ? 'Deleting…' : 'Delete'}
+            </button>
+          </div>
+        </div>
+      </Modal>
     </main>
   )
 }
