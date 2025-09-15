@@ -1,0 +1,42 @@
+.new-shop-container {
+  box-sizing: border-box;
+  padding: 40px;
+}
+
+.new-shop-container .top-line {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.ns-titleGroup { display: flex; align-items: center; gap: 6px; }
+
+.new-shop-container .top-line .heading {
+  font-size: 48px;
+  font-family: 'Aptos Narrow';
+  color: #121212;
+  position: relative;
+  margin: 0;
+}
+
+.new-shop-panel {
+  margin-top: 16px;
+  background: #f5f5f5;
+  border-radius: 16px;
+  padding: 16px;
+}
+
+.ns-form { display: flex; flex-direction: column; gap: 12px; }
+.ns-fieldRow { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.ns-field { display: flex; flex-direction: column; gap: 6px; }
+.ns-label { font-size: 14px; color: #374151; padding-left: 6px; }
+.ns-input { border-radius: 100px; padding: 12px 16px; font-size: 14px; background: #fff; border: none; outline: none; }
+.ns-helper { color: #6b7280; font-size: 13px; margin-top: 2px; }
+
+.ns-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 4px; }
+.ns-button { display: inline-flex; align-items: center; justify-content: center; background: #121212; color: #fff; padding: 10px 16px; border-radius: 100px; gap: 6px; font-size: 16px; border: 2px solid #121212; box-sizing: border-box; cursor: pointer; transition-duration: 0.2s; }
+.ns-button:hover { background: transparent; color: #121212; }
+
+@media (max-width: 820px) {
+  .ns-fieldRow { grid-template-columns: 1fr; }
+}
