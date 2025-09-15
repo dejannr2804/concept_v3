@@ -132,77 +132,84 @@
     filter: invert(1);
 }
 
-.categories-list-wrapper {
+/* Card grid wrapper */
+.categories-grid-wrapper {
     margin-top: 24px;
     box-sizing: border-box;
-    padding: 12px;
+    padding: 16px;
     background: #f5f5f5;
     border-radius: 16px;
 }
 
-.categories-list {
-    list-style: none;
-    margin: 0;
-    padding: 0;
+.categories-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 16px;
+}
+
+.category-card {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 16px;
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 14px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.categories-list .category-item {
+.category-card:hover {
+}
+
+.category-card-header {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    background: #fff;
-    border-radius: 12px;
-    padding: 0 16px;
-    height: 60px;
-}
-
-.categories-list .category-item .info .muted {
-    color: #777;
-    font-size: 12px;
-    margin-top: 4px;
-}
-
-.categories-list .category-item .actions {
-    display: flex;
     gap: 12px;
 }
 
-.categories-list .category-item .actions button {
-    color: #fff;
-    background: #121212;
-    border-radius: 100px;
-    padding: 0 12px;
-    display: flex;
-    gap: 6px;
+.category-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
-    height: 36px;
-    box-sizing: border-box;
-    border: 2px solid #121212;
-    transition-duration: 0.2s;
-    cursor: pointer;
+    background: #e6e6e6;
+    color: #ffffff;
+    font-weight: 700;
+    letter-spacing: 0.5px;
 }
 
-.categories-list .category-item .actions button:hover {
-    background: transparent;
-    color: #121212;
+.category-title {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 0; /* allow text overflow ellipsis */
 }
 
-.categories-list .category-item .actions button img {
+.category-name {
+    font-weight: 600;
+    color: #111827;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.category-desc {
+    color: #6b7280;
+    font-size: 13px;
+    margin-top: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.category-actions {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.category-actions .ss-button img {
     width: 16px;
     height: 16px;
-}
-
-.categories-list .category-item .actions button:hover img {
-    filter: invert(1);
-}
-
-/* Inline delete confirmation */
-.categories-list .category-item .confirm-inline {
-    display: flex;
-    align-items: center;
-    gap: 10px;
 }

@@ -75,7 +75,7 @@
   margin-top: 4px;
 }
 
-.ss-button {
+.ss-button { 
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -90,6 +90,9 @@
   cursor: pointer;
   transition-duration: 0.2s;
 }
+
+/* Small variant for compact actions */
+.ss-button--sm { padding: 6px 10px; font-size: 14px; gap: 4px; }
 
 .ss-button:hover { background: transparent; color: #121212; }
 .ss-button:hover img { filter: invert(1); }
@@ -126,6 +129,10 @@
 .ss-code { background: #f3f4f6; border-radius: 6px; padding: 2px 6px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace; }
 .ss-modalActions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 16px; }
 .ss-button:disabled { opacity: 0.6; cursor: not-allowed; }
+
+/* Make modal action buttons more compact */
+.ss-modal .ss-button { padding: 8px 12px; font-size: 14px; gap: 4px; }
+.ss-modal .nav-icon { width: 16px; height: 16px; }
 
 @media (max-width: 820px) {
   .ss-fieldRow { grid-template-columns: 1fr; }
