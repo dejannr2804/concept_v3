@@ -13,8 +13,10 @@ export default function Sidebar({ shopId }: { shopId: string }) {
   const [showSoonInventory, setShowSoonInventory] = useState(false)
   const [analyticsKey, setAnalyticsKey] = useState(0)
   const [inventoryKey, setInventoryKey] = useState(0)
+  const [helpKey, setHelpKey] = useState(0)
   const analyticsTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const inventoryTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const helpTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const dashboardHref = `/dashboard/${shopId}`
   const ordersHref = `/dashboard/${shopId}/orders`
@@ -32,6 +34,7 @@ export default function Sidebar({ shopId }: { shopId: string }) {
   const isInventory = pathname.startsWith(`/dashboard/${shopId}/inventory`)
   const isSettings = pathname.startsWith(`/dashboard/${shopId}/manage`)
   const isHelp = pathname.startsWith(`/dashboard/${shopId}/help`)
+  const [showSoonHelp, setShowSoonHelp] = useState(false)
 
   const handleAnalyticsClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault()
@@ -47,6 +50,14 @@ export default function Sidebar({ shopId }: { shopId: string }) {
     setInventoryKey((k) => k + 1)
     if (inventoryTimerRef.current) clearTimeout(inventoryTimerRef.current)
     inventoryTimerRef.current = setTimeout(() => setShowSoonInventory(false), 5000)
+  }
+
+  const handleHelpClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault()
+    setShowSoonHelp(true)
+    setHelpKey((k) => k + 1)
+    if (helpTimerRef.current) clearTimeout(helpTimerRef.current)
+    helpTimerRef.current = setTimeout(() => setShowSoonHelp(false), 5000)
   }
 
   return (
@@ -116,11 +127,12 @@ export default function Sidebar({ shopId }: { shopId: string }) {
         </div>
       </Link>
 
-      <Link href={`/dashboard/${shopId}/help`} className={`pe-sidebar-link ${isHelp ? 'is-active' : ''}`}>
+      <Link href={`/dashboard/${shopId}/help`} onClick={handleHelpClick} className={`pe-sidebar-link ${isHelp ? 'is-active' : ''}`}>
         <div className="text">
           <img src="/img/help-circle.svg" alt="" className="pe-icon pe-icon--inline" />
           <span>Get help</span>
         </div>
+        {showSoonHelp && <div key={helpKey} className="soon soon--fade">Soon</div>}
       </Link>
     </aside>
   )
