@@ -4,7 +4,7 @@ import { ApiClient } from '@/components/ApiClient'
 import { useAuth } from '@/hooks/useAuth'
 
 export function useApi() {
-  const { token } = useAuth()
-  return useMemo(() => new ApiClient({ getToken: () => token }), [token])
+  const { user } = useAuth()
+  // Recreate the client when auth state changes so future requests include fresh cookies.
+  return useMemo(() => new ApiClient(), [user?.id])
 }
-

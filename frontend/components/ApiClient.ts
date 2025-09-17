@@ -22,7 +22,10 @@ export class ApiClient {
   }
 
   async get<T>(path: string): Promise<T> {
-    const res = await fetch(`${this.baseUrl}${path}`, { headers: this.headers() })
+    const res = await fetch(`${this.baseUrl}${path}`, {
+      headers: this.headers(),
+      credentials: 'include',
+    })
     if (!res.ok) throw new Error(await this.extractError(res))
     return res.json() as Promise<T>
   }
@@ -32,6 +35,7 @@ export class ApiClient {
       method: 'POST',
       headers: this.headers(),
       body: body ? JSON.stringify(body) : undefined,
+      credentials: 'include',
     })
     if (!res.ok) throw new Error(await this.extractError(res))
     return res.json() as Promise<T>
@@ -48,4 +52,3 @@ export class ApiClient {
     }
   }
 }
-

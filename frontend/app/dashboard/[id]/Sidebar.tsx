@@ -1,5 +1,6 @@
 "use client"
 import Link from 'next/link'
+import type { Route } from 'next'
 import { usePathname } from 'next/navigation'
 import { useResourceItem } from '@/hooks/resource'
 import { useRef, useState } from 'react'
@@ -18,22 +19,23 @@ export default function Sidebar({ shopId }: { shopId: string }) {
   const inventoryTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const helpTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
-  const dashboardHref = `/dashboard/${shopId}`
-  const ordersHref = `/dashboard/${shopId}/orders`
-  const analyticsHref = `/dashboard/${shopId}/analytics`
-  const productsHref = `/dashboard/${shopId}/products`
-  const categoriesHref = `/dashboard/${shopId}/categories`
-  const inventoryHref = `/dashboard/${shopId}/inventory`
-  const settingsHref = `/dashboard/${shopId}/manage`
+  const dashboardHref = `/dashboard/${shopId}` as Route
+  const ordersHref = `/dashboard/${shopId}/orders` as Route
+  const analyticsHref = `/dashboard/${shopId}/analytics` as Route
+  const productsHref = `/dashboard/${shopId}/products` as Route
+  const categoriesHref = `/dashboard/${shopId}/categories` as Route
+  const inventoryHref = `/dashboard/${shopId}/inventory` as Route
+  const settingsHref = `/dashboard/${shopId}/manage` as Route
+  const helpHref = `/dashboard/${shopId}/help` as Route
 
   const isDashboard = pathname === dashboardHref
-  const isOrders = pathname.startsWith(`/dashboard/${shopId}/orders`)
-  const isAnalytics = pathname.startsWith(`/dashboard/${shopId}/analytics`)
-  const isProducts = pathname.startsWith(`/dashboard/${shopId}/products`)
-  const isCategories = pathname.startsWith(`/dashboard/${shopId}/categories`)
-  const isInventory = pathname.startsWith(`/dashboard/${shopId}/inventory`)
-  const isSettings = pathname.startsWith(`/dashboard/${shopId}/manage`)
-  const isHelp = pathname.startsWith(`/dashboard/${shopId}/help`)
+  const isOrders = pathname.startsWith(ordersHref)
+  const isAnalytics = pathname.startsWith(analyticsHref)
+  const isProducts = pathname.startsWith(productsHref)
+  const isCategories = pathname.startsWith(categoriesHref)
+  const isInventory = pathname.startsWith(inventoryHref)
+  const isSettings = pathname.startsWith(settingsHref)
+  const isHelp = pathname.startsWith(helpHref)
   const [showSoonHelp, setShowSoonHelp] = useState(false)
 
   const handleAnalyticsClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
@@ -79,14 +81,18 @@ export default function Sidebar({ shopId }: { shopId: string }) {
         </div>
       </Link>
 
-        <Link href={ordersHref} className={`pe-sidebar-link ${isOrders ? 'is-active' : ''}`}>
-            <div className="text">
-                <img src="/img/shopping-cart-01.svg" alt="" className="pe-icon pe-icon--inline"/>
-                <span>Orders</span>
-            </div>
-        </Link>
+      <Link href={ordersHref} className={`pe-sidebar-link ${isOrders ? 'is-active' : ''}`}>
+        <div className="text">
+          <img src="/img/shopping-cart-01.svg" alt="" className="pe-icon pe-icon--inline" />
+          <span>Orders</span>
+        </div>
+      </Link>
 
-        <Link href={analyticsHref} onClick={handleAnalyticsClick} className={`pe-sidebar-link ${isAnalytics ? 'is-active' : ''}`}>
+      <Link
+        href={analyticsHref}
+        onClick={handleAnalyticsClick}
+        className={`pe-sidebar-link ${isAnalytics ? 'is-active' : ''}`}
+      >
         <div className="text">
           <img src="/img/bar-chart-square-01.svg" alt="" className="pe-icon pe-icon--inline" />
           <span>Analytics</span>
@@ -109,16 +115,19 @@ export default function Sidebar({ shopId }: { shopId: string }) {
           <span>Categories</span>
         </div>
       </Link>
+      <Link
+        href={inventoryHref}
+        onClick={handleInventoryClick}
+        className={`pe-sidebar-link ${isInventory ? 'is-active' : ''}`}
+      >
+        <div className="text">
+          <img src="/img/box.svg" alt="" className="pe-icon pe-icon--inline" />
+          <span>Inventory</span>
+        </div>
+        {showSoonInventory && <div key={inventoryKey} className="soon soon--fade">Soon</div>}
+      </Link>
 
-        <Link href={inventoryHref} onClick={handleInventoryClick} className={`pe-sidebar-link ${isInventory ? 'is-active' : ''}`}>
-            <div className="text">
-                <img src="/img/box.svg" alt="" className="pe-icon pe-icon--inline"/>
-                <span>Inventory</span>
-            </div>
-            {showSoonInventory && <div key={inventoryKey} className="soon soon--fade">Soon</div>}
-        </Link>
-
-        <h3 className="pe-sidebar-subtitle">Advanced</h3>
+      <h3 className="pe-sidebar-subtitle">Advanced</h3>
 
       <Link href={settingsHref} className={`pe-sidebar-link ${isSettings ? 'is-active' : ''}`}>
         <div className="text">
@@ -127,7 +136,11 @@ export default function Sidebar({ shopId }: { shopId: string }) {
         </div>
       </Link>
 
-      <Link href={`/dashboard/${shopId}/help`} onClick={handleHelpClick} className={`pe-sidebar-link ${isHelp ? 'is-active' : ''}`}>
+      <Link
+        href={helpHref}
+        onClick={handleHelpClick}
+        className={`pe-sidebar-link ${isHelp ? 'is-active' : ''}`}
+      >
         <div className="text">
           <img src="/img/help-circle.svg" alt="" className="pe-icon pe-icon--inline" />
           <span>Get help</span>
