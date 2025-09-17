@@ -35,7 +35,7 @@ export default function NewShopPage() {
   }
 
   return (
-    <main className="new-shop-container">
+    <main className="new-shop-container dlp-fadeIn">
       <div className="top-line">
         <div className="ns-titleGroup">
           <Link href="/dashboard" className="pe-back">

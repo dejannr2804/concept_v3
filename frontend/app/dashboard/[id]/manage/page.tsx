@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useResourceItem, useResourceUpdater } from '@/hooks/resource'
 import Modal from '@/components/Modal'
 import { api } from '@/lib/api'
+import DashboardLoadingPlaceholder from '@/components/DashboardLoadingPlaceholder'
 
 type Shop = { id: number; name: string; slug: string; description?: string; profile_image_url?: string }
 
@@ -41,17 +42,19 @@ export default function ShopSettingsPage({ params }: { params: { id: string } })
     }
   }
 
+  if (shop.loading) {
+    return <DashboardLoadingPlaceholder />
+  }
+
   return (
-    <main className="shop-settings-root">
+    <main className="shop-settings-root dlp-fadeIn">
       <div className="shop-settings-header">
         <div className="shop-settings-top">
           <h1 className="shop-settings-title">Shop Settings</h1>
         </div>
       </div>
 
-      {shop.loading ? (
-        <div>Loading…</div>
-      ) : shop.error ? (
+      {shop.error ? (
         <div className="ss-error">{shop.error}</div>
       ) : (
         <section className="shop-settings-panel">

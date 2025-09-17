@@ -2,6 +2,7 @@
 import Link from 'next/link'
 import { useResourceItem, useResourceList } from '@/hooks/resource'
 import { api } from '@/lib/api'
+import DashboardLoadingPlaceholder from '@/components/DashboardLoadingPlaceholder'
 
 type Shop = { id: number; name: string; slug: string }
 type Product = {
@@ -36,8 +37,12 @@ export default function ProductsPage({ params }: { params: { id: string } }) {
     }
   }
 
+  if (products.loading || shop.loading || !products.data) {
+    return <DashboardLoadingPlaceholder />
+  }
+
   return (
-    <div className="products-page-container">
+    <div className="products-page-container dlp-fadeIn">
       <div className="top-line">
         <h1 className="heading">Products</h1>
         <div className="buttons">
@@ -52,9 +57,7 @@ export default function ProductsPage({ params }: { params: { id: string } }) {
         </div>
       </div>
 
-      {products.loading || !products.data ? (
-        <p>Loading products...</p>
-      ) : products.data.length === 0 ? (
+      {products.data.length === 0 ? (
         <div className="no-products-message">No products yet.</div>
       ) : (
           <>

@@ -6,6 +6,7 @@ import { useResourceCreator, useResourceItem, useResourceUpdater, useResourceLis
 import { api } from '@/lib/api'
 import { useNotifications } from '@/components/Notifications'
 import Modal from '@/components/Modal'
+import DashboardLoadingPlaceholder from '@/components/DashboardLoadingPlaceholder'
 
 type Mode = 'create' | 'update'
 
@@ -158,6 +159,10 @@ export default function ProductEditor({
   const loading = updater ? updater.loading : false
   const error = updater ? updater.error : null
 
+  if (shop.loading || loading || categoryList.loading) {
+    return <DashboardLoadingPlaceholder />
+  }
+
   const primaryLabel = mode === 'create' ? (creator?.saving ? 'Creating…' : 'Create') : (updater?.saving ? 'Saving…' : 'Update')
   const primaryDisabled = mode === 'create' ? Boolean(creator?.saving) : Boolean(updater?.saving)
 
@@ -234,7 +239,7 @@ export default function ProductEditor({
   }
 
   return (
-    <main className="pe-page">
+    <main className="pe-page dlp-fadeIn">
       <div className="pe-header">
         <div className="pe-titleGroup">
           <Link href={`/dashboard/${shopId}/products`} className="pe-back">
@@ -254,7 +259,7 @@ export default function ProductEditor({
       </div>
 
       {loading ? (
-          <div>Loading…</div>
+          <DashboardLoadingPlaceholder />
       ) : error ? (
         <div className="pe-error">{error}</div>
       ) : (

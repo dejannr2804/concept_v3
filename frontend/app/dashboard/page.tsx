@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { getCurrentUser, getTokenFromCookies } from '@/lib/auth'
 import { API_BASE_URL } from '@/lib/config'
+import DashboardLoadingPlaceholder from '@/components/DashboardLoadingPlaceholder'
 
 export const dynamic = 'force-dynamic'
 
@@ -31,13 +32,13 @@ export default async function DashboardPage() {
   }
 
   return (
-    <div className="dashboard-container">
+    <div className="dashboard-container dlp-fadeIn">
       <h2 className="name">Hello, {displayName}</h2>
       <p className="subname">Here is the portfolio of your shops.</p>
       {error ? (
         <p>{error}</p>
       ) : !shops ? (
-        <p>Loading shops...</p>
+        <DashboardLoadingPlaceholder />
       ) : shops.length === 0 ? (
           <div className="no-shops-message">
             <p>You don’t have any shops yet.</p>

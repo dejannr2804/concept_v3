@@ -3,6 +3,7 @@ import { useMemo, useState } from 'react'
 import { useResourceList } from '@/hooks/resource'
 import { api } from '@/lib/api'
 import Modal from '@/components/Modal'
+import DashboardLoadingPlaceholder from '@/components/DashboardLoadingPlaceholder'
 
 type Category = {
   id: number
@@ -105,8 +106,12 @@ export default function CategoriesPage({ params }: { params: { id: string } }) {
     return map
   }, [categories.data])
 
+  if (categories.loading || !categories.data) {
+    return <DashboardLoadingPlaceholder />
+  }
+
   return (
-    <div className="categories-page-container">
+    <div className="categories-page-container dlp-fadeIn">
       <div className="top-line">
         <h1 className="heading">Categories</h1>
       </div>
@@ -126,9 +131,7 @@ export default function CategoriesPage({ params }: { params: { id: string } }) {
         </form>
       </div>
 
-      {categories.loading || !categories.data ? (
-        <p>Loading categories...</p>
-      ) : categories.data.length === 0 ? (
+      {categories.data.length === 0 ? (
         <div className="no-categories-message">No categories yet.</div>
       ) : (
         <div className="categories-grid-wrapper">
