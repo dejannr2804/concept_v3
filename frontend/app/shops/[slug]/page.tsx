@@ -1,7 +1,9 @@
 "use client"
 import { useEffect, useState } from 'react'
+import Link from 'next/link'
 import LoaderStatus from '@/components/LoaderStatus'
 import { api } from '@/lib/api'
+// Uses global styles from app/styles/shops.css
 
 type Product = { id: number; name: string; slug: string; description?: string }
 type Shop = {
@@ -55,29 +57,57 @@ export default function PublicShopPage({ params }: { params: { slug: string } })
   }
 
   return (
-    <main>
+    <main className="public-shop-page">
       {shop.cover_image_url ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img src={shop.cover_image_url} alt="Shop cover" />
-      ) : null}
-      {shop.profile_image_url ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img src={shop.profile_image_url} alt={`Logo for ${shop.name}`} />
-      ) : null}
-      {shop.heading?.trim() ? <h1>{shop.heading}</h1> : <h1>{shop.name}</h1>}
-      <h2>Products</h2>
-      {shop.products && shop.products.length > 0 ? (
-        <ul>
-          {shop.products.map((p) => (
-            <li key={p.id}>
-              <a href={`/shops/${shop.slug}/products/${p.slug}`}>{p.name}</a>
-              {p.description ? <p>{p.description}</p> : null}
-            </li>
-          ))}
-        </ul>
+        <section
+          className="public-shop-cover"
+          style={{ backgroundImage: `url(${shop.cover_image_url})` }}
+          aria-label="Cover"
+        >
+          <div className="public-shop-overlay" />
+          <div className="public-shop-coverContent">
+            <div className="public-shop-brandRow">
+              {shop.profile_image_url ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={shop.profile_image_url} alt="Logo" className="public-shop-logo" />
+              ) : null}
+              <div className="public-shop-brandName">{shop.name}</div>
+            </div>
+            <h1 className="public-shop-heading">{(shop.heading || shop.name) || ''}</h1>
+          </div>
+        </section>
       ) : (
-        <p>No products yet.</p>
+        <section className="public-shop-cover" aria-label="Cover">
+          <div className="public-shop-overlay" />
+          <div className="public-shop-coverContent">
+            <div className="public-shop-brandRow">
+              {shop.profile_image_url ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={shop.profile_image_url} alt="Logo" className="public-shop-logo" />
+              ) : null}
+              <div className="public-shop-brandName">{shop.name}</div>
+            </div>
+            <h1 className="public-shop-heading">{(shop.heading || shop.name) || ''}</h1>
+          </div>
+        </section>
       )}
+
+      <section className="public-shop-content">
+        <h2>Products</h2>
+        {shop.products && shop.products.length > 0 ? (
+          <ul className="public-shop-list">
+            {shop.products.map((p) => (
+              <li key={p.id} className="public-shop-card">
+                <Link href={`/shops/${shop.slug}/products/${p.slug}`} className="public-shop-link">
+                  {p.name}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="public-shop-empty">No products yet.</p>
+        )}
+      </section>
     </main>
   )
 }
