@@ -84,19 +84,19 @@ export default function ProductEditor({
     }
   }, [catOpen])
 
-  const updater = mode === 'update' && productId
-    ? useResourceUpdater(`shops/${shopId}/products/${productId}`)
-    : null
+  // Always call hooks in the same order to satisfy React Rules of Hooks
+  const updater = useResourceUpdater(
+    `shops/${shopId}/products/${productId ?? 'new'}`,
+    { load: mode === 'update' && Boolean(productId) }
+  )
 
-  const creator = mode === 'create'
-    ? useResourceCreator(`shops/${shopId}/products`)
-    : null
+  const creator = useResourceCreator(`shops/${shopId}/products`)
 
-  const data = (mode === 'create' ? creator?.data : updater?.data) || {}
+  const data = (mode === 'create' ? creator.data : updater.data) || {}
   const canImmediateUpload = mode === 'update' && Boolean(productId)
   const setField = (name: string, value: any) => {
-    if (mode === 'create' && creator) creator.setField(name, value)
-    else if (mode === 'update' && updater) updater.setField(name, value)
+    if (mode === 'create') creator.setField(name, value)
+    else updater.setField(name, value)
   }
 
   function toSlug(v: string) {
@@ -151,13 +151,17 @@ export default function ProductEditor({
   const onBrowse = useCallback(() => inputRef.current?.click(), [])
 
   useEffect(() => {
-    const list = (updater?.data?.images || []) as { id: number; url: string; alt_text?: string; sort_order?: number }[]
+    const list = (updater.data?.images || []) as { id: number; url: string; alt_text?: string; sort_order?: number }[]
     setServerImages(list)
-  }, [updater?.data])
+  }, [updater.data])
 
 
-  const loading = updater ? updater.loading : false
-  const error = updater ? updater.error : null
+  const loading = updater.loading
+  const error = updater.error
+
+  // Custom delete confirmation UI (declare hooks before any early returns)
+  const [deleteOpen, setDeleteOpen] = useState(false)
+  const [deleting, setDeleting] = useState(false)
 
   if (shop.loading || loading || categoryList.loading) {
     return <DashboardLoadingPlaceholder />
@@ -219,9 +223,6 @@ export default function ProductEditor({
     }
   }
 
-  // Custom delete confirmation UI
-  const [deleteOpen, setDeleteOpen] = useState(false)
-  const [deleting, setDeleting] = useState(false)
   async function onConfirmDelete() {
     if (!(mode === 'update' && updater && productId)) return
     setDeleting(true)
@@ -250,7 +251,7 @@ export default function ProductEditor({
         </div>
         <div className="pe-actions">
           {mode === 'update' && shop.data && updater?.data?.slug && (
-              <Link href={`/shops/${shop.data.slug}/products/${updater.data.slug}`} className="pe-preview">
+              <Link href={`/shops/${shop.data.slug}/products/${updater.data.slug}`} className="pe-preview" target="_blank" rel="noopener noreferrer">
                 <img src="/img/arrow-narrow-up-right.svg" alt=""/>
                 <span>Preview</span>
               </Link>

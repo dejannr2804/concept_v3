@@ -130,7 +130,7 @@ export default function ProductsPage({ params }: { params: { id: string } }) {
                             <span>Manage</span>
                           </Link>
                           {shop.data && (
-                              <Link href={`/shops/${shop.data.slug}/products/${p.slug}`}>
+                              <Link href={`/shops/${shop.data.slug}/products/${p.slug}`} target="_blank" rel="noopener noreferrer">
                                 <img src="/img/arrow-narrow-up-right.svg" alt="" className="nav-icon"/>
                                 <span>Preview</span>
                               </Link>

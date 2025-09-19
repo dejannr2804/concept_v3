@@ -6,12 +6,10 @@ import { useAuth } from '@/hooks/useAuth'
 
 export default function Header() {
   const pathname = usePathname()
-  const [mounted, setMounted] = useState(false)
   const { user, logout } = useAuth()
   const [open, setOpen] = useState(false)
   const menuRef = useRef<HTMLDivElement | null>(null)
 
-  useEffect(() => setMounted(true), [])
   useEffect(() => {
     function onDocClick(e: MouseEvent) {
       if (!menuRef.current) return
@@ -21,7 +19,7 @@ export default function Header() {
     return () => document.removeEventListener('click', onDocClick)
   }, [])
 
-  const hide = mounted && pathname?.startsWith('/shops/')
+  const hide = pathname ? pathname.startsWith('/shops') : false
   if (hide) return null
 
   const displayName = user

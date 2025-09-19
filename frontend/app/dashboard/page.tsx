@@ -88,7 +88,7 @@ export default async function DashboardPage() {
                     <img src="/img/layout-grid-02.svg" alt="" className="nav-icon"/>
                     Dashboard
                   </Link>
-                  <Link href={`/shops/${s.slug}`}>
+                  <Link href={`/shops/${s.slug}`} target="_blank" rel="noopener noreferrer">
                     <img src="/img/arrow-narrow-up-right-d.svg" alt="" className="nav-icon"/>
                     Preview
                   </Link>

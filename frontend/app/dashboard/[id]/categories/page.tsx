@@ -16,8 +16,11 @@ export default function CategoriesPage({ params }: { params: { id: string } }) {
   const { id } = params
   const categories = useResourceList<Category>(`shops/${id}/categories`)
 
-  const [name, setName] = useState('')
-  const [description, setDescription] = useState('')
+  // Create modal state
+  const [createOpen, setCreateOpen] = useState(false)
+  const [creating, setCreating] = useState(false)
+  const [createName, setCreateName] = useState('')
+  const [createDescription, setCreateDescription] = useState('')
   // Edit modal state
   const [editOpen, setEditOpen] = useState(false)
   const [editing, setEditing] = useState(false)
@@ -26,22 +29,25 @@ export default function CategoriesPage({ params }: { params: { id: string } }) {
   const [editName, setEditName] = useState('')
   const [editDescription, setEditDescription] = useState('')
 
-  async function handleCreate(e: React.FormEvent) {
-    e.preventDefault()
-    if (!name.trim()) {
+  async function handleCreate() {
+    if (!createName.trim()) {
       categories.notify.error('Name is required')
       return
     }
-    const body: any = { name }
-    if (description.trim()) body.description = description.trim()
+    const body: any = { name: createName.trim() }
+    if (createDescription.trim()) body.description = createDescription.trim()
     try {
+      setCreating(true)
       await api.post(`shops/${id}/categories`, body)
       categories.notify.success('Category created')
-      setName('')
-      setDescription('')
+      setCreateOpen(false)
+      setCreateName('')
+      setCreateDescription('')
       categories.refresh()
     } catch (e: any) {
       categories.notify.error(e?.message || 'Failed to create category')
+    } finally {
+      setCreating(false)
     }
   }
 
@@ -114,22 +120,18 @@ export default function CategoriesPage({ params }: { params: { id: string } }) {
     <div className="categories-page-container dlp-fadeIn">
       <div className="top-line">
         <h1 className="heading">Categories</h1>
+        <div className="buttons">
+          <button
+            type="button"
+            className="ss-button"
+            onClick={() => setCreateOpen(true)}
+          >
+            <img src="/img/plus-l.svg" alt="" className="nav-icon" />
+            <span>Create New Category</span>
+          </button>
+        </div>
       </div>
 
-      <div className="filters">
-        <form className="filter create" onSubmit={handleCreate}>
-          <input
-            type="text"
-            placeholder="New category name..."
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
-          <button type="submit" className="create-btn">
-            <img src="/img/plus-l.svg" alt="" className="nav-icon" />
-            <span>Create</span>
-          </button>
-        </form>
-      </div>
 
       {categories.data.length === 0 ? (
         <div className="no-categories-message">No categories yet.</div>
@@ -161,7 +163,7 @@ export default function CategoriesPage({ params }: { params: { id: string } }) {
       <Modal open={editOpen} onClose={() => { if (!editing && !deleting) { setEditOpen(false); setSelected(null) } }}>
         <div className="ss-modal" role="document">
           <div className="ss-modalTitle">
-            <img src="/img/settings-01.svg" alt="" className="ss-modalIcon" />
+            <img src="/img/tag-01.svg" alt="" className="ss-modalIcon" />
             <span>Edit category</span>
           </div>
           <div className="ss-modalField">
@@ -193,6 +195,43 @@ export default function CategoriesPage({ params }: { params: { id: string } }) {
             <button className="ss-button" onClick={() => setEditOpen(false)} disabled={editing || deleting}>Cancel</button>
             <button className="ss-button" onClick={saveEdit} disabled={editing || deleting}>
               <span>{editing ? 'Saving...' : 'Save changes'}</span>
+            </button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* Create modal */}
+      <Modal open={createOpen} onClose={() => { if (!creating) { setCreateOpen(false) } }}>
+        <div className="ss-modal" role="document">
+          <div className="ss-modalTitle">
+            <img src="/img/tag-01.svg" alt="" className="ss-modalIcon" />
+            <span>Create new category</span>
+          </div>
+          <div className="ss-modalField">
+            <div className="ss-label">Name</div>
+            <input
+              className="ss-input"
+              value={createName}
+              onChange={(e) => setCreateName(e.target.value)}
+              placeholder="Category name"
+              disabled={creating}
+            />
+          </div>
+          <div className="ss-modalField">
+            <div className="ss-label">Description</div>
+            <textarea
+              className="ss-input"
+              style={{ minHeight: 90, borderRadius: 12 }}
+              value={createDescription}
+              onChange={(e) => setCreateDescription(e.target.value)}
+              placeholder="Optional description"
+              disabled={creating}
+            />
+          </div>
+          <div className="ss-modalActions">
+            <button className="ss-button" onClick={() => setCreateOpen(false)} disabled={creating}>Cancel</button>
+            <button className="ss-button" onClick={handleCreate} disabled={creating}>
+              <span>{creating ? 'Creating...' : 'Create'}</span>
             </button>
           </div>
         </div>

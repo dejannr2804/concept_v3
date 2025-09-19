@@ -21,7 +21,7 @@ export default function ShopDashboardPage({ params }: { params: { id: string } }
             {shop.data && (
                 <>
                   <h1>{shop.data ? shop.data.name : 'Shop'}</h1>
-                  <Link href={`/shops/${shop.data.slug}`} className="preview">
+                  <Link href={`/shops/${shop.data.slug}`} className="preview" target="_blank" rel="noopener noreferrer">
                     <img src="/img/arrow-narrow-up-right.svg" alt="" className="nav-icon"/>
                     <span>Preview</span>
                   </Link>
