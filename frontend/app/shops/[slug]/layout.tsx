@@ -1,0 +1,79 @@
+"use client"
+
+import Link from 'next/link'
+import { usePathname } from 'next/navigation'
+import type { ReactNode } from 'react'
+import { useMemo } from 'react'
+import { useShop } from '@/hooks/useShop'
+
+const normalize = (value: string) => value.replace(/\/$/, '')
+
+export default function ShopLayout({
+  children,
+  params,
+}: {
+  children: ReactNode
+  params: { slug: string }
+}) {
+  const { slug } = params
+  const { shop } = useShop(slug)
+  const pathname = usePathname()
+  const basePath = `/shops/${slug}`
+
+  const navLinks = useMemo(
+    () => [
+      { href: basePath, label: 'Home' },
+      { href: `${basePath}/products`, label: 'Products' },
+      { href: `${basePath}/contact`, label: 'Contact' },
+    ],
+    [basePath],
+  )
+
+  const normalizedPath = pathname ? normalize(pathname) : ''
+  const normalizedBase = normalize(basePath)
+
+  const isActive = (href: string) => {
+    const normalizedHref = normalize(href)
+    if (normalizedHref === normalizedBase) {
+      return normalizedPath === normalizedBase
+    }
+    return normalizedPath.startsWith(normalizedHref)
+  }
+
+  const activeClass = (href: string) => (isActive(href) ? ' is-active' : '')
+
+  const brandInitial = shop?.name?.charAt(0)?.toUpperCase() || '?'
+
+  return (
+    <div className="public-shop-layout">
+      <header className="public-shop-header">
+        <div className="public-shop-headerInner">
+          <Link href={basePath} className="public-shop-brand" aria-label={`${shop?.name || 'Shop'} home`}>
+            {shop?.profile_image_url ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={shop.profile_image_url} alt="Logo" className="public-shop-brandLogo" />
+            ) : (
+              <div className="public-shop-brandFallback">{brandInitial}</div>
+            )}
+            <div className="public-shop-brandCopy">
+              <span className="public-shop-brandNameText">{shop?.name || 'Loading shop'}</span>
+            </div>
+          </Link>
+          <nav className="public-shop-nav" aria-label="Shop navigation">
+            {navLinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={`public-shop-navLink${activeClass(link.href)}`}
+                aria-current={isActive(link.href) ? 'page' : undefined}
+              >
+                {link.label}
+              </Link>
+            ))}
+          </nav>
+        </div>
+      </header>
+      <div className="public-shop-body">{children}</div>
+    </div>
+  )
+}

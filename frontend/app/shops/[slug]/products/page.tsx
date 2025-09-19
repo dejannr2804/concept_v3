@@ -1,0 +1,47 @@
+"use client"
+
+import LoaderStatus from '@/components/LoaderStatus'
+import { ShopProductGrid } from '@/components/shops/ProductGrid'
+import { useShop } from '@/hooks/useShop'
+
+export default function ShopProductsPage({ params }: { params: { slug: string } }) {
+  const { slug } = params
+  const { shop, loading, error } = useShop(slug)
+
+  if (loading) return <LoaderStatus label="Loading products" delay={600} />
+
+  if (error) {
+    return (
+      <main className="public-shop-page">
+        <section className="public-shop-content">
+          <p>{error}</p>
+        </section>
+      </main>
+    )
+  }
+
+  if (!shop) {
+    return (
+      <main className="public-shop-page">
+        <section className="public-shop-content">
+          <p>Shop not found.</p>
+        </section>
+      </main>
+    )
+  }
+
+  return (
+    <main className="public-shop-page">
+      <section className="public-shop-content">
+        <div className="public-shop-contentHeader">
+          <h2>All products</h2>
+          <p>
+            Browse the complete catalogue from {shop.name}. Filter by category or jump into a product to
+            see real-time availability and pricing details.
+          </p>
+        </div>
+        <ShopProductGrid shopSlug={shop.slug} products={shop.products} />
+      </section>
+    </main>
+  )
+}

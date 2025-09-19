@@ -1,8 +1,104 @@
-/* Public shop page */
+/* Public shop layout */
+.public-shop-layout {
+  min-height: 100vh;
+  background: #f8fafc;
+}
+
+.public-shop-header {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+}
+
+.public-shop-headerInner {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.public-shop-brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  color: #0f172a;
+  text-decoration: none;
+}
+
+.public-shop-brandLogo,
+.public-shop-brandFallback {
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+  object-fit: cover;
+}
+
+.public-shop-brandFallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #1d4ed8, #0f172a);
+  color: #fff;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.public-shop-brandCopy {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.public-shop-brandNameText {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.public-shop-nav {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.public-shop-navLink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 16px;
+  border-radius: 999px;
+  background: transparent;
+  color: #1e293b;
+  font-weight: 500;
+  text-decoration: none;
+  transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.public-shop-navLink:hover {
+  background: rgba(226, 232, 240, 0.7);
+}
+
+.public-shop-navLink.is-active {
+  background: #0f172a;
+  color: #f8fafc;
+  box-shadow: 0 8px 16px rgba(15, 23, 42, 0.15);
+}
+
+.public-shop-body {
+  padding-top: 0;
+}
+
 .public-shop-page {
   color: #0f172a;
   background: #f8fafc;
   min-height: 100vh;
+  margin: 0;
 }
 
 .public-shop-logo {
@@ -24,6 +120,7 @@
   height: 420px;
   background-position: center;
   background-size: cover;
+  margin: 0;
 }
 
 .public-shop-overlay {
@@ -100,6 +197,82 @@
   max-width: 560px;
   margin: 0;
   line-height: 1.6;
+}
+
+.public-shop-contact {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.public-shop-contactGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+}
+
+.public-shop-contactCard {
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 24px;
+  box-shadow: 0 18px 34px rgba(15, 23, 42, 0.08);
+  border: 1px solid rgba(226, 232, 240, 0.7);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.public-shop-contactCard h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.public-shop-contactCard p {
+  margin: 0;
+  color: #475569;
+  line-height: 1.6;
+}
+
+.public-shop-contactLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+  color: #1d4ed8;
+  text-decoration: none;
+}
+
+.public-shop-contactLink:hover {
+  text-decoration: underline;
+}
+
+.public-shop-actions {
+  margin-top: 28px;
+  display: flex;
+  justify-content: center;
+}
+
+.public-shop-linkButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 22px;
+  border-radius: 999px;
+  background: #1d4ed8;
+  color: #f8fafc;
+  font-weight: 600;
+  text-decoration: none;
+  box-shadow: 0 12px 24px rgba(29, 78, 216, 0.2);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.public-shop-linkButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 30px rgba(29, 78, 216, 0.25);
+  background: #1e40af;
 }
 
 .public-shop-list {
@@ -261,6 +434,22 @@
 }
 
 @media (max-width: 640px) {
+  .public-shop-headerInner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .public-shop-nav {
+    width: 100%;
+    justify-content: flex-start;
+    gap: 8px;
+  }
+
+  .public-shop-navLink {
+    padding: 8px 14px;
+  }
+
   .public-shop-logo { width: 48px; height: 48px; }
   .public-shop-brandName { font-size: 18px; }
   .public-shop-heading { font-size: 28px; margin-top: 14px; }
