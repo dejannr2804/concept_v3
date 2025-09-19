@@ -6,14 +6,13 @@
   justify-content: center;
 }
 
-.dlp-spinner {
-  width: 42px;
-  height: 42px;
-  border-radius: 999px;
-  border: 3px solid rgba(148, 163, 184, 0.24);
-  border-top-color: rgba(15, 23, 42, 0.78);
-  border-right-color: rgba(15, 23, 42, 0.2);
-  animation: dlpSpin 0.75s linear infinite;
+.loader {
+  width: 50px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 8px solid;
+  border-color: #0f172a #0000;
+  animation: dlpArc 1s infinite;
 }
 
 .dlp-fadeIn {
@@ -34,9 +33,9 @@
   border: 0;
 }
 
-@keyframes dlpSpin {
+@keyframes dlpArc {
   to {
-    transform: rotate(360deg);
+    transform: rotate(0.5turn);
   }
 }
 
@@ -48,8 +47,8 @@
 }
 
 @media (max-width: 640px) {
-  .dlp-spinner {
-    width: 36px;
-    height: 36px;
+  .loader {
+    width: 44px;
+    border-width: 7px;
   }
 }

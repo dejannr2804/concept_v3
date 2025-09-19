@@ -37,13 +37,13 @@ export default function Modal({ open, onClose, children }: ModalProps) {
 
   return createPortal(
     <div
-      style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+      style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
       onClick={onClose}
       role="dialog"
       aria-modal="true"
     >
       <div
-        style={{ position: 'relative', maxWidth: '90vw', maxHeight: '90vh', background: '#0b0b0b', borderRadius: 12, overflow: 'hidden', boxShadow: '0 10px 30px rgba(0,0,0,0.4)' }}
+        style={{ position: 'relative', maxWidth: '90vw', maxHeight: '90vh', background: '#0b0b0b', borderRadius: 12, overflow: 'hidden' }}
         onClick={(e) => e.stopPropagation()}
       >
         <button
