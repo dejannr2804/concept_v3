@@ -178,6 +178,37 @@ class ShopProfileImageUploadView(generics.GenericAPIView):
         return Response({"shop": data}, status=status.HTTP_200_OK)
 
 
+class ShopCoverImageUploadView(generics.GenericAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+    parser_classes = [MultiPartParser, FormParser]
+
+    def post(self, request, shop_id: int):
+        shop = generics.get_object_or_404(Shop, pk=shop_id, user=request.user)
+        file_obj = request.FILES.get("file") or request.FILES.get("image")
+        if not file_obj:
+            return Response({"detail": "Missing file under 'file' or 'image'"}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            url = upload_shop_image(file_obj, getattr(file_obj, "name", "image"))
+        except SpacesConfigError as e:
+            return Response({"detail": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        except Exception as e:
+            return Response({"detail": "Upload failed", "error": str(e)}, status=status.HTTP_502_BAD_GATEWAY)
+
+        # Delete previous cover image best-effort
+        prev = shop.cover_image_url
+        if prev:
+            try:
+                from .spaces import delete_object_by_url
+                delete_object_by_url(prev)
+            except Exception:
+                pass
+        shop.cover_image_url = url
+        shop.save(update_fields=["cover_image_url"]) 
+
+        data = ShopSerializer(shop).data
+        return Response({"shop": data}, status=status.HTTP_200_OK)
+
+
 class CategoryListCreateView(generics.ListCreateAPIView):
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = CategorySerializer

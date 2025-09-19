@@ -6,7 +6,7 @@ import Modal from '@/components/Modal'
 import { api } from '@/lib/api'
 import DashboardLoadingPlaceholder from '@/components/DashboardLoadingPlaceholder'
 
-type Shop = { id: number; name: string; slug: string; description?: string; profile_image_url?: string }
+type Shop = { id: number; name: string; slug: string; description?: string; heading?: string; profile_image_url?: string; cover_image_url?: string }
 
 export default function ShopSettingsPage({ params }: { params: { id: string } }) {
   const { id } = params
@@ -16,12 +16,16 @@ export default function ShopSettingsPage({ params }: { params: { id: string } })
 
   const data = updater.data || shop.data || {}
   const [imgUrl, setImgUrl] = useState<string | undefined>(data?.profile_image_url || shop.data?.profile_image_url)
+  const [coverUrl, setCoverUrl] = useState<string | undefined>(data?.cover_image_url || shop.data?.cover_image_url)
   const fileInputRef = useRef<HTMLInputElement | null>(null)
+  const coverInputRef = useRef<HTMLInputElement | null>(null)
 
   // Keep local image URL in sync when shop data loads or changes
   useEffect(() => {
     const next = (updater?.data as any)?.profile_image_url || (shop.data as any)?.profile_image_url
     if (next && next !== imgUrl) setImgUrl(next)
+    const nextCover = (updater?.data as any)?.cover_image_url || (shop.data as any)?.cover_image_url
+    if (nextCover && nextCover !== coverUrl) setCoverUrl(nextCover)
   }, [updater?.data, shop.data])
 
   // Delete confirmation UI
@@ -59,6 +63,46 @@ export default function ShopSettingsPage({ params }: { params: { id: string } })
       ) : (
         <section className="shop-settings-panel">
           <form className="ss-form" onSubmit={(e) => e.preventDefault()}>
+            {/* Cover image */}
+            <div className="ss-row" style={{ marginBottom: 16 }}>
+              <div style={{ width: 280, height: 120, borderRadius: 12, background: '#f6f7f9', overflow: 'hidden' }}>
+                {coverUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={coverUrl} alt="Cover" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                ) : (
+                  <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#777' }}>No cover</div>
+                )}
+              </div>
+              <div>
+                <button type="button" className="ss-button" onClick={() => coverInputRef.current?.click()}>
+                  {coverUrl ? 'Change cover' : 'Upload cover'}
+                </button>
+                <input
+                  ref={coverInputRef}
+                  type="file"
+                  accept="image/*"
+                  style={{ display: 'none' }}
+                  onChange={async (e) => {
+                    const inputEl = e.currentTarget as HTMLInputElement
+                    const f = inputEl.files?.[0]
+                    if (!f) return
+                    const fd = new FormData()
+                    fd.append('file', f)
+                    try {
+                      const updated = await (await import('@/lib/api')).api.upload<{ shop: Shop }>(
+                        `shops/${id}/cover-image`,
+                        fd,
+                        { extract: (raw) => (raw && (raw as any).shop) || raw }
+                      )
+                      setCoverUrl((updated as any)?.cover_image_url)
+                    } catch (e) {
+                    } finally {
+                      if (inputEl) inputEl.value = ''
+                    }
+                  }}
+                />
+              </div>
+            </div>
             <div className="ss-row">
               <div className="ss-avatar">
                 {imgUrl ? (
@@ -111,12 +155,16 @@ export default function ShopSettingsPage({ params }: { params: { id: string } })
               </label>
             </div>
             <label className="ss-field">
+              <span className="ss-label">Heading</span>
+              <input className="ss-input" value={data?.heading || ''} onChange={(e) => updater.setField('heading', e.target.value)} />
+            </label>
+            <label className="ss-field">
               <span className="ss-label">Description</span>
               <textarea className="ss-textarea" rows={5} value={data?.description || ''} onChange={(e) => updater.setField('description', e.target.value)} />
             </label>
 
             <div className="ss-actions">
-              <button type="button" className="ss-button" onClick={() => updater.save(['name', 'slug', 'description'])} disabled={updater.saving}>
+              <button type="button" className="ss-button" onClick={() => updater.save(['name', 'slug', 'heading', 'description'])} disabled={updater.saving}>
                 {updater.saving ? 'Saving…' : 'Save Changes'}
               </button>
               <button

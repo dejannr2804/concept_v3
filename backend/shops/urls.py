@@ -10,6 +10,7 @@ from .views import (
     ProductImageDestroyView,
     ProductImageReorderView,
     ShopProfileImageUploadView,
+    ShopCoverImageUploadView,
     CategoryListCreateView,
     CategoryRetrieveUpdateDestroyView,
 )
@@ -25,6 +26,7 @@ urlpatterns = [
     path('<int:shop_id>/products/<int:product_id>/images/<int:image_id>/', ProductImageDestroyView.as_view(), name='product-image-destroy'),
     path('<int:shop_id>/products/<int:product_id>/images/reorder/', ProductImageReorderView.as_view(), name='product-image-reorder'),
     path('<int:shop_id>/profile-image/', ShopProfileImageUploadView.as_view(), name='shop-profile-image'),
+    path('<int:shop_id>/cover-image/', ShopCoverImageUploadView.as_view(), name='shop-cover-image'),
     # Categories
     path('<int:shop_id>/categories/', CategoryListCreateView.as_view(), name='category-list-create'),
     path('<int:shop_id>/categories/<int:pk>/', CategoryRetrieveUpdateDestroyView.as_view(), name='category-detail'),

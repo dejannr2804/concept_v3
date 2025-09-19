@@ -4,7 +4,15 @@ import LoaderStatus from '@/components/LoaderStatus'
 import { api } from '@/lib/api'
 
 type Product = { id: number; name: string; slug: string; description?: string }
-type Shop = { id: number; name: string; slug: string; description?: string; profile_image_url?: string; products: Product[] }
+type Shop = {
+  id: number
+  name: string
+  slug: string
+  heading?: string | null
+  profile_image_url?: string | null
+  cover_image_url?: string | null
+  products: Product[]
+}
 
 export default function PublicShopPage({ params }: { params: { slug: string } }) {
   const { slug } = params
@@ -30,7 +38,7 @@ export default function PublicShopPage({ params }: { params: { slug: string } })
     return () => { cancelled = true }
   }, [slug])
 
-  if (loading) return <LoaderStatus label="Loading shop" />
+  if (loading) return <LoaderStatus label="Loading shop" delay={1000} />
   if (error) {
     return (
       <main>
@@ -48,12 +56,15 @@ export default function PublicShopPage({ params }: { params: { slug: string } })
 
   return (
     <main>
+      {shop.cover_image_url ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={shop.cover_image_url} alt="Shop cover" />
+      ) : null}
       {shop.profile_image_url ? (
         // eslint-disable-next-line @next/next/no-img-element
-        <img src={shop.profile_image_url} alt={`Profile image for ${shop.name}`} />
+        <img src={shop.profile_image_url} alt={`Logo for ${shop.name}`} />
       ) : null}
-      <h1>{shop.name}</h1>
-      {shop.description ? <p>{shop.description}</p> : <p>No description provided.</p>}
+      {shop.heading?.trim() ? <h1>{shop.heading}</h1> : <h1>{shop.name}</h1>}
       <h2>Products</h2>
       {shop.products && shop.products.length > 0 ? (
         <ul>

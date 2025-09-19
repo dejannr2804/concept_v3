@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { api } from '@/lib/api'
+import LoaderStatus from '@/components/LoaderStatus'
 
 type Product = { id: number; name: string; slug: string; description?: string }
 
@@ -29,7 +30,7 @@ export default function PublicProductPage({ params }: { params: { slug: string; 
     return () => { cancelled = true }
   }, [shopSlug, productSlug])
 
-  if (loading) return <div className="p-4">Loading…</div>
+  if (loading) return <LoaderStatus label="Loading product" delay={1000} />
   if (error) return <div className="error p-4">{error}</div>
   if (!product) return <div className="p-4">Product not found.</div>
 
