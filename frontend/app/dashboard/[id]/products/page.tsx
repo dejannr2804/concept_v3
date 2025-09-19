@@ -26,6 +26,7 @@ export default function ProductsPage({ params }: { params: { id: string } }) {
   const { id } = params
   const shop = useResourceItem<Shop>(`shops/${id}`)
   const products = useResourceList<Product>(`shops/${id}/products`)
+  const shopSlug = shop.data?.slug
   async function toggleStatus(productId: number, current: Product['status']) {
     const next = current === 'active' ? 'inactive' : 'active'
     try {
@@ -50,10 +51,12 @@ export default function ProductsPage({ params }: { params: { id: string } }) {
             <img src="/img/plus-l.svg" alt="" className="nav-icon"/>
             <span>Create New Product</span>
           </Link>
-          <Link href={`/dashboard/${id}/products/new`}>
-            <img src="/img/arrow-narrow-up-right.svg" alt="" className="nav-icon"/>
-            <span>Preview</span>
-          </Link>
+          {shopSlug ? (
+            <Link href={`/shops/${shopSlug}/products`} target="_blank" rel="noopener noreferrer">
+              <img src="/img/arrow-narrow-up-right.svg" alt="" className="nav-icon"/>
+              <span>Preview</span>
+            </Link>
+          ) : null}
         </div>
       </div>
 
