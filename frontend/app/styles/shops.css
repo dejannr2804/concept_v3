@@ -60,6 +60,7 @@
   font-weight: 600;
 }
 
+
 .public-shop-nav {
   display: flex;
   align-items: center;
@@ -274,6 +275,7 @@
   box-shadow: 0 16px 30px rgba(29, 78, 216, 0.25);
   background: #1e40af;
 }
+
 
 .public-shop-list {
   list-style: none;

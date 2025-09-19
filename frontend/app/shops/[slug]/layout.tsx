@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import type { ReactNode } from 'react'
 import { useMemo } from 'react'
+import LoaderStatus from '@/components/LoaderStatus'
 import { useShop } from '@/hooks/useShop'
 
 const normalize = (value: string) => value.replace(/\/$/, '')
@@ -16,7 +17,7 @@ export default function ShopLayout({
   params: { slug: string }
 }) {
   const { slug } = params
-  const { shop } = useShop(slug)
+  const { shop, loading } = useShop(slug)
   const pathname = usePathname()
   const basePath = `/shops/${slug}`
 
@@ -43,6 +44,14 @@ export default function ShopLayout({
   const activeClass = (href: string) => (isActive(href) ? ' is-active' : '')
 
   const brandInitial = shop?.name?.charAt(0)?.toUpperCase() || '?'
+
+  if (loading && !shop) {
+    return (
+      <div className="public-shop-layout">
+        <LoaderStatus label="Loading shop" delay={600} />
+      </div>
+    )
+  }
 
   return (
     <div className="public-shop-layout">
