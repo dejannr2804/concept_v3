@@ -85,8 +85,7 @@ export default function ProductsPage({ params }: { params: { id: string } }) {
               <table className="products-table">
                 <thead>
                 <tr>
-                  <th>Image</th>
-                  <th>Name</th>
+                  <th>Product</th>
                   <th>SKU</th>
                   <th>Category</th>
                   <th>Status</th>
@@ -99,15 +98,15 @@ export default function ProductsPage({ params }: { params: { id: string } }) {
                   const img = (p.images || []).find((i) => i.sort_order === 1) || (p.images || [])[0]
                   return (
                       <tr key={p.id}>
-                        <td className="product-image-cell">
-                          {img ? (
-                              <img className="product-thumb" src={img.url} alt={img.alt_text || p.name}/>
-                          ) : (
-                              <div className="product-thumb placeholder"/>
-                          )}
-                        </td>
                         <td className="product-name">
-                          <strong>{p.name}</strong>
+                          <div className="product-name-content">
+                            {img ? (
+                                <img className="product-thumb" src={img.url} alt={img.alt_text || p.name}/>
+                            ) : (
+                                <div className="product-thumb placeholder"/>
+                            )}
+                            <strong>{p.name}</strong>
+                          </div>
                         </td>
                         <td>{p.sku}</td>
                         <td>{p.category || '-'}</td>
