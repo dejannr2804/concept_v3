@@ -568,16 +568,25 @@ export default function ProductEditor({
         </Modal>
       </main>
       <div className="pe-rightpanel">
+        <div className="pe-coverMeta">
+          <span className="pe-coverLabel">Cover image</span>
+          <p className="pe-coverHint">We use the first gallery image as the primary photo.</p>
+        </div>
         <div className="pe-coverArea">
           {coverImage ? (
               <img src={coverImage} alt={coverAlt} className="pe-coverImage"/>
           ) : (
               <div className="pe-coverPlaceholder">
-                <span>No cover image yet</span>
+                <div className="pe-coverPlaceholderInner">
+                  <img src="/img/image-03.svg" alt="" className="pe-coverIcon" aria-hidden="true"/>
+                  <span>Upload images to set a cover</span>
+                </div>
               </div>
           )}
         </div>
         <div className="pe-rightActions">
+          <span className="pe-rightTitle">Actions</span>
+          <p className="pe-rightHint">Save your changes or remove the product.</p>
           <button type="button" className="pe-preview pe-down" onClick={onPrimary} disabled={primaryDisabled}>
             <span>{primaryLabel}</span>
           </button>
