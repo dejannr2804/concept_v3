@@ -220,31 +220,33 @@ export default function ProductEditor({
     return orderChanged || images.length > 0
   }, [mode, baselineReady, serverImages, images])
 
-  const unsavedCount = useMemo(() => {
-    let total = 0
+  const fieldChangeCount = useMemo(() => {
     if (mode === 'create') {
       const src = creator?.data || {}
+      let count = 0
       for (const key of PRODUCT_FIELD_KEYS) {
         const value = src[key]
-        if (isMeaningfulValue(value)) total += 1
+        if (isMeaningfulValue(value)) count += 1
       }
-      if (imageChangesPending) total += 1
-      return total
+      return count
     }
-
-    if (baselineReady) {
-      const baseline = originalDataRef.current || {}
-      const src = updater?.data || {}
-      for (const key of PRODUCT_FIELD_KEYS) {
-        if (!valuesEqual(src[key], baseline[key])) total += 1
-      }
-      if (imageChangesPending) total += 1
-      return total
+    if (!baselineReady) return 0
+    const baseline = originalDataRef.current || {}
+    const src = updater?.data || {}
+    let count = 0
+    for (const key of PRODUCT_FIELD_KEYS) {
+      if (!valuesEqual(src[key], baseline[key])) count += 1
     }
+    return count
+  }, [mode, creator?.data, updater?.data, baselineReady])
 
+  const fieldChangesPending = fieldChangeCount > 0
+
+  const unsavedCount = useMemo(() => {
+    let total = fieldChangeCount
     if (imageChangesPending) total += 1
     return total
-  }, [mode, creator?.data, updater?.data, baselineReady, imageChangesPending])
+  }, [fieldChangeCount, imageChangesPending])
 
   const hasUnsaved = unsavedCount > 0
 
@@ -316,7 +318,6 @@ export default function ProductEditor({
     setServerImages(finalImages)
     setImages([])
     setField('images', finalImages)
-    if (didChange) notify.success('Images updated')
     return finalImages
   }
 
@@ -363,17 +364,27 @@ export default function ProductEditor({
     } else if (mode === 'update' && updater) {
       setImageSaving(true)
       try {
-        const res = await updater.save(PRODUCT_FIELD_KEYS)
-        if (res?.ok) {
-          let latestImages = serverImages
-          if (imageChangesPending) {
-            try {
-              latestImages = await applyImageChanges()
-            } catch {
-              return
-            }
-          }
+        const hadFieldChanges = fieldChangesPending
+        let savedAny = false
+
+        if (hadFieldChanges) {
+          const res = await updater.save(PRODUCT_FIELD_KEYS)
+          if (!res?.ok) return
+          savedAny = true
+        }
+
+        if (imageChangesPending) {
+          const latestImages = await applyImageChanges()
           originalDataRef.current = JSON.parse(JSON.stringify({ ...(updater.data || {}), images: latestImages }))
+          savedAny = true
+        } else if (savedAny) {
+          originalDataRef.current = JSON.parse(JSON.stringify(updater.data || {}))
+        }
+
+        if (!savedAny) {
+          notify.info('No changes to save')
+        } else if (!hadFieldChanges) {
+          notify.success('Changes saved')
         }
       } finally {
         setImageSaving(false)
@@ -473,7 +484,6 @@ export default function ProductEditor({
                         const next = serverImages.filter((x) => x.id !== im.id)
                         setServerImages(next)
                         if (mode === 'update') setField('images', next)
-                        notify.info('Image will be removed after saving.')
                       }}
                       aria-label="Remove image"
                     >
@@ -735,25 +745,25 @@ export default function ProductEditor({
             <span className={`pe-statusBadge ${statusText === 'Active' ? 'is-live' : 'is-draft'}`}>{statusText}</span>
             <p className="pe-rightCardHint">{statusHint}</p>
           </div>
-          <div className="pe-rightCard">
-            <span className="pe-rightCardTitle">Pricing</span>
-            <dl className="pe-rightList">
-              <div className="pe-rightItem">
-                <dt>Base price</dt>
-                <dd>{basePriceDisplay}</dd>
-              </div>
-              {hasDiscount ? (
-                <div className="pe-rightItem">
-                  <dt>Discounted</dt>
-                  <dd>{discountedPriceDisplay}</dd>
-                </div>
-              ) : null}
-              <div className="pe-rightItem">
-                <dt>Currency</dt>
-                <dd>{currencyCode}</dd>
-              </div>
-            </dl>
-          </div>
+          {/*<div className="pe-rightCard">*/}
+          {/*  <span className="pe-rightCardTitle">Pricing</span>*/}
+          {/*  <dl className="pe-rightList">*/}
+          {/*    <div className="pe-rightItem">*/}
+          {/*      <dt>Base price</dt>*/}
+          {/*      <dd>{basePriceDisplay}</dd>*/}
+          {/*    </div>*/}
+          {/*    {hasDiscount ? (*/}
+          {/*      <div className="pe-rightItem">*/}
+          {/*        <dt>Discounted</dt>*/}
+          {/*        <dd>{discountedPriceDisplay}</dd>*/}
+          {/*      </div>*/}
+          {/*    ) : null}*/}
+          {/*    <div className="pe-rightItem">*/}
+          {/*      <dt>Currency</dt>*/}
+          {/*      <dd>{currencyCode}</dd>*/}
+          {/*    </div>*/}
+          {/*  </dl>*/}
+          {/*</div>*/}
           <div className={`pe-rightCard pe-cardWarning ${hasUnsaved ? 'is-warning' : 'is-clear'}`}>
             <div className="pe-rightUnsavedHeader">
               <span className={`pe-warningDot ${hasUnsaved ? 'is-warning' : 'is-clear'}`} aria-hidden="true"></span>
