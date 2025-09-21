@@ -240,7 +240,8 @@ export default function ProductEditor({
   }
 
   return (
-    <main className="pe-page dlp-fadeIn">
+    <>
+      <main className="pe-page dlp-fadeIn">
       <div className="pe-header">
         <div className="pe-titleGroup">
           <Link href={`/dashboard/${shopId}/products`} className="pe-back">
@@ -545,5 +546,9 @@ export default function ProductEditor({
         </div>
       </Modal>
     </main>
+      <div className="pe-rightpanel">
+
+      </div>
+  </>
   )
 }

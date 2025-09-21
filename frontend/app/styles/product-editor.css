@@ -1,6 +1,19 @@
 /* Product Editor (global styles) */
 .pe-page { 
-  padding: 24px; 
+  padding: 24px;
+  width: calc(100% - 300px);
+  box-sizing: border-box;
+}
+
+.pe-rightpanel {
+
+  width: 300px;
+  height: calc(100vh - 58px);
+  position: fixed;
+  top: 58px;
+  right: 0;
+  background-color: #f5f5f5;
+
 }
 
 .pe-content {
@@ -119,15 +132,14 @@
 }
 
 .pe-grid { 
-  display: grid; 
-  grid-template-columns: 1fr 1fr; 
-  gap: 20px; 
+  display: flex;
+  flex-direction: column;
 }
 
 .pe-panel { 
-  background: #f5f5f5;
+  /*background: #f5f5f5;*/
   border: 1px solid #e5e7eb; 
-  border-radius: 18px;
+  /*border-radius: 18px;*/
   padding: 20px;
 }
 
