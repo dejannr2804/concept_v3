@@ -1,7 +1,7 @@
 "use client"
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useResourceCreator, useResourceItem, useResourceUpdater, useResourceList } from '@/hooks/resource'
 import { api } from '@/lib/api'
 import { useNotifications } from '@/components/Notifications'
@@ -162,6 +162,16 @@ export default function ProductEditor({
   // Custom delete confirmation UI (declare hooks before any early returns)
   const [deleteOpen, setDeleteOpen] = useState(false)
   const [deleting, setDeleting] = useState(false)
+
+  let coverImage: string | null = null
+  let coverAlt = 'No cover image yet'
+  if (serverImages.length > 0) {
+    coverImage = serverImages[0]?.url ?? null
+    coverAlt = serverImages[0]?.alt_text || 'Cover image'
+  } else if (images.length > 0) {
+    coverImage = images[0]?.previewUrl ?? null
+    coverAlt = images[0]?.file?.name || 'Cover image'
+  }
 
   if (shop.loading || loading || categoryList.loading) {
     return <DashboardLoadingPlaceholder />
@@ -517,16 +527,6 @@ export default function ProductEditor({
                 </label>
               </div>
 
-              <div className="pe-formActions">
-                <button type="button" className="pe-preview pe-down" onClick={onPrimary} disabled={primaryDisabled}>
-                  <span>{primaryLabel}</span>
-                </button>
-                {mode === 'update' && (
-                  <button type="button" className="pe-preview pe-down pe-red" onClick={() => setDeleteOpen(true)}>
-                    Delete
-                  </button>
-                )}
-              </div>
             </form>
           </section>
         </div>
@@ -547,7 +547,25 @@ export default function ProductEditor({
       </Modal>
     </main>
       <div className="pe-rightpanel">
-
+        <div className="pe-coverArea">
+          {coverImage ? (
+            <img src={coverImage} alt={coverAlt} className="pe-coverImage" />
+          ) : (
+            <div className="pe-coverPlaceholder">
+              <span>No cover image yet</span>
+            </div>
+          )}
+        </div>
+        <div className="pe-rightActions">
+          <button type="button" className="pe-preview pe-down" onClick={onPrimary} disabled={primaryDisabled}>
+            <span>{primaryLabel}</span>
+          </button>
+          {mode === 'update' && (
+            <button type="button" className="pe-preview pe-down pe-red" onClick={() => setDeleteOpen(true)}>
+              Delete
+            </button>
+          )}
+        </div>
       </div>
   </>
   )
