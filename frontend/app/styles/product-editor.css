@@ -14,22 +14,24 @@
   background-color: #f5f5f5;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 16px;
   padding: 20px;
   box-sizing: border-box;
-  overflow-y: auto;
+  overflow: hidden;
 }
 
 .pe-coverMeta {
   display: flex;
   flex-direction: column;
   gap: 4px;
+  flex-shrink: 0;
 }
 
 .pe-coverLabel {
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 600;
-  color: #111827;
+  font-family: 'Aptos Narrow', sans-serif;
+  color: #121212;
 }
 
 .pe-coverHint {
@@ -45,8 +47,8 @@
   background: #f3f4f6;
   aspect-ratio: 1 / 1;
   width: 100%;
-  border: 1px solid #e5e7eb;
   position: relative;
+  flex-shrink: 0;
 }
 
 .pe-coverImage {
@@ -81,6 +83,152 @@
   height: 64px;
 }
 
+.pe-rightDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  flex-shrink: 0;
+}
+
+.pe-rightCard {
+  background: #ffffff;
+  border-radius: 18px;
+  /*border: 1px solid #e5e7eb;*/
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.pe-cardWarning {
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.pe-cardWarning.is-warning {
+  background: #fefce8;
+  border-color: #fde68a;
+}
+
+.pe-cardWarning.is-clear {
+  background: #fff;
+  border-color: #e7e5e4;
+}
+
+.pe-rightCardTitle {
+  font-size: 14px;
+  font-weight: 600;
+  color: #121212;
+  font-family: 'Aptos Narrow', sans-serif;
+}
+
+.pe-statusBadge {
+  align-self: flex-start;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: #e5e7eb;
+  color: #111827;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.pe-statusBadge.is-live {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.pe-statusBadge.is-draft {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.pe-rightList {
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.pe-rightItem {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.pe-rightItem dt {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.pe-rightItem dd {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: #121212;
+  font-family: 'Aptos Narrow', sans-serif;
+}
+
+.pe-rightCardHint {
+  margin: 0;
+  font-size: 12px;
+  color: #6b7280;
+  line-height: 1.4;
+}
+
+.pe-rightUnsavedHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pe-warningDot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  transition: background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.pe-warningDot.is-warning {
+  background: #f59e0b;
+  box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.2);
+}
+
+.pe-warningDot.is-clear {
+  background: #10b981;
+  box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.18);
+}
+
+.pe-rightUnsavedCount {
+  font-size: 20px;
+  font-weight: 700;
+  font-family: 'Aptos Narrow', sans-serif;
+  transition: color 0.2s ease;
+}
+
+.pe-rightUnsavedCount.is-warning {
+  color: #92400e;
+}
+
+.pe-rightUnsavedCount.is-clear {
+  color: #15803d;
+}
+
+.pe-rightUnsavedContent {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.pe-rightCardHint.is-warning {
+  color: #92400e;
+}
+
+.pe-rightCardHint.is-clear {
+  color: #047857;
+}
+
 .pe-rightActions {
   margin-top: auto;
   display: flex;
@@ -91,9 +239,10 @@
 }
 
 .pe-rightTitle {
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 600;
-  color: #111827;
+  color: #121212;
+  font-family: 'Aptos Narrow', sans-serif;
 }
 
 .pe-rightHint {

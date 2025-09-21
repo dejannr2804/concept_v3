@@ -1,7 +1,7 @@
 "use client"
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useResourceCreator, useResourceItem, useResourceUpdater, useResourceList } from '@/hooks/resource'
 import { api } from '@/lib/api'
 import { useNotifications } from '@/components/Notifications'
@@ -18,6 +18,15 @@ type ImageItem = {
   uploading: boolean
   error?: string | null
 }
+
+const PRODUCT_FIELD_KEYS = [
+  'name', 'slug', 'sku', 'category',
+  'short_description', 'long_description',
+  'status',
+  'base_price', 'discounted_price', 'currency',
+  'stock_quantity', 'stock_status',
+  'available_from', 'available_to',
+]
 
 export default function ProductEditor({
   shopId,
@@ -41,23 +50,15 @@ export default function ProductEditor({
   const [dragIndexPending, setDragIndexPending] = useState<number | null>(null)
   const [overIndexPending, setOverIndexPending] = useState<number | null>(null)
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
+  const originalDataRef = useRef<Record<string, any> | null>(null)
+  const [baselineReady, setBaselineReady] = useState(mode === 'create')
+  const [imageSaving, setImageSaving] = useState(false)
 
   function reorder<T>(arr: T[], from: number, to: number): T[] {
     const next = arr.slice()
     const [moved] = next.splice(from, 1)
     next.splice(to, 0, moved)
     return next
-  }
-
-  async function persistOrder(list: { id: number }[]) {
-    try {
-      const ids = list.map((x) => x.id)
-      const updated = await api.post<{ id: number; url: string }[]>(`shops/${shopId}/products/${productId}/images/reorder`, { order: ids })
-      setServerImages(updated as any)
-      notify.success('Order saved')
-    } catch (e: any) {
-      notify.error(e?.message || 'Failed to save order')
-    }
   }
 
   const shop = useResourceItem<{ id: number; name: string; slug: string }>(`shops/${shopId}`)
@@ -93,7 +94,6 @@ export default function ProductEditor({
   const creator = useResourceCreator(`shops/${shopId}/products`)
 
   const data = (mode === 'create' ? creator.data : updater.data) || {}
-  const canImmediateUpload = mode === 'update' && Boolean(productId)
   const setField = (name: string, value: any) => {
     if (mode === 'create') creator.setField(name, value)
     else updater.setField(name, value)
@@ -108,6 +108,32 @@ export default function ProductEditor({
       .replace(/^-+|-+$/g, '')
   }
 
+  function isMeaningfulValue(value: any) {
+    if (value === null || value === undefined) return false
+    if (typeof value === 'string') return value.trim().length > 0
+    if (typeof value === 'number') return Number.isFinite(value) && value !== 0
+    if (Array.isArray(value)) return value.length > 0
+    if (typeof value === 'object') return Object.keys(value).length > 0
+    return Boolean(value)
+  }
+
+  function valuesEqual(a: any, b: any) {
+    if (a === b) return true
+    if (a === null || a === undefined || b === null || b === undefined) {
+      return a == null && b == null
+    }
+    const typeA = typeof a
+    const typeB = typeof b
+    if ((typeA === 'number' || typeA === 'string') && (typeB === 'number' || typeB === 'string')) {
+      return String(a) === String(b)
+    }
+    try {
+      return JSON.stringify(a) === JSON.stringify(b)
+    } catch {
+      return false
+    }
+  }
+
   // Drop handlers
   const onFiles = useCallback((files: FileList | File[]) => {
     const arr = Array.from(files)
@@ -116,33 +142,12 @@ export default function ProductEditor({
       file: f,
       previewUrl: URL.createObjectURL(f),
       progress: 0,
-      uploading: canImmediateUpload,
+      uploading: false,
       error: null,
     }))
     setImages((prev) => [...prev, ...items])
 
-    // Upload each file
-    if (canImmediateUpload) {
-      items.forEach(async (item) => {
-        try {
-          const fd = new FormData()
-          fd.append('file', item.file)
-          fd.append('alt_text', item.file.name)
-          const created = await api.upload<{ id: number; url: string; alt_text?: string }>(
-            `shops/${shopId}/products/${productId}/images/upload`,
-            fd
-          )
-          setServerImages((prev) => [...prev, created])
-          setImages((prev) => prev.filter((x) => x.id !== item.id))
-          notify.success('Image uploaded')
-        } catch (e: any) {
-          const msg = e?.message || 'Upload failed'
-          setImages((prev) => prev.map((x) => x.id === item.id ? { ...x, uploading: false, error: msg } : x))
-          notify.error(msg)
-        }
-      })
-    }
-  }, [shopId, productId, notify, canImmediateUpload])
+  }, [shopId, productId])
 
   const onDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault()
@@ -151,9 +156,10 @@ export default function ProductEditor({
   const onBrowse = useCallback(() => inputRef.current?.click(), [])
 
   useEffect(() => {
+    if (mode !== 'update') return
     const list = (updater.data?.images || []) as { id: number; url: string; alt_text?: string; sort_order?: number }[]
     setServerImages(list)
-  }, [updater.data])
+  }, [mode, updater.data?.images])
 
 
   const loading = updater.loading
@@ -162,6 +168,13 @@ export default function ProductEditor({
   // Custom delete confirmation UI (declare hooks before any early returns)
   const [deleteOpen, setDeleteOpen] = useState(false)
   const [deleting, setDeleting] = useState(false)
+
+  useEffect(() => {
+    if (mode === 'update' && !baselineReady && !loading && updater.data) {
+      originalDataRef.current = JSON.parse(JSON.stringify(updater.data || {}))
+      setBaselineReady(true)
+    }
+  }, [mode, baselineReady, loading, updater.data])
 
   let coverImage: string | null = null
   let coverAlt = 'No cover image yet'
@@ -173,22 +186,141 @@ export default function ProductEditor({
     coverAlt = images[0]?.file?.name || 'Cover image'
   }
 
+  const currencyCode = typeof data?.currency === 'string' && data.currency.trim() ? data.currency.trim().toUpperCase() : 'USD'
+  function formatCurrency(value: number | null | undefined) {
+    if (value === null || value === undefined || Number.isNaN(value)) return '—'
+    try {
+      return new Intl.NumberFormat('en-US', { style: 'currency', currency: currencyCode }).format(value)
+    } catch (err) {
+      return `$${Number(value).toFixed(2)}`
+    }
+  }
+
+  const statusText = data?.status === 'inactive' ? 'Inactive' : 'Active'
+  const statusHint = statusText === 'Active'
+    ? 'Customers can see and purchase this product.'
+    : 'Hidden from the storefront until you set it to active.'
+  const basePriceValue = typeof data?.base_price === 'number' ? data.base_price : Number(data?.base_price ?? NaN)
+  const basePriceDisplay = formatCurrency(basePriceValue)
+  const hasDiscount = typeof data?.discounted_price === 'number' && Number.isFinite(data.discounted_price)
+  const discountedPriceDisplay = hasDiscount ? formatCurrency(data?.discounted_price as number) : null
+
+  const imageChangesPending = useMemo(() => {
+    if (mode === 'create') {
+      return images.length > 0
+    }
+    if (!baselineReady) {
+      return images.length > 0
+    }
+    const baseline = originalDataRef.current || {}
+    const baselineImages = (baseline?.images || []) as { id: number }[]
+    const baselineIds = baselineImages.map((img) => img.id)
+    const currentIds = serverImages.map((img) => img.id)
+    const orderChanged = baselineIds.length !== currentIds.length || baselineIds.some((id, idx) => id !== currentIds[idx])
+    return orderChanged || images.length > 0
+  }, [mode, baselineReady, serverImages, images])
+
+  const unsavedCount = useMemo(() => {
+    let total = 0
+    if (mode === 'create') {
+      const src = creator?.data || {}
+      for (const key of PRODUCT_FIELD_KEYS) {
+        const value = src[key]
+        if (isMeaningfulValue(value)) total += 1
+      }
+      if (imageChangesPending) total += 1
+      return total
+    }
+
+    if (baselineReady) {
+      const baseline = originalDataRef.current || {}
+      const src = updater?.data || {}
+      for (const key of PRODUCT_FIELD_KEYS) {
+        if (!valuesEqual(src[key], baseline[key])) total += 1
+      }
+      if (imageChangesPending) total += 1
+      return total
+    }
+
+    if (imageChangesPending) total += 1
+    return total
+  }, [mode, creator?.data, updater?.data, baselineReady, imageChangesPending])
+
+  const hasUnsaved = unsavedCount > 0
+
   if (shop.loading || loading || categoryList.loading) {
     return <DashboardLoadingPlaceholder />
   }
 
-  const primaryLabel = mode === 'create' ? (creator?.saving ? 'Creating…' : 'Create') : (updater?.saving ? 'Saving…' : 'Update')
-  const primaryDisabled = mode === 'create' ? Boolean(creator?.saving) : Boolean(updater?.saving)
+  const isSaving = mode === 'create'
+    ? Boolean(creator?.saving || imageSaving)
+    : Boolean(updater?.saving || imageSaving)
+  const primaryLabel = mode === 'create'
+    ? (isSaving ? 'Creating…' : 'Create')
+    : (isSaving ? 'Saving…' : 'Update')
+  const primaryDisabled = isSaving
+
+  async function applyImageChanges(): Promise<{ id: number; url: string; alt_text?: string; sort_order?: number }[]> {
+    if (!(mode === 'update' && productId)) return serverImages
+
+    const baselineImages = (originalDataRef.current?.images || []) as { id: number; url: string; alt_text?: string; sort_order?: number }[]
+    const currentImages = serverImages
+    const currentIds = currentImages.map((img) => img.id)
+    const toDelete = baselineImages.filter((img) => !currentIds.includes(img.id))
+
+    for (const img of toDelete) {
+      try {
+        await api.delete(`shops/${shopId}/products/${productId}/images/${img.id}`)
+      } catch (e: any) {
+        notify.error(e?.message || 'Failed to remove image')
+        throw e
+      }
+    }
+
+    const uploadedImages: { id: number; url: string; alt_text?: string; sort_order?: number }[] = []
+    for (const item of images) {
+      setImages((prev) => prev.map((x) => x.id === item.id ? { ...x, uploading: true, error: null } : x))
+      try {
+        const fd = new FormData()
+        fd.append('file', item.file)
+        fd.append('alt_text', item.file.name)
+        const created = await api.upload<{ id: number; url: string; alt_text?: string; sort_order?: number }>(
+          `shops/${shopId}/products/${productId}/images/upload`,
+          fd
+        )
+        uploadedImages.push(created)
+        setImages((prev) => prev.filter((x) => x.id !== item.id))
+      } catch (e: any) {
+        const msg = e?.message || 'Upload failed'
+        setImages((prev) => prev.map((x) => x.id === item.id ? { ...x, uploading: false, error: msg } : x))
+        notify.error(msg)
+        throw e
+      }
+    }
+
+    const finalImages = [...currentImages, ...uploadedImages]
+    const baselineIds = baselineImages.map((img) => img.id)
+    const finalIds = finalImages.map((img) => img.id)
+    const orderChanged = baselineIds.length !== finalIds.length || baselineIds.some((id, idx) => id !== finalIds[idx])
+    const didChange = toDelete.length > 0 || uploadedImages.length > 0 || orderChanged
+
+    if (orderChanged && finalIds.length > 0) {
+      try {
+        await api.post(`shops/${shopId}/products/${productId}/images/reorder`, { order: finalIds })
+      } catch (e: any) {
+        notify.error(e?.message || 'Failed to update image order')
+        throw e
+      }
+    }
+
+    setServerImages(finalImages)
+    setImages([])
+    setField('images', finalImages)
+    if (didChange) notify.success('Images updated')
+    return finalImages
+  }
 
   async function onPrimary() {
-    const keys = [
-      'name', 'slug', 'sku', 'category',
-      'short_description', 'long_description',
-      'status',
-      'base_price', 'discounted_price', 'currency',
-      'stock_quantity', 'stock_status',
-      'available_from', 'available_to',
-    ]
     if (mode === 'create' && creator) {
       const n = String(creator.data?.name || '').trim()
       if (!n) return alert('Product name is required')
@@ -196,7 +328,7 @@ export default function ProductEditor({
       if (!currentSlug) creator.setField('slug', toSlug(n))
       const sku = String(creator.data?.sku || '').trim()
       if (!sku) return alert('SKU is required')
-      const res = await creator.create(keys)
+      const res = await creator.create(PRODUCT_FIELD_KEYS)
       if (res.ok) {
         const createdId = (res.data as any)?.id
         if (createdId && images.length > 0) {
@@ -229,7 +361,23 @@ export default function ProductEditor({
         }
       }
     } else if (mode === 'update' && updater) {
-      await updater.save(keys)
+      setImageSaving(true)
+      try {
+        const res = await updater.save(PRODUCT_FIELD_KEYS)
+        if (res?.ok) {
+          let latestImages = serverImages
+          if (imageChangesPending) {
+            try {
+              latestImages = await applyImageChanges()
+            } catch {
+              return
+            }
+          }
+          originalDataRef.current = JSON.parse(JSON.stringify({ ...(updater.data || {}), images: latestImages }))
+        }
+      } finally {
+        setImageSaving(false)
+      }
     }
   }
 
@@ -312,23 +460,20 @@ export default function ProductEditor({
                       if (dragIndex === null || dragIndex === i) { setDragIndex(null); setOverIndex(null); return }
                       const next = reorder(serverImages, dragIndex, i)
                       setServerImages(next)
+                      if (mode === 'update') setField('images', next)
                       setDragIndex(null); setOverIndex(null)
-                      persistOrder(next)
                     }}
                     title="Drag to reorder"
                   >
                     <img src={im.url} alt="" className="pe-image" onClick={(e) => { e.stopPropagation(); setPreviewUrl(im.url) }} />
                     <button
                       className="pe-removeBtn"
-                      onClick={async (e) => {
+                      onClick={(e) => {
                         e.stopPropagation()
-                        try {
-                          await api.delete(`shops/${shopId}/products/${productId}/images/${im.id}`)
-                          setServerImages((prev) => prev.filter((x) => x.id !== im.id))
-                          notify.success('Image removed')
-                        } catch (e: any) {
-                          notify.error(e?.message || 'Failed to remove image')
-                        }
+                        const next = serverImages.filter((x) => x.id !== im.id)
+                        setServerImages(next)
+                        if (mode === 'update') setField('images', next)
+                        notify.info('Image will be removed after saving.')
                       }}
                       aria-label="Remove image"
                     >
@@ -583,6 +728,44 @@ export default function ProductEditor({
                 </div>
               </div>
           )}
+        </div>
+        <div className="pe-rightDetails">
+          <div className="pe-rightCard">
+            <span className="pe-rightCardTitle">Product status</span>
+            <span className={`pe-statusBadge ${statusText === 'Active' ? 'is-live' : 'is-draft'}`}>{statusText}</span>
+            <p className="pe-rightCardHint">{statusHint}</p>
+          </div>
+          <div className="pe-rightCard">
+            <span className="pe-rightCardTitle">Pricing</span>
+            <dl className="pe-rightList">
+              <div className="pe-rightItem">
+                <dt>Base price</dt>
+                <dd>{basePriceDisplay}</dd>
+              </div>
+              {hasDiscount ? (
+                <div className="pe-rightItem">
+                  <dt>Discounted</dt>
+                  <dd>{discountedPriceDisplay}</dd>
+                </div>
+              ) : null}
+              <div className="pe-rightItem">
+                <dt>Currency</dt>
+                <dd>{currencyCode}</dd>
+              </div>
+            </dl>
+          </div>
+          <div className={`pe-rightCard pe-cardWarning ${hasUnsaved ? 'is-warning' : 'is-clear'}`}>
+            <div className="pe-rightUnsavedHeader">
+              <span className={`pe-warningDot ${hasUnsaved ? 'is-warning' : 'is-clear'}`} aria-hidden="true"></span>
+              <span className="pe-rightCardTitle">Unsaved changes</span>
+            </div>
+            <div className="pe-rightUnsavedContent">
+              <span className={`pe-rightUnsavedCount ${hasUnsaved ? 'is-warning' : 'is-clear'}`}>{unsavedCount}</span>
+              <p className={`pe-rightCardHint ${hasUnsaved ? 'is-warning' : 'is-clear'}`}>
+                {hasUnsaved ? 'Remember to save your edits.' : 'Nothing to save right now.'}
+              </p>
+            </div>
+          </div>
         </div>
         <div className="pe-rightActions">
           <span className="pe-rightTitle">Actions</span>
