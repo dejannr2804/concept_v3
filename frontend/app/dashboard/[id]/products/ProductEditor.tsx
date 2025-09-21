@@ -385,146 +385,165 @@ export default function ProductEditor({
           {/* Right: Fields */}
           <section className="pe-panel">
             <form className="pe-form" onSubmit={(e) => e.preventDefault()}>
-              <label className="pe-formField">
-                <span className="pe-label">Product Name</span>
-                <input
-                  className="pe-input"
-                  value={data?.name || ''}
-                  onChange={(e) => {
-                    const name = e.target.value
-                    setField('name', name)
-                    if (!slugTouched) setField('slug', toSlug(name))
-                  }}
-                />
-              </label>
-              <label className="pe-formField">
-                <span className="pe-label">Slug</span>
-                <input
-                  className="pe-input"
-                  value={data?.slug || ''}
-                  onChange={(e) => { setSlugTouched(true); setField('slug', toSlug(e.target.value)) }}
-                />
-              </label>
-
-              <div className="pe-rowFields">
+              <div className="pe-formGroup">
+                <h3 className="pe-groupTitle">Basic Info</h3>
                 <label className="pe-formField">
-                  <span className="pe-label">SKU</span>
-                  <input className="pe-input" value={data?.sku || ''} onChange={(e) => setField('sku', e.target.value)} />
+                  <span className="pe-label">Product Name</span>
+                  <input
+                      className="pe-input"
+                      value={data?.name || ''}
+                      onChange={(e) => {
+                        const name = e.target.value
+                        setField('name', name)
+                        if (!slugTouched) setField('slug', toSlug(name))
+                      }}
+                  />
                 </label>
                 <label className="pe-formField">
-                  <span className="pe-label">Category</span>
-                  <div className="pe-selectMenu" ref={catMenuRef}>
-                    <button
-                      type="button"
-                      className="pe-selectControl"
-                      onClick={() => setCatOpen((v) => !v)}
-                      aria-haspopup="listbox"
-                      aria-expanded={catOpen}
-                      ref={catBtnRef}
-                    >
-                      <span>{data?.category || 'Select category'}</span>
-                      <img src="/img/chevron-down.svg" alt="" className="pe-icon"/>
-                    </button>
-                    {catOpen && (
-                      <ul className="pe-selectList" role="listbox">
-                        <li
-                          role="option"
-                          aria-selected={!data?.category}
-                          className={`pe-option ${!data?.category ? 'is-selected' : ''}`}
-                          onMouseDown={(e) => {
-                            e.preventDefault()
-                            setField('category', '')
-                            setCatOpen(false)
-                            requestAnimationFrame(() => catBtnRef.current?.blur())
-                          }}
-                        >
-                          No category
-                        </li>
-                        {categoryList.data?.map((c) => (
-                          <li
-                            key={c.id}
-                            role="option"
-                            aria-selected={data?.category === c.name}
-                            className={`pe-option ${data?.category === c.name ? 'is-selected' : ''}`}
-                            onMouseDown={(e) => {
-                              e.preventDefault()
-                              setField('category', c.name)
-                              setCatOpen(false)
-                              requestAnimationFrame(() => catBtnRef.current?.blur())
-                            }}
-                          >
-                            {c.name}
-                          </li>
-                        ))}
-                        {(!categoryList.data || categoryList.data.length === 0) && (
-                          <li className="pe-option is-empty">No categories yet</li>
-                        )}
-                      </ul>
-                    )}
-                  </div>
+                  <span className="pe-label">Slug</span>
+                  <input
+                      className="pe-input"
+                      value={data?.slug || ''}
+                      onChange={(e) => {
+                        setSlugTouched(true);
+                        setField('slug', toSlug(e.target.value))
+                      }}
+                  />
+                </label>
+
+                <div className="pe-rowFields">
+                  <label className="pe-formField">
+                    <span className="pe-label">SKU</span>
+                    <input className="pe-input" value={data?.sku || ''}
+                           onChange={(e) => setField('sku', e.target.value)}/>
+                  </label>
+                  <label className="pe-formField">
+                    <span className="pe-label">Category</span>
+                    <div className="pe-selectMenu" ref={catMenuRef}>
+                      <button
+                          type="button"
+                          className="pe-selectControl"
+                          onClick={() => setCatOpen((v) => !v)}
+                          aria-haspopup="listbox"
+                          aria-expanded={catOpen}
+                          ref={catBtnRef}
+                      >
+                        <span>{data?.category || 'Select category'}</span>
+                        <img src="/img/chevron-down.svg" alt="" className="pe-icon"/>
+                      </button>
+                      {catOpen && (
+                          <ul className="pe-selectList" role="listbox">
+                            <li
+                                role="option"
+                                aria-selected={!data?.category}
+                                className={`pe-option ${!data?.category ? 'is-selected' : ''}`}
+                                onMouseDown={(e) => {
+                                  e.preventDefault()
+                                  setField('category', '')
+                                  setCatOpen(false)
+                                  requestAnimationFrame(() => catBtnRef.current?.blur())
+                                }}
+                            >
+                              No category
+                            </li>
+                            {categoryList.data?.map((c) => (
+                                <li
+                                    key={c.id}
+                                    role="option"
+                                    aria-selected={data?.category === c.name}
+                                    className={`pe-option ${data?.category === c.name ? 'is-selected' : ''}`}
+                                    onMouseDown={(e) => {
+                                      e.preventDefault()
+                                      setField('category', c.name)
+                                      setCatOpen(false)
+                                      requestAnimationFrame(() => catBtnRef.current?.blur())
+                                    }}
+                                >
+                                  {c.name}
+                                </li>
+                            ))}
+                            {(!categoryList.data || categoryList.data.length === 0) && (
+                                <li className="pe-option is-empty">No categories yet</li>
+                            )}
+                          </ul>
+                      )}
+                    </div>
+                  </label>
+                </div>
+              </div>
+
+              <div className="pe-formGroup">
+                <h3 className="pe-groupTitle">Descriptions</h3>
+                <label className="pe-formField">
+                  <span className="pe-label">Short Description</span>
+                  <input className="pe-input" value={data?.short_description || ''}
+                         onChange={(e) => setField('short_description', e.target.value)}/>
+                </label>
+                <label className="pe-formField">
+                  <span className="pe-label">Description</span>
+                  <textarea className="pe-textarea" rows={6} value={data?.long_description || ''}
+                            onChange={(e) => setField('long_description', e.target.value)}/>
                 </label>
               </div>
 
-              <label className="pe-formField">
-                <span className="pe-label">Short Description</span>
-                <input className="pe-input" value={data?.short_description || ''} onChange={(e) => setField('short_description', e.target.value)} />
-              </label>
-              <label className="pe-formField">
-                <span className="pe-label">Description</span>
-                <textarea className="pe-textarea" rows={6} value={data?.long_description || ''}
-                  onChange={(e) => setField('long_description', e.target.value)} />
-              </label>
-
-              <div className="pe-rowFields">
-                <label className="pe-formField">
-                  <span className="pe-label">Status</span>
-                  <select className="pe-select" value={data?.status || 'active'} onChange={(e) => setField('status', e.target.value)}>
-                    <option value="active">Active</option>
-                    <option value="inactive">Inactive</option>
-                  </select>
-                </label>
-                <label className="pe-formField">
-                  <span className="pe-label">Stock Status</span>
-                  <select className="pe-select" value={data?.stock_status || 'in_stock'} onChange={(e) => setField('stock_status', e.target.value)}>
-                    <option value="in_stock">In stock</option>
-                    <option value="out_of_stock">Out of stock</option>
-                  </select>
-                </label>
+              <div className="pe-formGroup">
+                <h3 className="pe-groupTitle">Pricing</h3>
+                <div className="pe-rowFields3">
+                  <label className="pe-formField">
+                    <span className="pe-label">Price</span>
+                    <input className="pe-input" type="number" step="0.01" value={data?.base_price ?? 0}
+                           onChange={(e) => setField('base_price', e.target.value === '' ? '' : Number(e.target.value))}/>
+                  </label>
+                  <label className="pe-formField">
+                    <span className="pe-label">Discounted Price</span>
+                    <input className="pe-input" type="number" step="0.01" value={data?.discounted_price ?? ''}
+                           onChange={(e) => setField('discounted_price', e.target.value === '' ? null : Number(e.target.value))}/>
+                  </label>
+                  <label className="pe-formField">
+                    <span className="pe-label">Currency</span>
+                    <input className="pe-input" value={data?.currency || 'USD'}
+                           onChange={(e) => setField('currency', e.target.value.toUpperCase())}/>
+                  </label>
+                </div>
               </div>
 
-              <div className="pe-rowFields3">
-                <label className="pe-formField">
-                  <span className="pe-label">Price</span>
-                  <input className="pe-input" type="number" step="0.01" value={data?.base_price ?? 0}
-                    onChange={(e) => setField('base_price', e.target.value === '' ? '' : Number(e.target.value))} />
-                </label>
-                <label className="pe-formField">
-                  <span className="pe-label">Discounted Price</span>
-                  <input className="pe-input" type="number" step="0.01" value={data?.discounted_price ?? ''}
-                    onChange={(e) => setField('discounted_price', e.target.value === '' ? null : Number(e.target.value))} />
-                </label>
-                <label className="pe-formField">
-                  <span className="pe-label">Currency</span>
-                  <input className="pe-input" value={data?.currency || 'USD'} onChange={(e) => setField('currency', e.target.value.toUpperCase())} />
-                </label>
-              </div>
-
-              <div className="pe-rowFields">
-                <label className="pe-formField">
-                  <span className="pe-label">Stock Quantity</span>
-                  <input className="pe-input" type="number" value={data?.stock_quantity ?? 0}
-                    onChange={(e) => setField('stock_quantity', Number(e.target.value))} />
-                </label>
-                <label className="pe-formField">
-                  <span className="pe-label">Available From</span>
-                  <input className="pe-input" type="date" value={data?.available_from || ''}
-                    onChange={(e) => setField('available_from', e.target.value || null)} />
-                </label>
-                <label className="pe-formField">
-                  <span className="pe-label">Available To</span>
-                  <input className="pe-input" type="date" value={data?.available_to || ''}
-                    onChange={(e) => setField('available_to', e.target.value || null)} />
-                </label>
+              <div className="pe-formGroup">
+                <h3 className="pe-groupTitle">Inventory</h3>
+                <div className="pe-rowFields">
+                  <label className="pe-formField">
+                    <span className="pe-label">Status</span>
+                    <select className="pe-select" value={data?.status || 'active'}
+                            onChange={(e) => setField('status', e.target.value)}>
+                      <option value="active">Active</option>
+                      <option value="inactive">Inactive</option>
+                    </select>
+                  </label>
+                  <label className="pe-formField">
+                    <span className="pe-label">Stock Status</span>
+                    <select className="pe-select" value={data?.stock_status || 'in_stock'}
+                            onChange={(e) => setField('stock_status', e.target.value)}>
+                      <option value="in_stock">In stock</option>
+                      <option value="out_of_stock">Out of stock</option>
+                    </select>
+                  </label>
+                </div>
+                <div className="pe-rowFields3">
+                  <label className="pe-formField">
+                    <span className="pe-label">Stock Quantity</span>
+                    <input className="pe-input" type="number" value={data?.stock_quantity ?? 0}
+                           onChange={(e) => setField('stock_quantity', Number(e.target.value))}/>
+                  </label>
+                  <label className="pe-formField">
+                    <span className="pe-label">Available From</span>
+                    <input className="pe-input" type="date" value={data?.available_from || ''}
+                           onChange={(e) => setField('available_from', e.target.value || null)}/>
+                  </label>
+                  <label className="pe-formField">
+                    <span className="pe-label">Available To</span>
+                    <input className="pe-input" type="date" value={data?.available_to || ''}
+                           onChange={(e) => setField('available_to', e.target.value || null)}/>
+                  </label>
+                </div>
               </div>
 
             </form>
@@ -532,28 +551,30 @@ export default function ProductEditor({
         </div>
       )}
 
-      {/* Delete confirmation modal */}
-      <Modal open={deleteOpen} onClose={() => (!deleting && setDeleteOpen(false))}>
-        <div style={{ background: '#fff', color: '#111', padding: 20, minWidth: 320 }}>
-          <h3 style={{ margin: '4px 0 12px 0' }}>Delete product?</h3>
-          <p className="pe-muted" style={{ marginBottom: 16 }}>This action cannot be undone.</p>
-          <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
-            <button type="button" className="pe-preview pe-down" onClick={() => setDeleteOpen(false)} disabled={deleting}>Cancel</button>
-            <button type="button" className="pe-preview pe-down pe-red" onClick={onConfirmDelete} disabled={deleting}>
-              {deleting ? 'Deleting…' : 'Delete'}
-            </button>
+        {/* Delete confirmation modal */}
+        <Modal open={deleteOpen} onClose={() => (!deleting && setDeleteOpen(false))}>
+          <div style={{background: '#fff', color: '#111', padding: 20, minWidth: 320}}>
+            <h3 style={{margin: '4px 0 12px 0'}}>Delete product?</h3>
+            <p className="pe-muted" style={{marginBottom: 16}}>This action cannot be undone.</p>
+            <div style={{display: 'flex', gap: 10, justifyContent: 'flex-end'}}>
+              <button type="button" className="pe-preview pe-down" onClick={() => setDeleteOpen(false)}
+                      disabled={deleting}>Cancel
+              </button>
+              <button type="button" className="pe-preview pe-down pe-red" onClick={onConfirmDelete} disabled={deleting}>
+                {deleting ? 'Deleting…' : 'Delete'}
+              </button>
+            </div>
           </div>
-        </div>
-      </Modal>
-    </main>
+        </Modal>
+      </main>
       <div className="pe-rightpanel">
         <div className="pe-coverArea">
           {coverImage ? (
-            <img src={coverImage} alt={coverAlt} className="pe-coverImage" />
+              <img src={coverImage} alt={coverAlt} className="pe-coverImage"/>
           ) : (
-            <div className="pe-coverPlaceholder">
-              <span>No cover image yet</span>
-            </div>
+              <div className="pe-coverPlaceholder">
+                <span>No cover image yet</span>
+              </div>
           )}
         </div>
         <div className="pe-rightActions">
