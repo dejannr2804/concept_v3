@@ -29,7 +29,7 @@ export default function ProductEditor({
   productId?: string
 }) {
   const router = useRouter()
-  const [slugTouched, setSlugTouched] = useState(false)
+  const [slugTouched, setSlugTouched] = useState(() => mode === 'update')
   const [images, setImages] = useState<ImageItem[]>([])
   const inputRef = useRef<HTMLInputElement | null>(null)
   const notify = useNotifications()
@@ -395,7 +395,7 @@ export default function ProductEditor({
                       onChange={(e) => {
                         const name = e.target.value
                         setField('name', name)
-                        if (!slugTouched) setField('slug', toSlug(name))
+                        if (mode === 'create' && !slugTouched) setField('slug', toSlug(name))
                       }}
                   />
                 </label>
@@ -405,7 +405,7 @@ export default function ProductEditor({
                       className="pe-input"
                       value={data?.slug || ''}
                       onChange={(e) => {
-                        setSlugTouched(true);
+                        setSlugTouched(true)
                         setField('slug', toSlug(e.target.value))
                       }}
                   />
