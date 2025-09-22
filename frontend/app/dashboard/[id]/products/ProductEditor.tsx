@@ -594,7 +594,7 @@ export default function ProductEditor({
                                 className={`pe-option ${!data?.category ? 'is-selected' : ''}`}
                                 onMouseDown={(e) => {
                                   e.preventDefault()
-                                  setField('category', '')
+                                  setField('category', null)
                                   setCatOpen(false)
                                   requestAnimationFrame(() => catBtnRef.current?.blur())
                                 }}
