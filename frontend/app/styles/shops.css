@@ -14,9 +14,8 @@
 }
 
 .public-shop-headerInner {
-  max-width: 1100px;
   margin: 0 auto;
-  padding: 16px 20px;
+  padding: 10px 100px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -28,14 +27,14 @@
   align-items: center;
   gap: 14px;
   text-decoration: none;
+  width: 200px;
 }
 
 .public-shop-brand span {
 
   color: #121212;
-  font-family: 'Aptos Narrow', sans-serif;
-  font-size: 22px;
-  font-weight: 600;
+  font-size: 18px;
+  font-weight: 500;
 
 }
 
@@ -83,20 +82,26 @@
   padding: 10px 16px;
   border-radius: 999px;
   background: transparent;
-  color: #1e293b;
+  color: #858585;
   font-weight: 500;
   text-decoration: none;
   transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .public-shop-navLink:hover {
-  background: rgba(226, 232, 240, 0.7);
+  color: #121212;
 }
 
 .public-shop-navLink.is-active {
-  background: #0f172a;
-  color: #f8fafc;
-  box-shadow: 0 8px 16px rgba(15, 23, 42, 0.15);
+  color: #121212;
+}
+
+.public-shop-header .cart {
+  width: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  cursor: pointer;
 }
 
 .public-shop-body {
@@ -170,14 +175,13 @@
   color: #fff;
   text-shadow: 0 2px 4px rgba(0,0,0,0.35);
   font-size: 30px;
-  font-family: 'Aptos Narrow', sans-serif;
 }
 
 .public-shop-heading {
   margin: 18px 0 0 0;
   color: #fff;
   font-size: 40px;
-  font-weight: 800;
+  font-weight: 700;
   text-align: center;
   text-shadow: 0 3px 5px rgba(0,0,0,0.4);
 }

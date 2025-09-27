@@ -105,7 +105,7 @@ export default function ProductsPage({ params }: { params: { id: string } }) {
                             ) : (
                                 <div className="product-thumb placeholder"/>
                             )}
-                            <strong>{p.name}</strong>
+                            <span>{p.name}</span>
                           </div>
                         </td>
                         <td>{p.sku}</td>

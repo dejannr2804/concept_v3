@@ -30,7 +30,6 @@
 .pe-coverLabel {
   font-size: 16px;
   font-weight: 600;
-  font-family: 'Aptos Narrow', sans-serif;
   color: #121212;
 }
 
@@ -118,7 +117,6 @@
   font-size: 14px;
   font-weight: 600;
   color: #121212;
-  font-family: 'Aptos Narrow', sans-serif;
 }
 
 .pe-statusBadge {
@@ -167,7 +165,6 @@
   font-size: 13px;
   font-weight: 600;
   color: #121212;
-  font-family: 'Aptos Narrow', sans-serif;
 }
 
 .pe-rightCardHint {
@@ -203,7 +200,6 @@
 .pe-rightUnsavedCount {
   font-size: 20px;
   font-weight: 700;
-  font-family: 'Aptos Narrow', sans-serif;
   transition: color 0.2s ease;
 }
 
@@ -242,7 +238,6 @@
   font-size: 16px;
   font-weight: 600;
   color: #121212;
-  font-family: 'Aptos Narrow', sans-serif;
 }
 
 .pe-rightHint {
@@ -271,7 +266,6 @@
 
 .pe-title { 
   font-size: 32px;
-  font-family: 'Aptos Narrow', sans-serif;
   font-weight: 600; 
   margin: 0; 
 }
@@ -384,7 +378,6 @@
   font-size: 20px;
   margin: 0 0 12px;
   color: #121212;
-  font-family: 'Aptos Narrow', sans-serif;
   font-weight: 600;
 }
 
@@ -487,7 +480,6 @@
   font-size: 20px;
   font-weight: 600;
   color: #121212;
-  font-family: 'Aptos Narrow', sans-serif;
 }
 
 .pe-rowFields { 

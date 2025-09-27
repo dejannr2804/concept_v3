@@ -35,7 +35,6 @@
 .app-header .links a {
 
   font-size: 16px;
-  font-family: 'Aptos Narrow', sans-serif;
 
 }
 
@@ -50,7 +49,6 @@
   letter-spacing: 0.2px;
   height: 58px;
   padding: 0 10px;
-  font-family: 'Aptos', sans-serif;
   font-size: 18px;
   box-sizing: border-box;
   border-top: 2px solid transparent;
@@ -170,7 +168,6 @@
 .user-btn .name {
 
   font-size: 18px;
-  font-family: 'Aptos Narrow', sans-serif;
 
 }
 

@@ -9,7 +9,6 @@
 .dashboard-container .name {
 
     font-size: 48px;
-    font-family: 'Aptos Narrow', sans-serif;
     color: #121212;
 
 }
@@ -106,7 +105,6 @@
 .dashboard-container .shops .shop .right .one h2 {
 
     font-size: 32px;
-    font-family: 'Aptos Narrow';
     font-weight: normal;
 
 }
@@ -167,14 +165,12 @@
 .dashboard-container .shops .shop .right .two .info .info-part .count {
 
     font-size: 16px;
-    font-family: 'Aptos Narrow', sans-serif;
     color: #808080;
 
 }
 
 .dashboard-container .shops .shop .right .two .info .info-part .text {
 
-    font-family: 'Aptos Narrow', sans-serif;
     color: #808080;
     font-size: 14px;
     font-weight: 500;

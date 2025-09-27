@@ -81,7 +81,7 @@ export default function ShopLayout({
             ))}
           </nav>
           <div className="cart">
-            <img src="" alt=""/>
+            <img src="/img/shopping-bag-02.svg" alt=""/>
           </div>
         </div>
       </header>
