@@ -20,6 +20,12 @@ export type Product = {
   images?: ProductImage[]
 }
 
+export type CategorySummary = {
+  id: number
+  name: string
+  slug: string
+}
+
 export type Shop = {
   id: number
   name: string
@@ -28,6 +34,7 @@ export type Shop = {
   profile_image_url?: string | null
   cover_image_url?: string | null
   products: Product[]
+  featured_categories?: CategorySummary[]
   contact_email?: string | null
   contact_phone?: string | null
   contact_website?: string | null

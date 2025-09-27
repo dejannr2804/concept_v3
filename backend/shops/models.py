@@ -10,6 +10,16 @@ class Shop(models.Model):
     heading = models.CharField(max_length=255, blank=True, default="")
     profile_image_url = models.URLField(blank=True, null=True)
     cover_image_url = models.URLField(blank=True, null=True)
+    # Up to three featured categories to highlight on public shop page
+    featured_category_1 = models.ForeignKey(
+        'Category', null=True, blank=True, on_delete=models.SET_NULL, related_name='+'
+    )
+    featured_category_2 = models.ForeignKey(
+        'Category', null=True, blank=True, on_delete=models.SET_NULL, related_name='+'
+    )
+    featured_category_3 = models.ForeignKey(
+        'Category', null=True, blank=True, on_delete=models.SET_NULL, related_name='+'
+    )
 
     class Meta:
         db_table = "cp_shop"

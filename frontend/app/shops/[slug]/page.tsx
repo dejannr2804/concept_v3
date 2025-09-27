@@ -35,8 +35,26 @@ export default function PublicShopPage({ params }: { params: { slug: string } })
 
   const heading = shop.heading || shop.name
   const allProducts = shop.products || []
-  const featuredProducts = allProducts.slice(0, 3)
-  const hasMoreProducts = allProducts.length > featuredProducts.length
+
+  function pickRandom<T>(arr: T[], count: number): T[] {
+    if (!arr || arr.length === 0) return []
+    const copy = [...arr]
+    for (let i = copy.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1))
+      const tmp = copy[i]
+      copy[i] = copy[j]
+      copy[j] = tmp
+    }
+    return copy.slice(0, count)
+  }
+
+  // Determine featured categories: use configured ones if present, else fallback to first 3 distinct in products
+  const configuredCategories = (shop as any).featured_categories as { id: number; name: string; slug: string }[] | undefined
+  let categories: { id: number; name: string; slug: string }[] = configuredCategories && configuredCategories.length
+    ? configuredCategories
+    : Array.from(new Map(allProducts.filter(p => p.category).map(p => [p.category as string, { id: 0, name: p.category as string, slug: '' }])).values()).slice(0, 3)
+
+  categories = categories.slice(0, 3)
 
   return (
     <main className="public-shop-page">
@@ -53,24 +71,41 @@ export default function PublicShopPage({ params }: { params: { slug: string } })
 
       <section className="public-shop-content">
         <div className="public-shop-contentHeader">
-          <h2>Featured products</h2>
+          <h2>Featured categories</h2>
           <p>
-            Explore a curated snapshot of what {shop.name} has to offer. Head to the full collection to
-            browse every item in stock.
+            Discover highlights across selected categories. Jump into the full collection to explore everything in {shop.name}.
           </p>
         </div>
-        <ShopProductGrid
-          shopSlug={shop.slug}
-          products={featuredProducts}
-          emptyMessage="Products will appear here soon."
-        />
-        {hasMoreProducts ? (
-          <div className="public-shop-actions">
-            <Link href={`/shops/${shop.slug}/products`} className="public-shop-linkButton">
-              View all products
-            </Link>
-          </div>
+        {categories.length === 0 ? (
+          <ShopProductGrid
+            shopSlug={shop.slug}
+            products={[]}
+            emptyMessage="No featured categories yet."
+          />
         ) : null}
+
+        {categories.map((cat) => {
+          const inCategory = allProducts.filter(p => (p.category || '') === cat.name)
+          const items = pickRandom(inCategory, 3)
+          const hasMoreInCat = inCategory.length > items.length
+          return (
+            <div key={`${cat.id || cat.name}`} style={{ marginBottom: 32 }}>
+              <h3 style={{ marginBottom: 8 }}>{cat.name}</h3>
+              <ShopProductGrid
+                shopSlug={shop.slug}
+                products={items}
+                emptyMessage={`No products in ${cat.name} yet.`}
+              />
+              {hasMoreInCat ? (
+                <div className="public-shop-actions">
+                  <Link href={`/shops/${shop.slug}/products`} className="public-shop-linkButton">
+                    View all products
+                  </Link>
+                </div>
+              ) : null}
+            </div>
+          )
+        })}
       </section>
     </main>
   )

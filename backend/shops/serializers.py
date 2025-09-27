@@ -7,7 +7,19 @@ from .models import Shop, Product, ProductImage, Category
 class ShopSerializer(serializers.ModelSerializer):
     class Meta:
         model = Shop
-        fields = ["id", "name", "slug", "description", "heading", "profile_image_url", "cover_image_url"]
+        fields = [
+            "id",
+            "name",
+            "slug",
+            "description",
+            "heading",
+            "profile_image_url",
+            "cover_image_url",
+            # Featured categories configurable in settings
+            "featured_category_1",
+            "featured_category_2",
+            "featured_category_3",
+        ]
 
     def validate_slug(self, value: str) -> str:
         # Normalize slug to slug-case
@@ -27,6 +39,13 @@ class ShopSerializer(serializers.ModelSerializer):
         if "slug" in validated_data and not validated_data.get("slug"):
             # If empty string provided, regenerate based on name
             validated_data["slug"] = slugify(validated_data.get("name", instance.name))
+        # Validate featured categories belong to this shop
+        for key in ("featured_category_1", "featured_category_2", "featured_category_3"):
+            cat = validated_data.get(key)
+            if cat is not None:
+                # Allow clearing by setting null
+                if cat and hasattr(cat, "shop_id") and cat.shop_id != instance.id:
+                    raise serializers.ValidationError({key: "Category must belong to this shop"})
         return super().update(instance, validated_data)
 
 
@@ -68,10 +87,27 @@ class PublicProductSerializer(serializers.ModelSerializer):
 
 class PublicShopSerializer(serializers.ModelSerializer):
     products = PublicProductSerializer(many=True, read_only=True)
+    featured_categories = serializers.SerializerMethodField()
 
     class Meta:
         model = Shop
-        fields = ["id", "name", "slug", "heading", "profile_image_url", "cover_image_url", "products"]
+        fields = [
+            "id",
+            "name",
+            "slug",
+            "heading",
+            "profile_image_url",
+            "cover_image_url",
+            "products",
+            "featured_categories",
+        ]
+
+    def get_featured_categories(self, obj: Shop):
+        cats = []
+        for cat in (getattr(obj, "featured_category_1", None), getattr(obj, "featured_category_2", None), getattr(obj, "featured_category_3", None)):
+            if cat is not None:
+                cats.append({"id": cat.id, "name": cat.name, "slug": cat.slug})
+        return cats
 
 
 class ProductSerializer(serializers.ModelSerializer):
