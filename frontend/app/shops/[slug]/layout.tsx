@@ -80,6 +80,9 @@ export default function ShopLayout({
               </Link>
             ))}
           </nav>
+          <div className="cart">
+            <img src="" alt=""/>
+          </div>
         </div>
       </header>
       <div className="public-shop-body">{children}</div>
