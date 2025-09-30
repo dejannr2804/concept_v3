@@ -95,6 +95,7 @@ class PublicShopSerializer(serializers.ModelSerializer):
             "id",
             "name",
             "slug",
+            "description",
             "heading",
             "profile_image_url",
             "cover_image_url",

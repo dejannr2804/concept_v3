@@ -57,61 +57,73 @@ export default function PublicShopPage({ params }: { params: { slug: string } })
   categories = categories.slice(0, 3)
 
   return (
-    <main className="public-shop-page">
-      <section
-        className="public-shop-cover"
-        style={shop.cover_image_url ? { backgroundImage: `url(${shop.cover_image_url})` } : undefined}
-        aria-label="Cover"
-      >
-        <div className="public-shop-overlay" />
-        <div className="public-shop-coverContent">
-          <h1 className="public-shop-heading">{heading}</h1>
-        </div>
-      </section>
+      <main className="public-shop-page">
+        <section
+            className="public-shop-cover"
+            style={shop.cover_image_url ? {backgroundImage: `url(${shop.cover_image_url})`} : undefined}
+            aria-label="Cover"
+        >
+          <div className="public-shop-overlay"/>
+          <div className="public-shop-coverContent">
+            <h1 className="public-shop-heading">{heading}</h1>
+          </div>
+        </section>
 
-      <section className="public-shop-content">
-        {/*<div className="public-shop-contentHeader">*/}
-        {/*  <h2>Featured categories</h2>*/}
-        {/*  <p>*/}
-        {/*    Discover highlights across selected categories. Jump into the full collection to explore everything in {shop.name}.*/}
-        {/*  </p>*/}
-        {/*</div>*/}
-        {categories.length === 0 ? (
-          <ShopProductGrid
-            shopSlug={shop.slug}
-            products={[]}
-            infoMode="compact"
-            emptyMessage="No featured categories yet."
-          />
-        ) : null}
-
-        {categories.map((cat) => {
-          const inCategory = allProducts.filter(p => (p.category || '') === cat.name)
-          const items = pickRandom(inCategory, 3)
-          const hasMoreInCat = inCategory.length > items.length
-          return (
-            <div key={`${cat.id || cat.name}`} style={{ marginBottom: 32 }}>
-              <div className="category-name-cont">
-                <span>{cat.name}</span>
+        <section className="public-shop-description">
+            <div className="icon">
+                {/*<img src="/img/shopping-bag-02.svg" alt=""/>*/}
                 <div className="underline"></div>
-              </div>
+                <h3>About us</h3>
+            </div>
+            <p>{shop.description || 'No description available.'}</p>
+        </section>
+
+        <section className="public-shop-content">
+          {/*<div className="public-shop-contentHeader">*/}
+          {/*  <h2>Featured categories</h2>*/}
+          {/*  <p>*/}
+          {/*    Discover highlights across selected categories. Jump into the full collection to explore everything in {shop.name}.*/}
+          {/*  </p>*/}
+          {/*</div>*/}
+          {categories.length === 0 ? (
               <ShopProductGrid
                   shopSlug={shop.slug}
-                  products={items}
+                  products={[]}
                   infoMode="compact"
-                emptyMessage={`No products in ${cat.name} yet.`}
+                  emptyMessage="No featured categories yet."
               />
-              {hasMoreInCat ? (
-                <div className="public-shop-actions">
-                  <Link href={`/shops/${shop.slug}/products`} className="public-shop-linkButton">
-                    View all products
-                  </Link>
+          ) : null}
+
+          {categories.map((cat) => {
+            const inCategory = allProducts.filter(p => (p.category || '') === cat.name)
+            const items = pickRandom(inCategory, 3)
+            const hasMoreInCat = inCategory.length > items.length
+            return (
+                <div key={`${cat.id || cat.name}`} style={{marginBottom: 32}}>
+                    <div className="category-name-cont">
+                        <div className="underline"></div>
+                        <span>{cat.name}</span>
+                    </div>
+                    <ShopProductGrid
+                        shopSlug={shop.slug}
+                      products={items}
+                      infoMode="compact"
+                      emptyMessage={`No products in ${cat.name} yet.`}
+                  />
+                  {hasMoreInCat ? (
+                      <div className="public-shop-actions">
+                        <Link href={`/shops/${shop.slug}/products`} className="public-shop-linkButton">
+                          View all products
+                        </Link>
+                      </div>
+                  ) : null}
                 </div>
-              ) : null}
-            </div>
-          )
-        })}
+            )
+          })}
+        </section>
+      <section className="public-shop-footer">
+
       </section>
-    </main>
+      </main>
   )
 }

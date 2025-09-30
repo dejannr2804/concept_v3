@@ -31,6 +31,8 @@ export type Shop = {
   name: string
   slug: string
   heading?: string | null
+  description?: string | null
+  short_description?: string | null
   profile_image_url?: string | null
   cover_image_url?: string | null
   products: Product[]
