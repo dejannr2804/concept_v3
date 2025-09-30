@@ -42,7 +42,7 @@
 .public-shop-brandFallback {
   width: 52px;
   height: 52px;
-  border-radius: 16px;
+  border-radius: 6px;
   object-fit: cover;
 }
 
