@@ -198,7 +198,7 @@
 
 .public-shop-description .icon {
 
-  max-width: 1100px;
+  max-width: 1200px;
   margin: 0 auto 16px;
   display: flex;
   align-items: center;
@@ -231,7 +231,7 @@
 
 .public-shop-description p {
 
-  max-width: 1100px;
+  max-width: 1200px;
   margin: 0 auto;
   font-size: 16px;
   line-height: 20px;
@@ -239,7 +239,7 @@
 }
 
 .public-shop-content {
-  max-width: 1100px;
+  max-width: 1200px;
   margin: 40px auto;
   padding: 0 20px;
 }
