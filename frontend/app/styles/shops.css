@@ -459,7 +459,7 @@
 .public-shop-cardPrice {
   font-size: 16px;
   font-weight: 500;
-  color: #424242;
+  color: #949494;
 }
 
 .public-shop-cardPrice.is-discounted { color: #ef4444; }
