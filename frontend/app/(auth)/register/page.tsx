@@ -3,6 +3,7 @@ import { FormEvent, useState } from 'react'
 import Link from 'next/link'
 import { useAuth } from '@/hooks/useAuth'
 import { useRouter } from 'next/navigation'
+import { useEffect } from 'react'
 
 export default function RegisterPage() {
   const router = useRouter()
@@ -11,6 +12,10 @@ export default function RegisterPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   // Notifications are handled globally; no inline error state
+
+  useEffect(() => {
+    document.title = 'Register'
+  }, [])
 
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault()

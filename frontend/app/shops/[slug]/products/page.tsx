@@ -3,10 +3,27 @@
 import LoaderStatus from '@/components/LoaderStatus'
 import { ShopProductGrid } from '@/components/shops/ProductGrid'
 import { useShop } from '@/hooks/useShop'
+import { useEffect } from 'react'
 
 export default function ShopProductsPage({ params }: { params: { slug: string } }) {
   const { slug } = params
   const { shop, loading, error } = useShop(slug)
+
+  useEffect(() => {
+    if (loading) {
+      document.title = 'Loading products…'
+      return
+    }
+    if (error) {
+      document.title = 'Products – Error'
+      return
+    }
+    if (shop) {
+      document.title = `${shop.name} · Products`
+    } else {
+      document.title = 'Products'
+    }
+  }, [loading, error, shop])
 
   if (loading) return <LoaderStatus label="Loading products" delay={600} />
 

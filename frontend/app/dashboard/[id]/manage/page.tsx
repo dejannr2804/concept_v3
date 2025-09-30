@@ -52,6 +52,11 @@ export default function ShopSettingsPage({ params }: { params: { id: string } })
     if (nextCover && nextCover !== coverUrl) setCoverUrl(nextCover)
   }, [updater?.data, shop.data])
 
+  useEffect(() => {
+    const name = shop.data?.name
+    document.title = name ? `Shop Settings – ${name}` : 'Shop Settings'
+  }, [shop.data?.name])
+
   // Load categories for this shop (for featured picks)
   useEffect(() => {
     let cancelled = false

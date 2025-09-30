@@ -2,12 +2,18 @@
 import Link from 'next/link'
 import { useResourceItem } from '@/hooks/resource'
 import DashboardLoadingPlaceholder from '@/components/DashboardLoadingPlaceholder'
+import { useEffect } from 'react'
 
 type Shop = { id: number; name: string; slug: string }
 
 export default function ShopDashboardPage({ params }: { params: { id: string } }) {
   const { id } = params
   const shop = useResourceItem<Shop>(`shops/${id}`)
+
+  useEffect(() => {
+    const name = shop.data?.name
+    document.title = name ? `Dashboard – ${name}` : 'Dashboard'
+  }, [shop.data?.name])
 
   if (shop.loading) {
     return <DashboardLoadingPlaceholder />

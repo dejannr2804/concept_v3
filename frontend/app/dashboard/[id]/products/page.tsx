@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { useResourceItem, useResourceList } from '@/hooks/resource'
 import { api } from '@/lib/api'
 import DashboardLoadingPlaceholder from '@/components/DashboardLoadingPlaceholder'
+import { useEffect } from 'react'
 
 type Shop = { id: number; name: string; slug: string }
 type Product = {
@@ -27,6 +28,11 @@ export default function ProductsPage({ params }: { params: { id: string } }) {
   const shop = useResourceItem<Shop>(`shops/${id}`)
   const products = useResourceList<Product>(`shops/${id}/products`)
   const shopSlug = shop.data?.slug
+
+  useEffect(() => {
+    const name = shop.data?.name
+    document.title = name ? `Products – ${name}` : 'Products'
+  }, [shop.data?.name])
   async function toggleStatus(productId: number, current: Product['status']) {
     const next = current === 'active' ? 'inactive' : 'active'
     try {

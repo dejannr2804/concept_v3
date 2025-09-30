@@ -1,9 +1,14 @@
 "use client"
 import Link from 'next/link'
 import { useAuth } from '@/hooks/useAuth'
+import { useEffect } from 'react'
 
 export default function ExamplePage() {
   const { user, logout } = useAuth()
+
+  useEffect(() => {
+    document.title = 'Example'
+  }, [])
 
   return (
     <main className="container">

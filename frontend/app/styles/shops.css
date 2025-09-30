@@ -382,7 +382,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(112, 112, 112, 0.4); /* semi-transparent grey */
+  background: rgba(112, 112, 112, 0.3); /* semi-transparent grey */
   opacity: 0;
   transition: opacity 0.25s ease;
   pointer-events: none;

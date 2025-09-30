@@ -19,6 +19,10 @@ export default function ProfilePage() {
     if (!user) router.replace('/login')
   }, [user, router])
 
+  useEffect(() => {
+    document.title = user ? `Profile – ${user.username}` : 'Profile'
+  }, [user])
+
   return (
     <main className="container">
       <div className="card">

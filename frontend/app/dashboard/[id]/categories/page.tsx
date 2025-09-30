@@ -1,5 +1,5 @@
 "use client"
-import { useMemo, useState } from 'react'
+import { useMemo, useState, useEffect } from 'react'
 import { useResourceList } from '@/hooks/resource'
 import { api } from '@/lib/api'
 import Modal from '@/components/Modal'
@@ -15,6 +15,10 @@ type Category = {
 export default function CategoriesPage({ params }: { params: { id: string } }) {
   const { id } = params
   const categories = useResourceList<Category>(`shops/${id}/categories`)
+
+  useEffect(() => {
+    document.title = 'Categories'
+  }, [])
 
   // Create modal state
   const [createOpen, setCreateOpen] = useState(false)

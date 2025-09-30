@@ -3,6 +3,7 @@ import { FormEvent, useState } from 'react'
 import Link from 'next/link'
 import { useAuth } from '@/hooks/useAuth'
 import { useRouter } from 'next/navigation'
+import { useEffect } from 'react'
 
 export default function LoginPage() {
   const router = useRouter()
@@ -10,6 +11,10 @@ export default function LoginPage() {
   const [identifier, setIdentifier] = useState('')
   const [password, setPassword] = useState('')
   // Notifications are handled globally; no inline error state
+
+  useEffect(() => {
+    document.title = 'Login'
+  }, [])
 
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault()

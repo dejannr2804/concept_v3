@@ -4,12 +4,29 @@ import Link from 'next/link'
 import LoaderStatus from '@/components/LoaderStatus'
 import { ShopProductGrid } from '@/components/shops/ProductGrid'
 import { useShop } from '@/hooks/useShop'
+import { useEffect } from 'react'
 
 // Uses global styles from app/styles/shops.css
 
 export default function PublicShopPage({ params }: { params: { slug: string } }) {
   const { slug } = params
   const { shop, loading, error } = useShop(slug)
+
+  useEffect(() => {
+    if (loading) {
+      document.title = 'Loading shop…'
+      return
+    }
+    if (error) {
+      document.title = 'Shop – Error'
+      return
+    }
+    if (shop) {
+      document.title = shop.name || 'Shop'
+    } else {
+      document.title = 'Shop not found'
+    }
+  }, [loading, error, shop])
 
   if (loading) return <LoaderStatus label="Loading shop" delay={1000} />
 

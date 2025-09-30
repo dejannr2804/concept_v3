@@ -1,5 +1,5 @@
 "use client"
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useResourceCreator } from '@/hooks/resource'
@@ -10,6 +10,10 @@ export default function NewShopPage() {
   const creator = useResourceCreator('shops')
   const [slugTouched, setSlugTouched] = useState(false)
   const notify = useNotifications()
+
+  useEffect(() => {
+    document.title = 'Create Shop'
+  }, [])
 
   function toSlug(v: string) {
     return v

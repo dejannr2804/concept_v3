@@ -30,6 +30,22 @@ export default function PublicProductPage({ params }: { params: { slug: string; 
     return () => { cancelled = true }
   }, [shopSlug, productSlug])
 
+  useEffect(() => {
+    if (loading) {
+      document.title = 'Loading product…'
+      return
+    }
+    if (error) {
+      document.title = 'Product – Error'
+      return
+    }
+    if (product) {
+      document.title = product.name || 'Product'
+    } else {
+      document.title = 'Product not found'
+    }
+  }, [loading, error, product])
+
   if (loading) return <LoaderStatus label="Loading product" delay={1000} />
   if (error) return <div className="error p-4">{error}</div>
   if (!product) return <div className="p-4">Product not found.</div>

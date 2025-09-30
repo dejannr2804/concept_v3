@@ -3,8 +3,13 @@ import { redirect } from 'next/navigation'
 import { getCurrentUser, getTokenFromCookies } from '@/lib/auth'
 import { API_BASE_URL } from '@/lib/config'
 import DashboardLoadingPlaceholder from '@/components/DashboardLoadingPlaceholder'
+import type { Metadata } from 'next'
 
 export const dynamic = 'force-dynamic'
+
+export const metadata: Metadata = {
+  title: 'Dashboard',
+}
 
 export default async function DashboardPage() {
   const user = await getCurrentUser()

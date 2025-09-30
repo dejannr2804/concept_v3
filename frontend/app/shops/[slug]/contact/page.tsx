@@ -2,6 +2,7 @@
 
 import LoaderStatus from '@/components/LoaderStatus'
 import { useShop } from '@/hooks/useShop'
+import { useEffect } from 'react'
 
 const ensureProtocol = (url?: string | null) => {
   if (!url) return null
@@ -12,6 +13,22 @@ const ensureProtocol = (url?: string | null) => {
 export default function ShopContactPage({ params }: { params: { slug: string } }) {
   const { slug } = params
   const { shop, loading, error } = useShop(slug)
+
+  useEffect(() => {
+    if (loading) {
+      document.title = 'Loading contact…'
+      return
+    }
+    if (error) {
+      document.title = 'Contact – Error'
+      return
+    }
+    if (shop) {
+      document.title = `${shop.name} · Contact`
+    } else {
+      document.title = 'Contact'
+    }
+  }, [loading, error, shop])
 
   if (loading) return <LoaderStatus label="Loading contact details" delay={600} />
 
