@@ -70,16 +70,17 @@ export default function PublicShopPage({ params }: { params: { slug: string } })
       </section>
 
       <section className="public-shop-content">
-        <div className="public-shop-contentHeader">
-          <h2>Featured categories</h2>
-          <p>
-            Discover highlights across selected categories. Jump into the full collection to explore everything in {shop.name}.
-          </p>
-        </div>
+        {/*<div className="public-shop-contentHeader">*/}
+        {/*  <h2>Featured categories</h2>*/}
+        {/*  <p>*/}
+        {/*    Discover highlights across selected categories. Jump into the full collection to explore everything in {shop.name}.*/}
+        {/*  </p>*/}
+        {/*</div>*/}
         {categories.length === 0 ? (
           <ShopProductGrid
             shopSlug={shop.slug}
             products={[]}
+            infoMode="compact"
             emptyMessage="No featured categories yet."
           />
         ) : null}
@@ -90,10 +91,14 @@ export default function PublicShopPage({ params }: { params: { slug: string } })
           const hasMoreInCat = inCategory.length > items.length
           return (
             <div key={`${cat.id || cat.name}`} style={{ marginBottom: 32 }}>
-              <h3 style={{ marginBottom: 8 }}>{cat.name}</h3>
+              <div className="category-name-cont">
+                <span style={{marginBottom: 8}}>{cat.name}</span>
+                <div className="underline"></div>
+              </div>
               <ShopProductGrid
-                shopSlug={shop.slug}
-                products={items}
+                  shopSlug={shop.slug}
+                  products={items}
+                  infoMode="compact"
                 emptyMessage={`No products in ${cat.name} yet.`}
               />
               {hasMoreInCat ? (

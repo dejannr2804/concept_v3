@@ -5,6 +5,8 @@ type ShopProductGridProps = {
   shopSlug: string
   products?: Product[] | null
   emptyMessage?: string
+  // When set to 'compact', only show name and primary price
+  infoMode?: 'full' | 'compact'
 }
 
 const FALLBACK_EMPTY_MESSAGE = 'No products yet.'
@@ -35,7 +37,7 @@ const formatCurrency = (value: number | null | undefined, currency?: string | nu
   }
 }
 
-export function ShopProductGrid({ shopSlug, products, emptyMessage = FALLBACK_EMPTY_MESSAGE }: ShopProductGridProps) {
+export function ShopProductGrid({ shopSlug, products, emptyMessage = FALLBACK_EMPTY_MESSAGE, infoMode = 'full' }: ShopProductGridProps) {
   if (!products || products.length === 0) {
     return <p className="public-shop-empty">{emptyMessage}</p>
   }
@@ -50,7 +52,7 @@ export function ShopProductGrid({ shopSlug, products, emptyMessage = FALLBACK_EM
         const primaryPriceValue = discountedValue ?? baseValue
         const formattedPrimaryPrice = formatCurrency(primaryPriceValue, product.currency)
         const formattedOriginalPrice = hasDiscount ? formatCurrency(baseValue, product.currency) : null
-        const description = (product.short_description || product.description || '').trim()
+        const description = infoMode === 'full' ? (product.short_description || product.description || '').trim() : ''
         const isInStock = product.stock_status === 'in_stock'
         const stockLabel = isInStock ? 'In stock' : 'Out of stock'
 
@@ -87,14 +89,16 @@ export function ShopProductGrid({ shopSlug, products, emptyMessage = FALLBACK_EM
                 {description ? (
                   <p className="public-shop-cardDescription">{description}</p>
                 ) : null}
-                <div className="public-shop-cardMeta">
-                  <span className={`public-shop-stock ${isInStock ? 'is-available' : 'is-out'}`}>
-                    {stockLabel}
-                  </span>
-                  {product.category ? (
-                    <span className="public-shop-badge">{product.category}</span>
-                  ) : null}
-                </div>
+                {infoMode === 'full' ? (
+                  <div className="public-shop-cardMeta">
+                    <span className={`public-shop-stock ${isInStock ? 'is-available' : 'is-out'}`}>
+                      {stockLabel}
+                    </span>
+                    {product.category ? (
+                      <span className="public-shop-badge">{product.category}</span>
+                    ) : null}
+                  </div>
+                ) : null}
               </div>
             </Link>
           </li>
