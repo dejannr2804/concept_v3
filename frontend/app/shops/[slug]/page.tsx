@@ -74,7 +74,7 @@ export default function PublicShopPage({ params }: { params: { slug: string } })
   categories = categories.slice(0, 3)
 
   return (
-      <main className="public-shop-page">
+      <main className="public-shop-page ps-fixed-cols">
         <section
             className="public-shop-cover"
             style={shop.cover_image_url ? {backgroundImage: `url(${shop.cover_image_url})`} : undefined}

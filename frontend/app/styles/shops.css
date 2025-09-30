@@ -352,6 +352,11 @@
   gap: 24px;
 }
 
+/* Force exactly 3 products per row on the public shop overview page */
+.ps-fixed-cols .public-shop-list {
+  grid-template-columns: repeat(3, 1fr);
+}
+
 .public-shop-card {
   position: relative;
   overflow: hidden;
