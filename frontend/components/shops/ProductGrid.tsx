@@ -71,6 +71,10 @@ export function ShopProductGrid({ shopSlug, products, emptyMessage = FALLBACK_EM
                 ) : (
                   <div className="public-shop-cardImagePlaceholder">Image coming soon</div>
                 )}
+                {/* Hover overlay with existing icon */}
+                <div className="public-shop-cardOverlay" aria-hidden="true">
+                  <img src="/img/arrow-narrow-up-right.svg" alt="" className="public-shop-cardOverlayIcon" />
+                </div>
               </div>
               <div className="public-shop-cardBody">
                 <div className="public-shop-cardTop">

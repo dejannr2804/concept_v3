@@ -92,7 +92,7 @@ export default function PublicShopPage({ params }: { params: { slug: string } })
           return (
             <div key={`${cat.id || cat.name}`} style={{ marginBottom: 32 }}>
               <div className="category-name-cont">
-                <span style={{marginBottom: 8}}>{cat.name}</span>
+                <span>{cat.name}</span>
                 <div className="underline"></div>
               </div>
               <ShopProductGrid
