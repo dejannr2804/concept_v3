@@ -3,6 +3,8 @@ import { useRouter } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
 import { useResourceItem, useResourceUpdater } from '@/hooks/resource'
 import Modal from '@/components/Modal'
+import SelectPopup from '@/components/SelectPopup'
+import { CURRENCIES, DEFAULT_CURRENCY } from '@/lib/currencies'
 import { api } from '@/lib/api'
 import DashboardLoadingPlaceholder from '@/components/DashboardLoadingPlaceholder'
 
@@ -10,6 +12,7 @@ type Shop = {
   id: number
   name: string
   slug: string
+  currency?: string | null
   description?: string
   heading?: string
   profile_image_url?: string
@@ -232,6 +235,19 @@ export default function ShopSettingsPage({ params }: { params: { id: string } })
               <textarea className="ss-textarea" rows={5} value={data?.description || ''} onChange={(e) => updater.setField('description', e.target.value)} />
             </label>
 
+            <div className="ss-fieldRow">
+              <label className="ss-field" style={{ position: 'relative' }}>
+                <span className="ss-label">Currency</span>
+                <SelectPopup
+                  value={data?.currency || DEFAULT_CURRENCY}
+                  onChange={(v) => updater.setField('currency', v)}
+                  options={CURRENCIES.map((c) => ({ value: c.code, label: `${c.code} — ${c.name} (${c.symbol})` }))}
+                  placeholder="Select currency"
+                  ariaLabel="Shop currency"
+                />
+              </label>
+            </div>
+
             <div className="ss-fieldRow3">
               <div className="ss-field" style={{ position: 'relative' }}>
                 <span className="ss-label">Featured category 1</span>
@@ -394,7 +410,7 @@ export default function ShopSettingsPage({ params }: { params: { id: string } })
             </div>
 
             <div className="ss-actions">
-              <button type="button" className="ss-button" onClick={() => updater.save(['name', 'slug', 'heading', 'description', 'featured_category_1', 'featured_category_2', 'featured_category_3'])} disabled={updater.saving}>
+              <button type="button" className="ss-button" onClick={() => updater.save(['name', 'slug', 'heading', 'description', 'currency', 'featured_category_1', 'featured_category_2', 'featured_category_3'])} disabled={updater.saving}>
                 {updater.saving ? 'Saving…' : 'Save Changes'}
               </button>
               <button

@@ -30,6 +30,7 @@ export type Shop = {
   id: number
   name: string
   slug: string
+  currency?: string | null
   heading?: string | null
   description?: string | null
   short_description?: string | null

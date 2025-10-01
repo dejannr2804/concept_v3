@@ -57,7 +57,7 @@ export default function ShopProductsPage({ params }: { params: { slug: string } 
             see real-time availability and pricing details.
           </p>
         </div>
-        <ShopProductGrid shopSlug={shop.slug} products={shop.products} />
+        <ShopProductGrid shopSlug={shop.slug} products={shop.products} currency={(shop as any).currency} />
       </section>
     </main>
   )

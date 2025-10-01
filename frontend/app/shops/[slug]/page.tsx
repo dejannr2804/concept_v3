@@ -107,10 +107,11 @@ export default function PublicShopPage({ params }: { params: { slug: string } })
           {/*</div>*/}
           {categories.length === 0 ? (
               <ShopProductGrid
-                  shopSlug={shop.slug}
-                  products={[]}
-                  infoMode="compact"
-                  emptyMessage="No featured categories yet."
+                shopSlug={shop.slug}
+                products={[]}
+                infoMode="compact"
+                currency={shop.currency}
+                emptyMessage="No featured categories yet."
               />
           ) : null}
 
@@ -125,11 +126,12 @@ export default function PublicShopPage({ params }: { params: { slug: string } })
                         <span>{cat.name}</span>
                     </div>
                     <ShopProductGrid
-                        shopSlug={shop.slug}
+                      shopSlug={shop.slug}
                       products={items}
                       infoMode="compact"
+                      currency={shop.currency}
                       emptyMessage={`No products in ${cat.name} yet.`}
-                  />
+                    />
                   {hasMoreInCat ? (
                       <div className="public-shop-actions">
                         <Link href={`/shops/${shop.slug}/products`} className="public-shop-linkButton">

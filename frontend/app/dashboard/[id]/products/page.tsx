@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { useResourceItem, useResourceList } from '@/hooks/resource'
 import { api } from '@/lib/api'
 import DashboardLoadingPlaceholder from '@/components/DashboardLoadingPlaceholder'
+import { DEFAULT_CURRENCY } from '@/lib/currencies'
 import { useEffect } from 'react'
 
 type Shop = { id: number; name: string; slug: string }
@@ -129,7 +130,7 @@ export default function ProductsPage({ params }: { params: { id: string } }) {
                     </td>
                         <td>
                           <strong>
-                            {(p.currency || 'USD')} {Number((p.discounted_price ?? p.base_price ?? 0)).toFixed(2)}
+                            {(shop.data?.currency || DEFAULT_CURRENCY)} {Number((p.discounted_price ?? p.base_price ?? 0)).toFixed(2)}
                           </strong>
                         </td>
                         <td className="actions">

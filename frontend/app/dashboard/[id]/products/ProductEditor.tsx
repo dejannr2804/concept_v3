@@ -7,6 +7,8 @@ import { api } from '@/lib/api'
 import { useNotifications } from '@/components/Notifications'
 import Modal from '@/components/Modal'
 import DashboardLoadingPlaceholder from '@/components/DashboardLoadingPlaceholder'
+import { DEFAULT_CURRENCY } from '@/lib/currencies'
+import SelectPopup from '@/components/SelectPopup'
 
 type Mode = 'create' | 'update'
 
@@ -23,7 +25,7 @@ const PRODUCT_FIELD_KEYS = [
   'name', 'slug', 'sku', 'category',
   'short_description', 'long_description',
   'status',
-  'base_price', 'discounted_price', 'currency',
+  'base_price', 'discounted_price',
   'stock_quantity', 'stock_status',
   'available_from', 'available_to',
 ]
@@ -61,7 +63,7 @@ export default function ProductEditor({
     return next
   }
 
-  const shop = useResourceItem<{ id: number; name: string; slug: string }>(`shops/${shopId}`)
+  const shop = useResourceItem<{ id: number; name: string; slug: string; currency?: string | null }>(`shops/${shopId}`)
   const categoryList = useResourceList<{ id: number; name: string }>(`shops/${shopId}/categories`)
   const [catOpen, setCatOpen] = useState(false)
   const catMenuRef = useRef<HTMLDivElement | null>(null)
@@ -186,7 +188,7 @@ export default function ProductEditor({
     coverAlt = images[0]?.file?.name || 'Cover image'
   }
 
-  const currencyCode = typeof data?.currency === 'string' && data.currency.trim() ? data.currency.trim().toUpperCase() : 'USD'
+  const currencyCode = typeof shop.data?.currency === 'string' && shop.data.currency.trim() ? shop.data.currency.trim().toUpperCase() : DEFAULT_CURRENCY
   function formatCurrency(value: number | null | undefined) {
     if (value === null || value === undefined || Number.isNaN(value)) return '—'
     try {
@@ -654,11 +656,6 @@ export default function ProductEditor({
                     <input className="pe-input" type="number" step="0.01" value={data?.discounted_price ?? ''}
                            onChange={(e) => setField('discounted_price', e.target.value === '' ? null : Number(e.target.value))}/>
                   </label>
-                  <label className="pe-formField">
-                    <span className="pe-label">Currency</span>
-                    <input className="pe-input" value={data?.currency || 'USD'}
-                           onChange={(e) => setField('currency', e.target.value.toUpperCase())}/>
-                  </label>
                 </div>
               </div>
 
@@ -667,19 +664,29 @@ export default function ProductEditor({
                 <div className="pe-rowFields">
                   <label className="pe-formField">
                     <span className="pe-label">Status</span>
-                    <select className="pe-select" value={data?.status || 'active'}
-                            onChange={(e) => setField('status', e.target.value)}>
-                      <option value="active">Active</option>
-                      <option value="inactive">Inactive</option>
-                    </select>
+                    <SelectPopup
+                      value={data?.status || 'active'}
+                      onChange={(v) => setField('status', v)}
+                      options={[
+                        { value: 'active', label: 'Active' },
+                        { value: 'inactive', label: 'Inactive' },
+                      ]}
+                      placeholder="Select status"
+                      ariaLabel="Status"
+                    />
                   </label>
                   <label className="pe-formField">
                     <span className="pe-label">Stock Status</span>
-                    <select className="pe-select" value={data?.stock_status || 'in_stock'}
-                            onChange={(e) => setField('stock_status', e.target.value)}>
-                      <option value="in_stock">In stock</option>
-                      <option value="out_of_stock">Out of stock</option>
-                    </select>
+                    <SelectPopup
+                      value={data?.stock_status || 'in_stock'}
+                      onChange={(v) => setField('stock_status', v)}
+                      options={[
+                        { value: 'in_stock', label: 'In stock' },
+                        { value: 'out_of_stock', label: 'Out of stock' },
+                      ]}
+                      placeholder="Select stock status"
+                      ariaLabel="Stock status"
+                    />
                   </label>
                 </div>
                 <div className="pe-rowFields3">

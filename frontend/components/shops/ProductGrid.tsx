@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import type { Product, ProductImage } from '@/lib/shops/types'
+import { DEFAULT_CURRENCY } from '@/lib/currencies'
 
 type ShopProductGridProps = {
   shopSlug: string
@@ -7,6 +8,8 @@ type ShopProductGridProps = {
   emptyMessage?: string
   // When set to 'compact', only show name and primary price
   infoMode?: 'full' | 'compact'
+  // Optional currency code to format prices; falls back to product currency or default
+  currency?: string | null
 }
 
 const FALLBACK_EMPTY_MESSAGE = 'No products yet.'
@@ -25,7 +28,7 @@ const parseAmount = (value: number | null | undefined): number | null => {
 
 const formatCurrency = (value: number | null | undefined, currency?: string | null): string | null => {
   if (value === null || value === undefined || !Number.isFinite(value)) return null
-  const code = currency || 'USD'
+  const code = currency || DEFAULT_CURRENCY
   try {
     return new Intl.NumberFormat(undefined, {
       style: 'currency',
@@ -37,7 +40,7 @@ const formatCurrency = (value: number | null | undefined, currency?: string | nu
   }
 }
 
-export function ShopProductGrid({ shopSlug, products, emptyMessage = FALLBACK_EMPTY_MESSAGE, infoMode = 'full' }: ShopProductGridProps) {
+export function ShopProductGrid({ shopSlug, products, emptyMessage = FALLBACK_EMPTY_MESSAGE, infoMode = 'full', currency }: ShopProductGridProps) {
   if (!products || products.length === 0) {
     return <p className="public-shop-empty">{emptyMessage}</p>
   }
@@ -50,8 +53,8 @@ export function ShopProductGrid({ shopSlug, products, emptyMessage = FALLBACK_EM
         const baseValue = parseAmount(product.base_price)
         const hasDiscount = discountedValue !== null && baseValue !== null && discountedValue < baseValue
         const primaryPriceValue = discountedValue ?? baseValue
-        const formattedPrimaryPrice = formatCurrency(primaryPriceValue, product.currency)
-        const formattedOriginalPrice = hasDiscount ? formatCurrency(baseValue, product.currency) : null
+        const formattedPrimaryPrice = formatCurrency(primaryPriceValue, currency || product.currency)
+        const formattedOriginalPrice = hasDiscount ? formatCurrency(baseValue, currency || product.currency) : null
         const description = infoMode === 'full' ? (product.short_description || product.description || '').trim() : ''
         const isInStock = product.stock_status === 'in_stock'
         const stockLabel = isInStock ? 'In stock' : 'Out of stock'
