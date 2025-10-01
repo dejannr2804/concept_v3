@@ -11,6 +11,7 @@ class ShopSerializer(serializers.ModelSerializer):
             "id",
             "name",
             "slug",
+            "currency",
             "description",
             "heading",
             "profile_image_url",
@@ -95,6 +96,7 @@ class PublicShopSerializer(serializers.ModelSerializer):
             "id",
             "name",
             "slug",
+            "currency",
             "description",
             "heading",
             "profile_image_url",
@@ -167,6 +169,9 @@ class ProductSerializer(serializers.ModelSerializer):
         shop = validated_data.get("shop")
         if shop is not None:
             validated_data["category"] = self._resolve_category(shop=shop, name=cat_name)
+            # Default product currency to the shop currency when not explicitly provided
+            if not validated_data.get("currency") and getattr(shop, "currency", None):
+                validated_data["currency"] = shop.currency
         return super().create(validated_data)
 
     def update(self, instance, validated_data):
