@@ -645,7 +645,7 @@ export default function ProductEditor({
 
               <div className="pe-formGroup">
                 <h3 className="pe-groupTitle">Pricing</h3>
-                <div className="pe-rowFields3">
+                <div className="pe-rowFields">
                   <label className="pe-formField">
                     <span className="pe-label">Price</span>
                     <input className="pe-input" type="number" step="0.01" value={data?.base_price ?? 0}
