@@ -83,6 +83,9 @@ export default function PublicShopPage({ params }: { params: { slug: string } })
           <div className="public-shop-overlay"/>
           <div className="public-shop-coverContent">
             <h1 className="public-shop-heading">{heading}</h1>
+            <Link href={`/shops/${shop.slug}/products`} className="public-shop-linkButton">
+              View all products
+            </Link>
           </div>
         </section>
 
