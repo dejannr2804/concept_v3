@@ -20,7 +20,7 @@ class ShopListCreateView(generics.ListCreateAPIView):
 
     def perform_create(self, serializer):
         user = self.request.user
-        # Enforce plan-based shop limits (free: 1, paid: 5, enterprise: unlimited)
+        # Enforce plan-based shop limits (free: 1, pro: 5, enterprise: unlimited)
         try:
             max_allowed = getattr(user, "max_shops_allowed", None)
         except Exception:

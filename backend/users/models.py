@@ -5,7 +5,7 @@ from django.db import models
 class User(AbstractUser):
     class AccountType(models.TextChoices):
         FREE = "free", "Free"
-        PAID = "paid", "Paid"
+        PRO = "pro", "Pro"
         ENTERPRISE = "enterprise", "Enterprise"
 
     email = models.EmailField(unique=True)
@@ -28,7 +28,7 @@ class User(AbstractUser):
         """
         if self.account_type == self.AccountType.FREE:
             return 1
-        if self.account_type == self.AccountType.PAID:
+        if self.account_type == self.AccountType.PRO:
             return 5
         # Enterprise (or any unrecognized future unlimited tier)
         return None

@@ -2,13 +2,13 @@
 import { useRouter } from 'next/navigation'
 import { useNotifications } from '@/components/Notifications'
 
-export default function CreateShopButton({ currentCount, accountType }: { currentCount: number; accountType?: 'free' | 'paid' | 'enterprise' | string | null }) {
+export default function CreateShopButton({ currentCount, accountType }: { currentCount: number; accountType?: 'free' | 'pro' | 'enterprise' | string | null }) {
   const router = useRouter()
   const notify = useNotifications()
 
   function maxAllowed(type?: string | null): number | null {
     if (!type || type === 'free') return 1
-    if (type === 'paid') return 5
+    if (type === 'pro') return 5
     if (type === 'enterprise') return null
     // Unknown future plan -> treat as unlimited to avoid false negatives
     return null
@@ -32,4 +32,3 @@ export default function CreateShopButton({ currentCount, accountType }: { curren
     </button>
   )
 }
-

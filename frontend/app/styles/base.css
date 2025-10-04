@@ -118,6 +118,11 @@ input, select {
     vertical-align:middle;
 }
 
+/* Ensure form controls use the global font */
+button, input, select, textarea {
+    font-family: inherit;
+}
+
 a {
     text-decoration: none;
 }

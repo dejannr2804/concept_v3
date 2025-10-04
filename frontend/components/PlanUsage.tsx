@@ -4,7 +4,7 @@ import { useNotifications } from '@/components/Notifications'
 
 function capFor(type?: string | null): number | null {
   if (!type || type === 'free') return 1
-  if (type === 'paid') return 5
+  if (type === 'pro') return 5
   if (type === 'enterprise') return null
   return null
 }
@@ -14,7 +14,7 @@ function titleCase(s: string): string {
   return s.charAt(0).toUpperCase() + s.slice(1)
 }
 
-export default function PlanUsage({ currentCount, accountType }: { currentCount: number; accountType?: 'free' | 'paid' | 'enterprise' | string | null }) {
+export default function PlanUsage({ currentCount, accountType }: { currentCount: number; accountType?: 'free' | 'pro' | 'enterprise' | string | null }) {
   const router = useRouter()
   const notify = useNotifications()
   const cap = capFor(accountType)
@@ -27,7 +27,7 @@ export default function PlanUsage({ currentCount, accountType }: { currentCount:
           <h3>Plan usage</h3>
           <span className={`pu-badge plan-${accountType || 'free'}`}>{titleCase(String(accountType || 'free'))}</span>
         </div>
-        {accountType !== 'paid' && accountType !== 'enterprise' && (
+        {accountType === 'free' && (
           <button
             className="pu-upgradeBtn"
             onClick={() => {
@@ -36,6 +36,17 @@ export default function PlanUsage({ currentCount, accountType }: { currentCount:
             }}
           >
             Upgrade to Pro
+          </button>
+        )}
+        {accountType === 'pro' && (
+          <button
+            className="pu-upgradeBtn"
+            onClick={() => {
+              notify.info('Enterprise upgrade flow coming soon. Contact support or use admin to change plan.')
+              try { router.push('/profile') } catch {}
+            }}
+          >
+            Upgrade to Enterprise
           </button>
         )}
       </div>
