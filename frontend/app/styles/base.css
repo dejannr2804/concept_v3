@@ -126,3 +126,9 @@ button, input, select, textarea {
 a {
     text-decoration: none;
 }
+
+button {
+
+    cursor: pointer;
+
+}

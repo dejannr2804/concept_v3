@@ -40,8 +40,15 @@ export default async function DashboardPage() {
 
   return (
     <div className="dashboard-container dlp-fadeIn">
-      <h2 className="name">Hello, {displayName}</h2>
-      <p className="subname">Here is the portfolio of your shops.</p>
+      <div className="dashboard-container-top">
+        <div className="left">
+          <h2 className="name">Hello, {displayName}</h2>
+          <p className="subname">Here is the portfolio of your shops.</p>
+        </div>
+        <div className="right">
+          <CreateShopButton currentCount={(shops?.length ?? 0)} accountType={(user as any)?.account_type ?? 'free'} />
+        </div>
+      </div>
       {error ? (
           <p>{error}</p>
       ) : !shops ? (
@@ -103,11 +110,9 @@ export default async function DashboardPage() {
               </div>
             </div>
           ))}
-
+        <PlanUsage currentCount={shops?.length ?? 0} accountType={(user as any)?.account_type ?? 'free'}/>
         </div>
       )}
-      <PlanUsage currentCount={shops?.length ?? 0} accountType={(user as any)?.account_type ?? 'free'}/>
-      <CreateShopButton currentCount={(shops?.length ?? 0)} accountType={(user as any)?.account_type ?? 'free'} />
     </div>
   )
 }
