@@ -7,12 +7,15 @@ from .forms import UserAdminForm
 @admin.register(User)
 class UserAdmin(BaseUserAdmin):
     form = UserAdminForm
+    list_display = ("username", "email", "account_type", "is_staff", "is_superuser")
+    list_filter = ("account_type",) + BaseUserAdmin.list_filter
 
     fieldsets = BaseUserAdmin.fieldsets + (
         (
             'Profile',
             {
                 'fields': (
+                    'account_type',
                     'profile_image_url',
                     'profile_image_file',
                 )
@@ -25,7 +28,7 @@ class UserAdmin(BaseUserAdmin):
             'Profile',
             {
                 'classes': ('wide',),
-                'fields': ('profile_image_url',),
+                'fields': ('account_type', 'profile_image_url',),
             },
         ),
     )

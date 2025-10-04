@@ -1,4 +1,5 @@
 from rest_framework import generics, permissions, status
+from rest_framework.exceptions import ValidationError
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.response import Response
 from rest_framework.generics import RetrieveAPIView
@@ -18,7 +19,21 @@ class ShopListCreateView(generics.ListCreateAPIView):
         return Shop.objects.filter(user=self.request.user).order_by('id')
 
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+        user = self.request.user
+        # Enforce plan-based shop limits (free: 1, paid: 5, enterprise: unlimited)
+        try:
+            max_allowed = getattr(user, "max_shops_allowed", None)
+        except Exception:
+            max_allowed = None
+        if max_allowed is not None:
+            current_count = Shop.objects.filter(user=user).count()
+            if current_count >= max_allowed:
+                plan = getattr(user, "account_type", "free")
+                raise ValidationError({
+                    "detail": f"Shop limit reached for your plan ('{plan}').",
+                    "max_shops": max_allowed,
+                })
+        serializer.save(user=user)
 
 
 class ShopRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):

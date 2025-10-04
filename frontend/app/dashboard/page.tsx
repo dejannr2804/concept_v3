@@ -4,6 +4,8 @@ import { getCurrentUser, getTokenFromCookies } from '@/lib/auth'
 import { API_BASE_URL } from '@/lib/config'
 import DashboardLoadingPlaceholder from '@/components/DashboardLoadingPlaceholder'
 import type { Metadata } from 'next'
+import CreateShopButton from '@/components/CreateShopButton'
+import PlanUsage from '@/components/PlanUsage'
 
 export const dynamic = 'force-dynamic'
 
@@ -41,9 +43,9 @@ export default async function DashboardPage() {
       <h2 className="name">Hello, {displayName}</h2>
       <p className="subname">Here is the portfolio of your shops.</p>
       {error ? (
-        <p>{error}</p>
+          <p>{error}</p>
       ) : !shops ? (
-        <DashboardLoadingPlaceholder />
+          <DashboardLoadingPlaceholder/>
       ) : shops.length === 0 ? (
           <div className="no-shops-message">
             <p>You don’t have any shops yet.</p>
@@ -104,10 +106,8 @@ export default async function DashboardPage() {
 
         </div>
       )}
-      <Link href="/dashboard/new" className="create-new-shop">
-        <img src="/img/plus.svg" alt="" className="nav-icon"/>
-        Create a new shop
-      </Link>
+      <PlanUsage currentCount={shops?.length ?? 0} accountType={(user as any)?.account_type ?? 'free'}/>
+      <CreateShopButton currentCount={(shops?.length ?? 0)} accountType={(user as any)?.account_type ?? 'free'} />
     </div>
   )
 }

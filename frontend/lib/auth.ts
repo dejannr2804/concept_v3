@@ -2,7 +2,15 @@ import { cookies } from 'next/headers'
 import { API_BASE_URL, AUTH_COOKIE } from '@/lib/config'
 import 'server-only'
 
-export type User = { id: number; username: string; email: string; first_name?: string; last_name?: string; profile_image_url?: string }
+export type User = {
+  id: number
+  username: string
+  email: string
+  first_name?: string
+  last_name?: string
+  profile_image_url?: string
+  account_type?: 'free' | 'paid' | 'enterprise'
+}
 
 export function getTokenFromCookies(): string | null {
   try {
