@@ -9,6 +9,7 @@ from .models import Shop, Product, ProductImage, Category
 from django.db.models import Max
 from .serializers import ShopSerializer, ProductSerializer, PublicShopSerializer, PublicProductSerializer, ProductImageSerializer, CategorySerializer
 from .spaces import upload_product_image, delete_product_image_by_url, SpacesConfigError, upload_shop_image
+from users.plan_limits import get_plan_features
 
 
 class ShopListCreateView(generics.ListCreateAPIView):
@@ -58,6 +59,20 @@ class ProductListCreateView(generics.ListCreateAPIView):
 
     def perform_create(self, serializer):
         shop = self.get_shop()
+        # Enforce plan-based product limits per shop
+        try:
+            features = get_plan_features(getattr(shop.user, "account_type", None))
+            max_allowed = getattr(features, "max_products_per_shop", None)
+        except Exception:
+            max_allowed = None
+        if max_allowed is not None:
+            current_count = Product.objects.filter(shop=shop).count()
+            if current_count >= max_allowed:
+                plan = getattr(shop.user, "account_type", "free")
+                raise ValidationError({
+                    "detail": f"Product limit reached for your plan ('{plan}').",
+                    "max_products": max_allowed,
+                })
         serializer.save(shop=shop)
 
 

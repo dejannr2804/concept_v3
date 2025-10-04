@@ -1,5 +1,6 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from .plan_limits import get_plan_features
 
 
 class User(AbstractUser):
@@ -26,9 +27,5 @@ class User(AbstractUser):
         Returns the maximum number of shops this user can create based on
         their account type. None means unlimited.
         """
-        if self.account_type == self.AccountType.FREE:
-            return 1
-        if self.account_type == self.AccountType.PRO:
-            return 5
-        # Enterprise (or any unrecognized future unlimited tier)
-        return None
+        features = get_plan_features(self.account_type)
+        return features.max_shops

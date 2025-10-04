@@ -54,3 +54,14 @@ Production Notes
 - Prefer httpOnly, secure cookies (JWT or session) and enforce CSRF.
 - Restrict `ALLOWED_HOSTS`, configure `CORS_ALLOWED_ORIGINS`, and set `DJANGO_DEBUG=False`.
 - Rotate `DJANGO_SECRET_KEY` and store secrets securely.
+
+Plan Limits
+- Plan features are centralized in `backend/users/plan_limits.py`.
+- Current limits by account type:
+  - `free`: max 1 shop, max 20 products per shop
+  - `pro`: max 5 shops, max 100 products per shop
+  - `enterprise`: unlimited shops and products
+- API enforces limits on:
+  - Shop creation (`ShopListCreateView`): returns 400 with `detail` and `max_shops`.
+  - Product creation (`ProductListCreateView`): returns 400 with `detail` and `max_products`.
+  - Extend by adding fields to `PlanFeatures` and using `get_plan_features()` where needed.

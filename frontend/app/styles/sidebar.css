@@ -121,6 +121,13 @@
   padding: 6px 8px; 
 }
 
+/* Optional: subtle separator before footer/usage */
+.pe-sidebar .pe-sidebar-muted {
+  margin: 0 8px;
+  border-top: 1px dashed #e5e7eb;
+  padding-top: 10px;
+}
+
 .pe-sidebar .is-active { 
   background: #fff;
 }
@@ -137,6 +144,58 @@
   width: 18px;
   height: 18px;
 }
+
+.pe-sidebar .dashed-line {
+
+  border-bottom: 1px dashed #ababab;
+  margin: 16px;
+  box-sizing: border-box;
+
+}
+
+/* Usage card (vertical bar meter) */
+.pe-usageBlock {
+  margin: 8px 12px 0;
+  padding: 2px 4px 8px;
+}
+
+.pe-usageHeader {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+.pe-usageTitle {
+  font-size: 12px;
+  font-weight: 500;
+  color: #121212;
+}
+
+.pe-meterBars {
+  display: flex;
+  gap: 6px;
+  align-items: flex-end;
+  margin: 6px 0 8px;
+}
+
+.pe-meterBar {
+  width: 8px;
+  height: 18px;
+  background: #e5e7eb; /* gray-200 */
+  border-radius: 3px;
+}
+
+.pe-meterBar.is-filled {
+  background: #f97316; /* orange-500 */
+}
+
+.pe-meterCaption {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.pe-meterCaption .pe-meterCount { color: #121212; font-weight: 500; }
 
 /* Dashboard shell with sidebar */
 .pe-shell { 

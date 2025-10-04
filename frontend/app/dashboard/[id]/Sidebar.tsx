@@ -2,12 +2,17 @@
 import Link from 'next/link'
 import type { Route } from 'next'
 import { usePathname } from 'next/navigation'
-import { useResourceItem } from '@/hooks/resource'
+import { useResourceItem, useResourceList } from '@/hooks/resource'
 import { useRef, useState } from 'react'
+import { useAuth } from '@/hooks/useAuth'
+import { getPlanFeatures } from '@/lib/plans'
+import UsageMeter from '@/components/UsageMeter'
 
 export default function Sidebar({ shopId }: { shopId: string }) {
   const pathname = usePathname()
   const shop = useResourceItem<{ id: number; name: string }>(`shops/${shopId}`)
+  const products = useResourceList<{ id: number }>(`shops/${shopId}/products`)
+  const { user } = useAuth()
 
   // Show "Soon" badges on click for 5 seconds
   const [showSoonAnalytics, setShowSoonAnalytics] = useState(false)
@@ -147,6 +152,25 @@ export default function Sidebar({ shopId }: { shopId: string }) {
         </div>
         {showSoonHelp && <div key={helpKey} className="soon soon--fade">Soon</div>}
       </Link>
+
+        <div className="dashed-line"></div>
+
+      {/* Usage summary */}
+      <div className="pe-sidebar-subtitle">Usage</div>
+      {(() => {
+        const features = getPlanFeatures(user?.account_type)
+        const used = products.data?.length ?? 0
+        const max = features.maxProductsPerShop
+        if (products.loading) {
+          return <div className="pe-sidebar-muted">Products: loading…</div>
+        }
+        if (max === null) {
+          return <div className="pe-sidebar-muted">Products: {used} used (unlimited)</div>
+        }
+        return (
+          <UsageMeter label="Products" used={used} max={max} />
+        )
+      })()}
     </aside>
   )
 }
