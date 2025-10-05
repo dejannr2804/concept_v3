@@ -19,7 +19,9 @@ export default function CreateShopButton({ currentCount, accountType }: { curren
     const max = maxAllowed(accountType)
     if (max !== null && currentCount >= max) {
       const plan = (accountType || 'free')
-      notify.error(`You have reached your shop limit for the '${plan}' plan. Max shops: ${max}.`)
+      notify.error(
+        `Plan limit reached. The maximum of ${max} shops allowed on the '${plan}' plan has been used. Please upgrade your plan to create additional shops.`
+      )
       return
     }
     router.push('/dashboard/new')

@@ -39,11 +39,13 @@
 .toast-title { 
   font-weight: 600; 
   font-size: 0.95rem; 
+  line-height: 1.2;
 }
 
 .toast-message { 
   opacity: 0.9; 
   font-size: 0.9rem; 
+  line-height: 1.4;
 }
 
 .toast-close {
@@ -74,10 +76,16 @@
 
 /* Notifications icon dot */
 .inline-dot { 
-  display: inline-block; 
+  display: block; /* avoid line-height distortion */
   width: 10px; 
   height: 10px; 
-  border-radius: 9999px; 
+  min-width: 10px;
+  min-height: 10px;
+  max-width: 10px;
+  max-height: 10px;
+  flex: 0 0 10px; /* stay fixed size in flex */
+  border-radius: 50%; 
+  aspect-ratio: 1 / 1; /* ensure perfect circle on wrap */
 }
 
 .dot-success { 
