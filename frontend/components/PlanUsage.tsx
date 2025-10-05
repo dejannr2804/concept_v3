@@ -27,7 +27,20 @@ export default function PlanUsage({ currentCount, accountType }: { currentCount:
           <h3>Plan usage</h3>
           <span className={`pu-badge plan-${accountType || 'free'}`}>{titleCase(String(accountType || 'free'))}</span>
         </div>
-        {accountType === 'free' && (
+      </div>
+      <div className="pu-content">
+        {cap === null ? (
+          <div className="pu-count">{currentCount} of ∞ shops used</div>
+        ) : (
+          <>
+            <div className="pu-count">{currentCount} of {cap} shops used</div>
+            <div className="pu-meter" role="progressbar" aria-valuemin={0} aria-valuemax={cap} aria-valuenow={currentCount}>
+              <div className="pu-meterFill" style={{ width: `${pct}%` }} />
+            </div>
+          </>
+        )}
+      </div>
+      {accountType === 'free' && (
           <button
             className="pu-upgradeBtn"
             onClick={() => {
@@ -49,18 +62,5 @@ export default function PlanUsage({ currentCount, accountType }: { currentCount:
             Upgrade to Enterprise
           </button>
         )}
-      </div>
-      <div className="pu-content">
-        {cap === null ? (
-          <div className="pu-count">{currentCount} of ∞ shops used</div>
-        ) : (
-          <>
-            <div className="pu-count">{currentCount} of {cap} shops used</div>
-            <div className="pu-meter" role="progressbar" aria-valuemin={0} aria-valuemax={cap} aria-valuenow={currentCount}>
-              <div className="pu-meterFill" style={{ width: `${pct}%` }} />
-            </div>
-          </>
-        )}
-      </div>
     </div>
   )}
