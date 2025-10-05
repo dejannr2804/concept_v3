@@ -48,7 +48,7 @@
 .plan-usage-card .pu-badge { font-size: 12px; background: #111827; color: #fff; padding: 3px 10px; border-radius: 999px; letter-spacing: .2px; line-height: 1.6; }
 .plan-usage-card .pu-content { margin-top: 8px; }
 .plan-usage-card .pu-count { font-size: 14px; color: #374151; margin-bottom: 8px; }
-.plan-usage-card .pu-meter { width: 100%; height: 8px; background: #e5e7eb; border-radius: 999px; overflow: hidden; }
+.plan-usage-card .pu-meter { width: 100%; height: 14px; background: #e5e7eb; border-radius: 999px; overflow: hidden; }
 .plan-usage-card .pu-meter .pu-meterFill { height: 100%; background: linear-gradient(90deg, #121212, #4b5563, #9ca3af); border-radius: 999px; transition: width .25s ease; }
 .plan-usage-card .pu-upgradeBtn { cursor: pointer; background: #121212; color: #fff; border: 2px solid #121212; border-radius: 999px; padding: 8px 14px; font-size: 13px; font-weight: 500; transition: .2s; box-shadow: 0 1px 1px rgba(0,0,0,0.04); align-self: flex-end }
 .plan-usage-card .pu-upgradeBtn:hover { background: transparent; color: #121212; }
