@@ -1,5 +1,6 @@
 "use client"
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { useNotifications } from '@/components/Notifications'
 
 export type User = {
@@ -26,6 +27,7 @@ export function AuthProvider({ children, initialUser = null }: { children: React
   const [user, setUser] = useState<User | null>(initialUser)
   const [loading, setLoading] = useState(false)
   const notify = useNotifications()
+  const router = useRouter()
 
   useEffect(() => {
     if (initialUser === null) {
@@ -93,6 +95,10 @@ export function AuthProvider({ children, initialUser = null }: { children: React
       }
       setUser(null)
       notify.info('Logged out')
+      try {
+        router.push('/login')
+        router.refresh()
+      } catch {}
     },
   }), [user, loading])
 
