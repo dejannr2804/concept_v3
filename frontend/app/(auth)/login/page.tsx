@@ -16,31 +16,25 @@ export default function LoginPage() {
     document.title = 'Login'
   }, [])
 
+  // If already authenticated, redirect to dashboard
+  useEffect(() => {
+    if (user) {
+      router.replace('/dashboard')
+    }
+  }, [user, router])
+
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault()
     try {
       await login({ identifier, password })
-      router.push('/')
+      router.push('/dashboard')
     } catch (err: any) {
       // Error toast already shown in AuthProvider
     }
   }
 
-  // If already authenticated, show a friendly message and shortcuts
-  if (user) {
-    return (
-      <main className="container">
-        <div className="card">
-          <h2>Already logged in</h2>
-          <p>You are signed in as <strong>{user.username}</strong>.</p>
-          <div className="row gap-1">
-            <button onClick={() => router.push('/')}>Go to Home</button>
-            <button onClick={async () => { await logout(); router.refresh() }}>Logout</button>
-          </div>
-        </div>
-      </main>
-    )
-  }
+  // If authenticated, let the redirect effect run without flashing the page
+  if (user) return null
 
   return (
     <main className="container">

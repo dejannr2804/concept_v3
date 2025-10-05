@@ -7,7 +7,7 @@ import { useEffect } from 'react'
 
 export default function RegisterPage() {
   const router = useRouter()
-  const { register: registerUser, loading } = useAuth()
+  const { user, register: registerUser, loading } = useAuth()
   const [username, setUsername] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -17,15 +17,24 @@ export default function RegisterPage() {
     document.title = 'Register'
   }, [])
 
+  // If already authenticated, redirect to dashboard
+  useEffect(() => {
+    if (user) {
+      router.replace('/dashboard')
+    }
+  }, [user, router])
+
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault()
     try {
       await registerUser({ username, email, password })
-      router.push('/')
+      router.push('/dashboard')
     } catch (err: any) {
       // Error toast already shown in AuthProvider
     }
   }
+
+  if (user) return null
 
   return (
     <main className="container">
