@@ -30,7 +30,7 @@ export default function CreateShopButton({ currentCount, accountType }: { curren
   return (
     <button className="create-new-shop" onClick={onClick}>
       <img src="/img/plus.svg" alt="" className="nav-icon"/>
-      Create a new shop
+      Create New Shop
     </button>
   )
 }
