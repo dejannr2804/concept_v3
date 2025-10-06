@@ -10,7 +10,6 @@
   z-index: 40;
   background: #fff;
   backdrop-filter: blur(12px);
-  border-bottom: 1px solid rgba(226, 232, 240, 0.8);
 }
 
 .public-shop-headerInner {
@@ -106,6 +105,8 @@
 
 .public-shop-body {
   padding-top: 0;
+  background-color: #fff;
+  min-height: calc(100vh - 72px);
 }
 
 .public-shop-page {

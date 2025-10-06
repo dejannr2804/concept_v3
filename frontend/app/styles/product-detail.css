@@ -1,5 +1,5 @@
 /* Public Product Detail */
-.public-product { max-width: 1200px; margin: 40px auto; padding: 0 20px; display: grid; grid-template-columns: 1.08fr .92fr; column-gap: 44px; row-gap: 12px; }
+.public-product { max-width: 1200px; margin: 0 auto; padding: 40px 20px; display: grid; grid-template-columns: 1.08fr .92fr; column-gap: 44px; row-gap: 12px; }
 
 /* Left: Gallery */
 .pp-gallery { background: transparent; }
@@ -25,6 +25,11 @@
 .pp-brand { color: #6b7280; font-size: 13px; display: flex; align-items: center; gap: 8px; }
 .pp-category { color: #6b7280; font-size: 13px; }
 .pp-title { margin: 2px 0 0 0; font-size: 30px; font-weight: 700; color: #0f172a; }
+.pp-starsRow { display: inline-flex; gap: 4px; margin-top: 6px; align-items: center; }
+.pp-starsRow img { width: 16px; height: 16px; display: block; }
+.pp-starsRow .starSpacer { width: 4px; }
+.pp-ratingScore { margin-left: 6px; color: #111827; font-size: 16px; font-weight: 500; line-height: 1; display: inline-flex; align-items: center; }
+.pp-ratingCount { margin-left: 4px; color: #6b7280; font-size: 12px; line-height: 1; display: inline-flex; align-items: center; }
 .pp-rating { color: #111827; font-size: 13px; display: flex; align-items: center; gap: 6px; }
 .pp-rating .stars { display: inline-flex; gap: 2px; filter: hue-rotate(18deg) saturate(1.2); }
 

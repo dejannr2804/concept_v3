@@ -4,6 +4,8 @@ import Link from 'next/link'
 import { api } from '@/lib/api'
 import LoaderStatus from '@/components/LoaderStatus'
 import type { Product as ShopProduct, ProductImage } from '@/lib/shops/types'
+import { useShop } from '@/hooks/useShop'
+import { DEFAULT_CURRENCY } from '@/lib/currencies'
 
 type Product = ShopProduct
 
@@ -25,6 +27,7 @@ const formatMoney = (value: number | null, currency?: string | null): string => 
 
 export default function PublicProductPage({ params }: { params: { slug: string; productSlug: string } }) {
   const { slug: shopSlug, productSlug } = params
+  const { shop } = useShop(shopSlug)
   const [product, setProduct] = useState<Product | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -75,7 +78,7 @@ export default function PublicProductPage({ params }: { params: { slug: string; 
   const discount = parseAmount(product.discounted_price)
   const hasDiscount = discount !== null && base !== null && discount < base
   const primary = discount ?? base
-  const currency = product.currency || 'USD'
+  const currency = shop?.currency || product.currency || DEFAULT_CURRENCY
   const priceText = formatMoney(primary, currency)
   const originalText = hasDiscount && base !== null ? formatMoney(base, currency) : ''
 
@@ -122,6 +125,15 @@ export default function PublicProductPage({ params }: { params: { slug: string; 
       <section className="pp-info">
         <div className="pp-category">{product.category || 'Category'}</div>
         <h1 className="pp-title">{product.name}</h1>
+        <div className="pp-starsRow" aria-hidden>
+          <img src="/img/star-01.svg" alt="" />
+          <img src="/img/star-01.svg" alt="" />
+          <img src="/img/star-01.svg" alt="" />
+          <img src="/img/star-01.svg" alt="" />
+          <img src="/img/star-01.svg" alt="" />
+          <span className="pp-ratingScore">4.8</span>
+          <span className="pp-ratingCount">(42)</span>
+        </div>
 
         <div className="pp-price">
           {priceText}
