@@ -35,6 +35,8 @@ export default function PublicProductPage({ params }: { params: { slug: string; 
   const [isZooming, setIsZooming] = useState(false)
   const [zoomPos, setZoomPos] = useState<{ x: number; y: number }>({ x: 0, y: 0 })
   const containerRef = useRef<HTMLDivElement | null>(null)
+  const imgRef = useRef<HTMLImageElement | null>(null)
+  const [imgSize, setImgSize] = useState<{ w: number; h: number } | null>(null)
 
   useEffect(() => {
     let cancelled = false
@@ -114,7 +116,15 @@ export default function PublicProductPage({ params }: { params: { slug: string; 
         >
           {mainImage ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={mainImage.url} alt={mainImage.alt_text || product.name} />
+            <img
+              ref={imgRef}
+              src={mainImage.url}
+              alt={mainImage.alt_text || product.name}
+              onLoad={(e) => {
+                const i = e.currentTarget
+                setImgSize({ w: i.naturalWidth, h: i.naturalHeight })
+              }}
+            />
           ) : (
             <div style={{width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#64748b'}}>Image coming soon</div>
           )}
@@ -124,7 +134,7 @@ export default function PublicProductPage({ params }: { params: { slug: string; 
                 className="pp-lens"
                 style={{ left: zoomPos.x, top: zoomPos.y }}
               />
-              <ZoomPopup imageUrl={mainImage.url} container={containerRef.current} pos={zoomPos} />
+              <ZoomPopup imageUrl={mainImage.url} container={containerRef.current} pos={zoomPos} imgSize={imgSize} />
             </>
           ) : null}
         </div>
@@ -181,15 +191,51 @@ export default function PublicProductPage({ params }: { params: { slug: string; 
   )
 }
 
-function ZoomPopup({ imageUrl, container, pos }: { imageUrl: string; container: HTMLElement | null; pos: { x: number; y: number } }) {
+function ZoomPopup({ imageUrl, container, pos, imgSize }: { imageUrl: string; container: HTMLElement | null; pos: { x: number; y: number }; imgSize: { w: number; h: number } | null }) {
   if (!container) return null as any
   const box = { w: 260, h: 260 }
   const rect = container.getBoundingClientRect()
   const zoom = 2.5
-  const bgW = rect.width * zoom
-  const bgH = rect.height * zoom
-  const px = (pos.x / rect.width) * (bgW - box.w)
-  const py = (pos.y / rect.height) * (bgH - box.h)
+  let bgW: number
+  let bgH: number
+  let px: number
+  let py: number
+
+  if (imgSize) {
+    const s = rect.width // square container
+    const r = imgSize.w / imgSize.h
+    let coverW: number
+    let coverH: number
+    let offsetX = 0
+    let offsetY = 0
+    if (r >= 1) {
+      // Landscape: height fits, width overflows
+      coverH = s
+      coverW = s * r
+      offsetX = (coverW - s) / 2
+    } else {
+      // Portrait: width fits, height overflows
+      coverW = s
+      coverH = s / r
+      offsetY = (coverH - s) / 2
+    }
+    bgW = coverW * zoom
+    bgH = coverH * zoom
+    const imgX = pos.x + offsetX
+    const imgY = pos.y + offsetY
+    px = imgX * zoom - box.w / 2
+    py = imgY * zoom - box.h / 2
+  } else {
+    // Fallback to container-based zoom
+    bgW = rect.width * zoom
+    bgH = rect.height * zoom
+    px = (pos.x / rect.width) * (bgW - box.w)
+    py = (pos.y / rect.height) * (bgH - box.h)
+  }
+
+  // Clamp background position so we don't show empty space
+  px = Math.max(0, Math.min(px, bgW - box.w))
+  py = Math.max(0, Math.min(py, bgH - box.h))
 
   const style: React.CSSProperties = {
     backgroundImage: `url(${imageUrl})`,
