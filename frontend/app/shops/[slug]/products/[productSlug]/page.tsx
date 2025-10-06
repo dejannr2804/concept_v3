@@ -1,5 +1,5 @@
 "use client"
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import Link from 'next/link'
 import { api } from '@/lib/api'
 import LoaderStatus from '@/components/LoaderStatus'
@@ -32,6 +32,9 @@ export default function PublicProductPage({ params }: { params: { slug: string; 
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [activeIndex, setActiveIndex] = useState(0)
+  const [isZooming, setIsZooming] = useState(false)
+  const [zoomPos, setZoomPos] = useState<{ x: number; y: number }>({ x: 0, y: 0 })
+  const containerRef = useRef<HTMLDivElement | null>(null)
 
   useEffect(() => {
     let cancelled = false
@@ -95,13 +98,35 @@ export default function PublicProductPage({ params }: { params: { slug: string; 
       </div>
       {/* Left: Gallery */}
       <section className="pp-gallery" aria-label="Product media">
-        <div className="pp-main">
+        <div
+          className="pp-main"
+          ref={containerRef}
+          onMouseEnter={() => setIsZooming(true)}
+          onMouseLeave={() => setIsZooming(false)}
+          onMouseMove={(e) => {
+            const el = containerRef.current
+            if (!el) return
+            const rect = el.getBoundingClientRect()
+            const x = Math.max(0, Math.min(e.clientX - rect.left, rect.width))
+            const y = Math.max(0, Math.min(e.clientY - rect.top, rect.height))
+            setZoomPos({ x, y })
+          }}
+        >
           {mainImage ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img src={mainImage.url} alt={mainImage.alt_text || product.name} />
           ) : (
             <div style={{width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#64748b'}}>Image coming soon</div>
           )}
+          {isZooming && mainImage ? (
+            <>
+              <div
+                className="pp-lens"
+                style={{ left: zoomPos.x, top: zoomPos.y }}
+              />
+              <ZoomPopup imageUrl={mainImage.url} container={containerRef.current} pos={zoomPos} />
+            </>
+          ) : null}
         </div>
         <div className="pp-thumbs">
           {(images.length ? images : [null, null, null, null]).slice(0, 5).map((img, idx) => (
@@ -154,4 +179,25 @@ export default function PublicProductPage({ params }: { params: { slug: string; 
       </section>
     </main>
   )
+}
+
+function ZoomPopup({ imageUrl, container, pos }: { imageUrl: string; container: HTMLElement | null; pos: { x: number; y: number } }) {
+  if (!container) return null as any
+  const box = { w: 260, h: 260 }
+  const rect = container.getBoundingClientRect()
+  const zoom = 2.5
+  const bgW = rect.width * zoom
+  const bgH = rect.height * zoom
+  const px = (pos.x / rect.width) * (bgW - box.w)
+  const py = (pos.y / rect.height) * (bgH - box.h)
+
+  const style: React.CSSProperties = {
+    backgroundImage: `url(${imageUrl})`,
+    backgroundSize: `${bgW}px ${bgH}px`,
+    backgroundPosition: `-${px}px -${py}px`,
+    // Smoothly snap between corners using transform
+    transform: `translate(${pos.x < rect.width / 2 ? rect.width - 260 - 24 : 0}px, ${pos.y < rect.height / 2 ? rect.height - 260 - 24 : 0}px)`,
+  }
+
+  return <div className="pp-zoomPopup" style={style} />
 }
