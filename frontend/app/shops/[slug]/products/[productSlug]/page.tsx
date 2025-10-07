@@ -3,7 +3,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import Link from 'next/link'
 import { api } from '@/lib/api'
 import LoaderStatus from '@/components/LoaderStatus'
-import type { Product as ShopProduct, ProductImage } from '@/lib/shops/types'
+import type { Product as ShopProduct, ProductImage, ProductVariantType } from '@/lib/shops/types'
 import { useShop } from '@/hooks/useShop'
 import { DEFAULT_CURRENCY } from '@/lib/currencies'
 
@@ -37,6 +37,40 @@ export default function PublicProductPage({ params }: { params: { slug: string; 
   const containerRef = useRef<HTMLDivElement | null>(null)
   const imgRef = useRef<HTMLImageElement | null>(null)
   const [imgSize, setImgSize] = useState<{ w: number; h: number } | null>(null)
+  const [selectedVariants, setSelectedVariants] = useState<Record<string, number>>({})
+
+  const variantTypes = useMemo<ProductVariantType[]>(() => {
+    if (!product?.variant_types || product.variant_types.length === 0) return []
+    return product.variant_types
+      .slice()
+      .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0))
+      .map((variant) => ({
+        ...variant,
+        options: (variant.options ?? []).slice().sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0)),
+      }))
+  }, [product])
+
+  useEffect(() => {
+    setSelectedVariants((prev) => {
+      const next: Record<string, number> = {}
+      let changed = false
+      variantTypes.forEach((variant, idx) => {
+        const options = variant.options ?? []
+        if (!options.length) return
+        const key = `${variant.id ?? idx}`
+        const prevIndex = prev[key]
+        const nextIndex = typeof prevIndex === 'number' && prevIndex < options.length ? prevIndex : 0
+        next[key] = nextIndex
+        if (nextIndex !== prevIndex) changed = true
+      })
+      if (Object.keys(prev).length !== Object.keys(next).length) changed = true
+      return changed ? next : prev
+    })
+  }, [variantTypes])
+
+  function selectVariant(key: string, optionIndex: number) {
+    setSelectedVariants((prev) => ({ ...prev, [key]: optionIndex }))
+  }
 
   useEffect(() => {
     let cancelled = false
@@ -175,7 +209,38 @@ export default function PublicProductPage({ params }: { params: { slug: string; 
           {originalText ? <span className="muted">{originalText}</span> : null}
         </div>
 
-        {/* Removed color and size pickers per request */}
+        {variantTypes.length > 0 ? (
+          <div className="pp-variants">
+            {variantTypes.map((variant, idx) => {
+              const options = variant.options ?? []
+              if (!options.length) return null
+              const key = `${variant.id ?? idx}`
+              const selectedIndex = selectedVariants[key] ?? 0
+              return (
+                <div className="pp-variant" key={key}>
+                  <span className="pp-variantLabel">{variant.name}</span>
+                  <div className="pp-variantOptions">
+                    {options.map((option, optionIdx) => {
+                      const optionLabel = option.name || option.value || `Option ${optionIdx + 1}`
+                      const isSelected = selectedIndex === optionIdx
+                      return (
+                        <button
+                          type="button"
+                          key={option.id ?? `option-${optionIdx}`}
+                          className={`pp-optionBtn${isSelected ? ' is-active' : ''}`}
+                          onClick={() => selectVariant(key, optionIdx)}
+                          aria-pressed={isSelected}
+                        >
+                          {optionLabel}
+                        </button>
+                      )
+                    })}
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        ) : null}
 
         <div className="pp-actions">
           <button type="button" className="pp-addToCart">Add to cart</button>

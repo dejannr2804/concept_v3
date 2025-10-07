@@ -1,7 +1,14 @@
 from rest_framework import serializers
 from django.utils.text import slugify
 
-from .models import Shop, Product, ProductImage, Category
+from .models import (
+    Shop,
+    Product,
+    ProductImage,
+    Category,
+    ProductVariantType,
+    ProductVariantOption,
+)
 
 
 class ShopSerializer(serializers.ModelSerializer):
@@ -57,11 +64,50 @@ class ProductImageSerializer(serializers.ModelSerializer):
         read_only_fields = ["id", "created_at"]
 
 
+class ProductVariantOptionSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(required=False)
+
+    class Meta:
+        model = ProductVariantOption
+        fields = ["id", "name", "value", "color_hex", "sort_order"]
+        extra_kwargs = {
+            "sort_order": {"required": False},
+            "color_hex": {"required": False, "allow_blank": True},
+        }
+
+    def validate_name(self, value: str) -> str:
+        value = (value or "").strip()
+        if not value:
+            raise serializers.ValidationError("Option name is required")
+        return value
+
+
+class ProductVariantTypeSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(required=False)
+    options = ProductVariantOptionSerializer(many=True, required=False)
+
+    class Meta:
+        model = ProductVariantType
+        fields = ["id", "name", "input_type", "sort_order", "options"]
+        extra_kwargs = {
+            "sort_order": {"required": False},
+            "input_type": {"read_only": True},
+        }
+
+    def validate_name(self, value: str) -> str:
+        value = (value or "").strip()
+        if not value:
+            raise serializers.ValidationError("Variant name is required")
+        return value
+
+
 class PublicProductSerializer(serializers.ModelSerializer):
     images = ProductImageSerializer(many=True, read_only=True)
     # Back-compat alias for older clients
     description = serializers.CharField(source="long_description", read_only=True)
     category = serializers.CharField(source="category.name", read_only=True, allow_blank=True, default="")
+    variant_types = ProductVariantTypeSerializer(many=True, read_only=True)
+
     class Meta:
         model = Product
         fields = [
@@ -81,6 +127,7 @@ class PublicProductSerializer(serializers.ModelSerializer):
             "available_from",
             "available_to",
             "images",
+            "variant_types",
             "created_at",
             "updated_at",
         ]
@@ -119,6 +166,8 @@ class ProductSerializer(serializers.ModelSerializer):
     description = serializers.CharField(source="long_description", read_only=True)
     # Represent category as a simple name for simplicity/back-compat (read-only display)
     category = serializers.CharField(source="category.name", read_only=True)
+    variant_types = ProductVariantTypeSerializer(many=True, required=False)
+
     class Meta:
         model = Product
         fields = [
@@ -140,6 +189,7 @@ class ProductSerializer(serializers.ModelSerializer):
             "available_from",
             "available_to",
             "images",
+            "variant_types",
             "created_at",
             "updated_at",
         ]
@@ -172,7 +222,11 @@ class ProductSerializer(serializers.ModelSerializer):
             # Default product currency to the shop currency when not explicitly provided
             if not validated_data.get("currency") and getattr(shop, "currency", None):
                 validated_data["currency"] = shop.currency
-        return super().create(validated_data)
+        variant_types_data = validated_data.pop("variant_types", [])
+        product = super().create(validated_data)
+        if variant_types_data:
+            self._sync_variant_types(product=product, variant_types=variant_types_data)
+        return product
 
     def update(self, instance, validated_data):
         if "slug" in validated_data and not validated_data.get("slug"):
@@ -181,7 +235,68 @@ class ProductSerializer(serializers.ModelSerializer):
         if isinstance(self.initial_data, dict) and "category" in self.initial_data:
             cat_name = self.initial_data.get("category")
             validated_data["category"] = self._resolve_category(shop=instance.shop, name=cat_name)
-        return super().update(instance, validated_data)
+        variant_types_data = validated_data.pop("variant_types", None)
+        product = super().update(instance, validated_data)
+        if variant_types_data is not None:
+            self._sync_variant_types(product=product, variant_types=variant_types_data)
+        return product
+
+    def _sync_variant_types(self, *, product: Product, variant_types: list[dict]):
+        if len(variant_types) > 3:
+            raise serializers.ValidationError({"variant_types": "Up to three variant types are allowed per product"})
+
+        existing_types = {vt.id: vt for vt in product.variant_types.all()}
+        keep_type_ids: list[int] = []
+        for index, variant_data in enumerate(variant_types):
+            vt_id = variant_data.get("id")
+            options_data = variant_data.get("options") or []
+            name = (variant_data.get("name") or "").strip()
+            input_type = ProductVariantType.InputType.TEXT
+            if vt_id and vt_id in existing_types:
+                vt = existing_types[vt_id]
+                vt.name = name
+                vt.input_type = input_type
+                vt.sort_order = index
+                vt.save(update_fields=["name", "input_type", "sort_order", "updated_at"])
+            else:
+                vt = ProductVariantType.objects.create(
+                    product=product,
+                    name=name,
+                    input_type=input_type,
+                    sort_order=index,
+                )
+            keep_type_ids.append(vt.id)
+            self._sync_variant_options(variant_type=vt, options=options_data, input_type=input_type)
+
+        ProductVariantType.objects.filter(product=product).exclude(id__in=keep_type_ids).delete()
+
+    def _sync_variant_options(self, *, variant_type: ProductVariantType, options: list[dict], input_type: str):
+        existing_options = {opt.id: opt for opt in variant_type.options.all()}
+        keep_option_ids: list[int] = []
+        for index, option_data in enumerate(options):
+            opt_id = option_data.get("id")
+            name = (option_data.get("name") or "").strip()
+            value = option_data.get("value") or name
+            color_hex = ""
+
+            if opt_id and opt_id in existing_options:
+                opt = existing_options[opt_id]
+                opt.name = name
+                opt.value = value
+                opt.color_hex = color_hex
+                opt.sort_order = index
+                opt.save(update_fields=["name", "value", "color_hex", "sort_order"])
+            else:
+                opt = ProductVariantOption.objects.create(
+                    variant_type=variant_type,
+                    name=name,
+                    value=value,
+                    color_hex=color_hex,
+                    sort_order=index,
+                )
+            keep_option_ids.append(opt.id)
+
+        ProductVariantOption.objects.filter(variant_type=variant_type).exclude(id__in=keep_option_ids).delete()
 
 
 class CategorySerializer(serializers.ModelSerializer):

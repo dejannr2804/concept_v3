@@ -112,3 +112,46 @@ class ProductImage(models.Model):
 
     def __str__(self) -> str:
         return f"Image {self.id} for product {self.product_id}"
+
+
+class ProductVariantType(models.Model):
+    class InputType(models.TextChoices):
+        TEXT = "text", "Text"
+        COLOR = "color", "Color"
+
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="variant_types")
+    name = models.CharField(max_length=64)
+    input_type = models.CharField(max_length=16, choices=InputType.choices, default=InputType.TEXT)
+    sort_order = models.PositiveIntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = "cp_product_variant_type"
+        ordering = ["product_id", "sort_order", "id"]
+        constraints = [
+            models.UniqueConstraint(fields=["product", "name"], name="unique_variant_name_per_product"),
+        ]
+
+    def __str__(self) -> str:
+        return f"VariantType {self.name} (product={self.product_id})"
+
+
+class ProductVariantOption(models.Model):
+    variant_type = models.ForeignKey(ProductVariantType, on_delete=models.CASCADE, related_name="options")
+    name = models.CharField(max_length=64)
+    value = models.CharField(max_length=128, blank=True, default="")
+    color_hex = models.CharField(max_length=7, blank=True, default="")
+    sort_order = models.PositiveIntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = "cp_product_variant_option"
+        ordering = ["variant_type_id", "sort_order", "id"]
+        constraints = [
+            models.UniqueConstraint(fields=["variant_type", "name"], name="unique_variant_option_name_per_variant"),
+        ]
+
+    def __str__(self) -> str:
+        return f"VariantOption {self.name} (variant_type={self.variant_type_id})"

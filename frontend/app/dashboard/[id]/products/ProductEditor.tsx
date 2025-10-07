@@ -21,6 +21,19 @@ type ImageItem = {
   error?: string | null
 }
 
+type VariantOption = {
+  id?: number
+  name: string
+  value?: string | null
+  sort_order?: number
+}
+
+type VariantType = {
+  id?: number
+  name: string
+  options: VariantOption[]
+}
+
 const PRODUCT_FIELD_KEYS = [
   'name', 'slug', 'sku', 'category',
   'short_description', 'long_description',
@@ -28,7 +41,10 @@ const PRODUCT_FIELD_KEYS = [
   'base_price', 'discounted_price',
   'stock_quantity', 'stock_status',
   'available_from', 'available_to',
+  'variant_types',
 ]
+
+const MAX_VARIANT_TYPES = 3
 
 export default function ProductEditor({
   shopId,
@@ -99,6 +115,95 @@ export default function ProductEditor({
   const setField = (name: string, value: any) => {
     if (mode === 'create') creator.setField(name, value)
     else updater.setField(name, value)
+  }
+
+  const variantTypes = (Array.isArray(data?.variant_types) ? data.variant_types : []) as VariantType[]
+  const variantLimitReached = variantTypes.length >= MAX_VARIANT_TYPES
+
+  function normalizeVariantOptions(options: VariantOption[] | null | undefined): VariantOption[] {
+    if (!Array.isArray(options)) return []
+    return options.map((opt, idx) => {
+      const name = typeof opt?.name === 'string' ? opt.name : ''
+      const value = typeof opt?.value === 'string' ? opt.value : name
+      const base: VariantOption = {
+        name,
+        value,
+        sort_order: idx,
+      }
+      if (opt && typeof opt.id === 'number') base.id = opt.id
+      return base
+    })
+  }
+
+  function updateVariantTypes(next: VariantType[]) {
+    const normalized = next.map((variant, index) => {
+      const name = typeof variant?.name === 'string' ? variant.name : ''
+      const base: VariantType = {
+        name,
+        options: normalizeVariantOptions(variant.options),
+      }
+      if (variant && typeof variant.id === 'number') base.id = variant.id
+      // Preserve sort order implicitly by array index; backend reassigns.
+      return base
+    })
+    setField('variant_types', normalized)
+  }
+
+  function updateVariantTypeAt(index: number, patch: Partial<VariantType>) {
+    const next = variantTypes.map((variant, idx) => {
+      if (idx !== index) return variant
+      const currentOptions = Array.isArray(variant.options) ? variant.options : []
+      const nextOptions = patch.options !== undefined ? patch.options : currentOptions
+      return {
+        ...variant,
+        ...patch,
+        options: nextOptions,
+      }
+    })
+    updateVariantTypes(next)
+  }
+
+  function addVariantType() {
+    if (variantLimitReached) return
+    updateVariantTypes([
+      ...variantTypes,
+      { name: '', options: [] },
+    ])
+  }
+
+  function removeVariantType(index: number) {
+    updateVariantTypes(variantTypes.filter((_, idx) => idx !== index))
+  }
+
+  function addVariantOption(index: number) {
+    const variant = variantTypes[index]
+    if (!variant) return
+    const options = Array.isArray(variant.options) ? variant.options : []
+    const nextOption: VariantOption = {
+      name: '',
+      value: '',
+    }
+    updateVariantTypeAt(index, { options: [...options, nextOption] })
+  }
+
+  function removeVariantOption(index: number, optionIndex: number) {
+    const variant = variantTypes[index]
+    if (!variant) return
+    const options = Array.isArray(variant.options) ? variant.options : []
+    updateVariantTypeAt(index, { options: options.filter((_, idx) => idx !== optionIndex) })
+  }
+
+  function updateVariantOption(index: number, optionIndex: number, patch: Partial<VariantOption>) {
+    const variant = variantTypes[index]
+    if (!variant) return
+    const options = Array.isArray(variant.options) ? variant.options : []
+    const nextOptions = options.map((opt, idx) => {
+      if (idx !== optionIndex) return opt
+      const updated: VariantOption = { ...opt, ...patch }
+      if (patch.name !== undefined) updated.value = patch.name
+      return updated
+    })
+    updateVariantTypeAt(index, { options: nextOptions })
   }
 
   function toSlug(v: string) {
@@ -641,6 +746,93 @@ export default function ProductEditor({
                   <textarea className="pe-textarea" rows={6} value={data?.long_description || ''}
                             onChange={(e) => setField('long_description', e.target.value)}/>
                 </label>
+              </div>
+
+              <div className="pe-formGroup">
+                <h3 className="pe-groupTitle">Variants</h3>
+                <p className="pe-variantsHint">
+                  Optional: add up to three variant groups (like Size or Material). Each variant lets shoppers choose from your predefined text options.
+                </p>
+                <div className="pe-variantList">
+                  {variantTypes.length === 0 ? (
+                    <p className="pe-variantEmpty">No variants yet. Use “Add variant type” to get started.</p>
+                  ) : (
+                    variantTypes.map((variant, index) => {
+                      const options = Array.isArray(variant.options) ? variant.options : []
+                      const title = variant.name?.trim() || `Variant ${index + 1}`
+                      return (
+                        <div className="pe-variantCard" key={variant.id ?? `variant-${index}`}>
+                          <div className="pe-variantHeader">
+                            <span className="pe-variantTitle">{title}</span>
+                            <button
+                              type="button"
+                              className="pe-variantRemove"
+                              onClick={() => removeVariantType(index)}
+                              aria-label={`Remove variant ${title}`}
+                            >
+                              Remove
+                            </button>
+                          </div>
+                          <div className="pe-rowFields">
+                            <label className="pe-formField">
+                              <span className="pe-label">Name</span>
+                              <input
+                                className="pe-input"
+                                placeholder="e.g. Size"
+                                value={variant.name || ''}
+                                onChange={(e) => updateVariantTypeAt(index, { name: e.target.value })}
+                              />
+                            </label>
+                          </div>
+                          <div className="pe-variantOptions">
+                            {options.length === 0 ? (
+                              <p className="pe-variantOptionEmpty">No options yet.</p>
+                            ) : (
+                              options.map((opt, optionIndex) => {
+                                return (
+                                  <div className="pe-variantOptionRow" key={opt.id ?? `option-${index}-${optionIndex}`}>
+                                    <label className="pe-formField pe-variantOptionField">
+                                      <span className="pe-label">Option label</span>
+                                      <input
+                                        className="pe-input"
+                                        placeholder="e.g. Large"
+                                        value={opt.name || ''}
+                                        onChange={(e) => updateVariantOption(index, optionIndex, { name: e.target.value })}
+                                      />
+                                    </label>
+                                    <button
+                                      type="button"
+                                      className="pe-variantOptionRemove"
+                                      onClick={() => removeVariantOption(index, optionIndex)}
+                                      aria-label={`Remove option ${opt.name || optionIndex + 1}`}
+                                    >
+                                      Remove
+                                    </button>
+                                  </div>
+                                )
+                              })
+                            )}
+                          </div>
+                          <button
+                            type="button"
+                            className="pe-variantAddOption"
+                            onClick={() => addVariantOption(index)}
+                          >
+                            Add option
+                          </button>
+                        </div>
+                      )
+                    })
+                  )}
+                </div>
+                <button
+                  type="button"
+                  className="pe-variantAddType"
+                  onClick={addVariantType}
+                  disabled={variantLimitReached}
+                >
+                  {variantLimitReached ? 'Variant limit reached' : 'Add variant type'}
+                </button>
               </div>
 
               <div className="pe-formGroup">

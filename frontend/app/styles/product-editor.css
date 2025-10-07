@@ -657,6 +657,124 @@
   outline-offset: -2px; 
 }
 
+.pe-variantsHint {
+  margin: 4px 0 12px 0;
+  font-size: 13px;
+  color: #6b7280;
+  line-height: 1.5;
+}
+
+.pe-variantList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.pe-variantCard {
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.pe-variantHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.pe-variantTitle {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.pe-variantRemove,
+.pe-variantOptionRemove {
+  border: none;
+  background: none;
+  color: #dc2626;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 4px 6px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.pe-variantRemove:hover,
+.pe-variantOptionRemove:hover {
+  background: rgba(220, 38, 38, 0.08);
+}
+
+.pe-variantOptions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.pe-variantOptionRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 12px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 12px;
+}
+
+.pe-variantOptionField {
+  flex: 1 1 200px;
+}
+
+.pe-variantOptionEmpty,
+.pe-variantEmpty {
+  margin: 0;
+  font-size: 13px;
+  color: #6b7280;
+  background: #ffffff;
+  border: 1px dashed #d1d5db;
+  border-radius: 12px;
+  padding: 12px;
+}
+
+.pe-variantAddOption,
+.pe-variantAddType {
+  align-self: flex-start;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.pe-variantAddOption {
+  border: 1px dashed #93c5fd;
+  background: #f8fbff;
+  color: #1d4ed8;
+}
+
+.pe-variantAddOption:hover {
+  background: #eff6ff;
+}
+
+.pe-variantAddType {
+  margin-top: 12px;
+  border: 1px dashed #d1d5db;
+  background: #ffffff;
+  color: #2563eb;
+}
+
+.pe-variantAddType:disabled {
+  color: #9ca3af;
+  border-color: #e5e7eb;
+  cursor: not-allowed;
+  background: #f3f4f6;
+}
 
 @media (max-width: 920px) { 
   .pe-grid { 

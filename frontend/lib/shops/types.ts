@@ -5,6 +5,22 @@ export type ProductImage = {
   sort_order: number
 }
 
+export type ProductVariantOption = {
+  id: number
+  name: string
+  value?: string | null
+  color_hex?: string | null
+  sort_order: number
+}
+
+export type ProductVariantType = {
+  id: number
+  name: string
+  input_type: 'text' | 'color'
+  sort_order: number
+  options: ProductVariantOption[]
+}
+
 export type Product = {
   id: number
   name: string
@@ -18,6 +34,7 @@ export type Product = {
   stock_status?: 'in_stock' | 'out_of_stock'
   stock_quantity?: number | null
   images?: ProductImage[]
+  variant_types?: ProductVariantType[]
 }
 
 export type CategorySummary = {

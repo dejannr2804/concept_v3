@@ -55,7 +55,11 @@ class ProductListCreateView(generics.ListCreateAPIView):
 
     def get_queryset(self):
         shop = self.get_shop()
-        return Product.objects.filter(shop=shop).order_by("id")
+        return (
+            Product.objects.filter(shop=shop)
+            .prefetch_related("images", "variant_types__options")
+            .order_by("id")
+        )
 
     def perform_create(self, serializer):
         shop = self.get_shop()
@@ -82,7 +86,10 @@ class ProductRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         # Constrain to products within the user's shops
-        return Product.objects.filter(shop__user=self.request.user)
+        return (
+            Product.objects.filter(shop__user=self.request.user)
+            .prefetch_related("images", "variant_types__options")
+        )
 
 
 class PublicShopDetailView(RetrieveAPIView):
@@ -92,7 +99,10 @@ class PublicShopDetailView(RetrieveAPIView):
 
     def get_queryset(self):
         # Publicly readable shop by slug, no user constraint
-        return Shop.objects.all()
+        return Shop.objects.prefetch_related(
+            "products__images",
+            "products__variant_types__options",
+        )
 
 
 class PublicProductDetailView(RetrieveAPIView):
@@ -102,7 +112,11 @@ class PublicProductDetailView(RetrieveAPIView):
     def get_object(self):
         shop_slug = self.kwargs.get("shop_slug")
         product_slug = self.kwargs.get("product_slug")
-        return generics.get_object_or_404(Product, shop__slug=shop_slug, slug=product_slug)
+        return generics.get_object_or_404(
+            Product.objects.prefetch_related("images", "variant_types__options").select_related("category", "shop"),
+            shop__slug=shop_slug,
+            slug=product_slug,
+        )
 
 
 class ProductImageUploadView(generics.GenericAPIView):
