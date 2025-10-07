@@ -673,8 +673,8 @@
 .pe-variantCard {
   background: #f9fafb;
   border: 1px solid #e5e7eb;
-  border-radius: 16px;
-  padding: 16px;
+  border-radius: 12px;
+  padding: 14px;
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -684,16 +684,57 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 12px;
 }
 
-.pe-variantTitle {
+.pe-variantNameInput {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-weight: 600;
+  font-size: 14px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: 1px solid #d1d5db;
+  background: #fff;
+  color: #111827;
+}
+
+.pe-variantNameWrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.pe-variantNameDisplay {
   font-size: 14px;
   font-weight: 600;
+  color: #111827;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pe-variantEdit {
+  border: none;
+  background: none;
+  padding: 4px;
+  border-radius: 6px;
+  color: #475569;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.pe-variantEdit:hover {
+  background: rgba(148, 163, 184, 0.18);
   color: #1f2937;
 }
 
-.pe-variantRemove,
-.pe-variantOptionRemove {
+.pe-variantRemove {
   border: none;
   background: none;
   color: #dc2626;
@@ -704,30 +745,47 @@
   cursor: pointer;
 }
 
-.pe-variantRemove:hover,
-.pe-variantOptionRemove:hover {
+.pe-variantRemove:hover {
   background: rgba(220, 38, 38, 0.08);
 }
 
 .pe-variantOptions {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 6px;
 }
 
 .pe-variantOptionRow {
   display: flex;
-  flex-wrap: wrap;
-  align-items: flex-end;
-  gap: 12px;
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
-  padding: 12px;
+  align-items: center;
+  gap: 8px;
 }
 
-.pe-variantOptionField {
-  flex: 1 1 200px;
+.pe-variantOptionInput {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: 1px solid #d1d5db;
+  background: #fff;
+  font-size: 13px;
+}
+
+.pe-variantOptionRemove {
+  padding: 4px 6px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #6b7280;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  transition: color 0.15s ease, background 0.15s ease;
+}
+
+.pe-variantOptionRemove:hover {
+  color: #dc2626;
+  background: rgba(252, 165, 165, 0.18);
 }
 
 .pe-variantOptionEmpty,
@@ -735,25 +793,25 @@
   margin: 0;
   font-size: 13px;
   color: #6b7280;
-  background: #ffffff;
+  background: #fff;
   border: 1px dashed #d1d5db;
-  border-radius: 12px;
-  padding: 12px;
+  border-radius: 10px;
+  padding: 8px 10px;
 }
 
 .pe-variantAddOption,
 .pe-variantAddType {
-  align-self: flex-start;
-  border-radius: 10px;
-  font-size: 13px;
-  font-weight: 500;
-  padding: 8px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px 14px;
   cursor: pointer;
   transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
 }
 
 .pe-variantAddOption {
-  border: 1px dashed #93c5fd;
+  align-self: flex-start;
+  border: 1px dashed #bfdbfe;
   background: #f8fbff;
   color: #1d4ed8;
 }
@@ -767,6 +825,7 @@
   border: 1px dashed #d1d5db;
   background: #ffffff;
   color: #2563eb;
+  align-self: flex-start;
 }
 
 .pe-variantAddType:disabled {

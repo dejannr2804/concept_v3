@@ -71,6 +71,7 @@ export default function ProductEditor({
   const originalDataRef = useRef<Record<string, any> | null>(null)
   const [baselineReady, setBaselineReady] = useState(mode === 'create')
   const [imageSaving, setImageSaving] = useState(false)
+  const [editingVariantKey, setEditingVariantKey] = useState<string | null>(null)
 
   function reorder<T>(arr: T[], from: number, to: number): T[] {
     const next = arr.slice()
@@ -165,14 +166,17 @@ export default function ProductEditor({
 
   function addVariantType() {
     if (variantLimitReached) return
+    const nextIndex = variantTypes.length
     updateVariantTypes([
       ...variantTypes,
       { name: '', options: [] },
     ])
+    setEditingVariantKey(`idx-${nextIndex}`)
   }
 
   function removeVariantType(index: number) {
     updateVariantTypes(variantTypes.filter((_, idx) => idx !== index))
+    setEditingVariantKey(null)
   }
 
   function addVariantOption(index: number) {
@@ -760,10 +764,60 @@ export default function ProductEditor({
                     variantTypes.map((variant, index) => {
                       const options = Array.isArray(variant.options) ? variant.options : []
                       const title = variant.name?.trim() || `Variant ${index + 1}`
-                      return (
+  return (
                         <div className="pe-variantCard" key={variant.id ?? `variant-${index}`}>
                           <div className="pe-variantHeader">
-                            <span className="pe-variantTitle">{title}</span>
+                            {(() => {
+                              const variantKey = variant.id ? `id-${variant.id}` : `idx-${index}`
+                              const isEditing = editingVariantKey === variantKey
+                              const displayName = (variant.name || '').trim() || `Variant ${index + 1}`
+                              if (isEditing) {
+                                return (
+                                  <input
+                                    className="pe-input pe-variantNameInput"
+                                    placeholder="Variant name"
+                                    aria-label="Variant name"
+                                    value={variant.name || ''}
+                                    autoFocus
+                                    onChange={(e) => updateVariantTypeAt(index, { name: e.target.value })}
+                                    onBlur={() => setEditingVariantKey(null)}
+                                    onKeyDown={(e) => {
+                                      if (e.key === 'Enter' || e.key === 'Escape') {
+                                        e.currentTarget.blur()
+                                      }
+                                    }}
+                                  />
+                                )
+                              }
+                              return (
+                                <div className="pe-variantNameWrap">
+                                  <span className="pe-variantNameDisplay">{displayName}</span>
+                                  <button
+                                    type="button"
+                                    className="pe-variantEdit"
+                                    onClick={() => setEditingVariantKey(variantKey)}
+                                    aria-label={`Edit name for ${displayName}`}
+                                  >
+                                    <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
+                                      <path
+                                        d="M11.5 2.5a1.06 1.06 0 0 1 1.5 1.5l-6.5 6.5L4 11l0.5-2.5 7-6z"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        strokeWidth="1.2"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                      />
+                                      <path
+                                        d="M3 13h10"
+                                        stroke="currentColor"
+                                        strokeWidth="1.2"
+                                        strokeLinecap="round"
+                                      />
+                                    </svg>
+                                  </button>
+                                </div>
+                              )
+                            })()}
                             <button
                               type="button"
                               className="pe-variantRemove"
@@ -773,44 +827,29 @@ export default function ProductEditor({
                               Remove
                             </button>
                           </div>
-                          <div className="pe-rowFields">
-                            <label className="pe-formField">
-                              <span className="pe-label">Name</span>
-                              <input
-                                className="pe-input"
-                                placeholder="e.g. Size"
-                                value={variant.name || ''}
-                                onChange={(e) => updateVariantTypeAt(index, { name: e.target.value })}
-                              />
-                            </label>
-                          </div>
                           <div className="pe-variantOptions">
                             {options.length === 0 ? (
                               <p className="pe-variantOptionEmpty">No options yet.</p>
                             ) : (
-                              options.map((opt, optionIndex) => {
-                                return (
-                                  <div className="pe-variantOptionRow" key={opt.id ?? `option-${index}-${optionIndex}`}>
-                                    <label className="pe-formField pe-variantOptionField">
-                                      <span className="pe-label">Option label</span>
-                                      <input
-                                        className="pe-input"
-                                        placeholder="e.g. Large"
-                                        value={opt.name || ''}
-                                        onChange={(e) => updateVariantOption(index, optionIndex, { name: e.target.value })}
-                                      />
-                                    </label>
-                                    <button
-                                      type="button"
-                                      className="pe-variantOptionRemove"
-                                      onClick={() => removeVariantOption(index, optionIndex)}
-                                      aria-label={`Remove option ${opt.name || optionIndex + 1}`}
-                                    >
-                                      Remove
-                                    </button>
-                                  </div>
-                                )
-                              })
+                              options.map((opt, optionIndex) => (
+                                <div className="pe-variantOptionRow" key={opt.id ?? `option-${index}-${optionIndex}`}>
+                                  <input
+                                    className="pe-input pe-variantOptionInput"
+                                    placeholder="Option label"
+                                    aria-label="Option label"
+                                    value={opt.name || ''}
+                                    onChange={(e) => updateVariantOption(index, optionIndex, { name: e.target.value })}
+                                  />
+                                  <button
+                                    type="button"
+                                    className="pe-variantOptionRemove"
+                                    onClick={() => removeVariantOption(index, optionIndex)}
+                                    aria-label={`Remove option ${opt.name || optionIndex + 1}`}
+                                  >
+                                    Remove
+                                  </button>
+                                </div>
+                              ))
                             )}
                           </div>
                           <button
@@ -818,7 +857,7 @@ export default function ProductEditor({
                             className="pe-variantAddOption"
                             onClick={() => addVariantOption(index)}
                           >
-                            Add option
+                            + Add option
                           </button>
                         </div>
                       )
