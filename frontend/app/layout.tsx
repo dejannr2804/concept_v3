@@ -22,7 +22,7 @@ import { getCurrentUser } from '@/lib/auth'
 import Header from '@/components/Header'
 
 export const metadata: Metadata = {
-  title: 'Next + Django Starter',
+  title: 'Loading...',
   description: 'A scalable starter using Next.js and Django REST',
 }
 

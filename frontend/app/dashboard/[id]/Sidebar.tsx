@@ -10,7 +10,7 @@ import UsageMeter from '@/components/UsageMeter'
 
 export default function Sidebar({ shopId }: { shopId: string }) {
   const pathname = usePathname()
-  const shop = useResourceItem<{ id: number; name: string }>(`shops/${shopId}`)
+  const shop = useResourceItem<{ id: number; name: string; slug?: string }>(`shops/${shopId}`)
   const products = useResourceList<{ id: number }>(`shops/${shopId}/products`)
   const { user } = useAuth()
 
@@ -76,7 +76,16 @@ export default function Sidebar({ shopId }: { shopId: string }) {
         </div>
       </Link>
 
-      <h2 className="pe-sidebar-title">{shop.data?.name || 'Shop'}</h2>
+      {shop.data?.slug ? (
+        <h2 className="pe-sidebar-title">
+          <Link href={`/shops/${shop.data.slug}`} target="_blank" rel="noreferrer">
+            {shop.data?.name || 'Shop'}
+            <img src="/img/arrow-narrow-up-right-d.svg" alt="" className="pe-icon pe-icon--inline" />
+          </Link>
+        </h2>
+      ) : (
+        <h2 className="pe-sidebar-title">{shop.data?.name || 'Shop'}</h2>
+      )}
       <h3 className="pe-sidebar-subtitle">Menu</h3>
 
       <Link href={dashboardHref} className={`pe-sidebar-link ${isDashboard ? 'is-active' : ''}`}>
