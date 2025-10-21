@@ -12,7 +12,7 @@
 
 .pp-thumb { background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; aspect-ratio: 1 / 1; overflow: hidden; cursor: pointer; box-shadow: 0 1px 2px rgba(0,0,0,.03); padding: 0; }
 .pp-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.pp-thumb.is-active { border-color: #111827; box-shadow: none; }
+.pp-thumb.is-active { border-color: #121212; box-shadow: none; }
 
 /* Right: Info */
 .pp-info { display: flex; flex-direction: column; gap: 18px; }
@@ -28,9 +28,9 @@
 .pp-starsRow { display: inline-flex; gap: 4px; margin-top: 6px; align-items: center; }
 .pp-starsRow img { width: 16px; height: 16px; display: block; }
 .pp-starsRow .starSpacer { width: 4px; }
-.pp-ratingScore { margin-left: 6px; color: #111827; font-size: 16px; font-weight: 500; line-height: 1; display: inline-flex; align-items: center; }
+.pp-ratingScore { margin-left: 6px; color: #121212; font-size: 16px; font-weight: 500; line-height: 1; display: inline-flex; align-items: center; }
 .pp-ratingCount { margin-left: 4px; color: #6b7280; font-size: 12px; line-height: 1; display: inline-flex; align-items: center; }
-.pp-rating { color: #111827; font-size: 13px; display: flex; align-items: center; gap: 6px; }
+.pp-rating { color: #121212; font-size: 13px; display: flex; align-items: center; gap: 6px; }
 .pp-rating .stars { display: inline-flex; gap: 2px; filter: hue-rotate(18deg) saturate(1.2); }
 
 .pp-price { font-size: 40px; font-weight: 700; margin-top: 10px; }
@@ -38,7 +38,7 @@
 
 .pp-variants { display: flex; flex-direction: column; gap: 18px; margin-top: 8px; }
 .pp-variant { display: flex; flex-direction: column; gap: 10px; }
-.pp-variantLabel { font-size: 14px; font-weight: 600; color: #111827; }
+.pp-variantLabel { font-size: 14px; font-weight: 600; color: #121212; }
 .pp-variantOptions { display: flex; flex-wrap: wrap; gap: 12px; }
 .pp-optionBtn {
   min-width: 72px;
@@ -50,11 +50,11 @@
   cursor: pointer;
   transition: background .18s ease, color .18s ease, border-color .18s ease, box-shadow .18s ease;
 }
-.pp-optionBtn:hover { border-color: #111827; }
+.pp-optionBtn:hover { border-color: #121212; }
 .pp-optionBtn.is-active {
-  background: #111827;
+  background: #121212;
   color: #fff;
-  border-color: #111827;
+  border-color: #121212;
   box-shadow: 0 10px 24px rgba(15, 23, 42, 0.18);
 }
 
@@ -68,11 +68,11 @@
 
 .pp-sizeGrid { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 10px; }
 .pp-sizeBtn { height: 48px; display: inline-flex; align-items: center; justify-content: center; border-radius: 12px; border: 1px solid #e5e7eb; background: #fff; cursor: pointer; font-weight: 600; }
-.pp-sizeBtn.is-active { background: #111827; color: #fff; border-color: #111827; }
+.pp-sizeBtn.is-active { background: #121212; color: #fff; border-color: #121212; }
 
 .pp-actions { display: block; margin-top: 10px; }
-.pp-addToCart { width: 100%; height: 56px; border-radius: 14px; background: #111827; color: #fff; border: 2px solid #111827; font-weight: 500; cursor: pointer; transition: .2s; font-size: 20px }
-.pp-addToCart:hover { background: transparent; color: #111827; }
+.pp-addToCart { width: 100%; height: 56px; border-radius: 14px; background: #121212; color: #fff; border: 2px solid #121212; font-weight: 500; cursor: pointer; transition: .2s; font-size: 20px }
+.pp-addToCart:hover { background: transparent; color: #121212; }
 
 .pp-meta { color: #6b7280; font-size: 13px; display: flex; gap: 10px; align-items: center; }
 .pp-meta img { width: 18px; height: 18px; }

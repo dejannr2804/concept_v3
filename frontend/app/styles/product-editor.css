@@ -671,13 +671,13 @@
 }
 
 .pe-variantCard {
-  background: #f9fafb;
-  border: 1px solid #e5e7eb;
   border-radius: 12px;
   padding: 14px;
   display: flex;
   flex-direction: column;
   gap: 12px;
+  border: 1px dashed #bfdbfe;
+  background-color: rgba(29, 78, 216, 0.03);
 }
 
 .pe-variantHeader {
@@ -693,8 +693,7 @@
   font-weight: 600;
   font-size: 14px;
   padding: 8px 12px;
-  border-radius: 10px;
-  border: 1px solid #d1d5db;
+  border-radius: 100px;
   background: #fff;
   color: #111827;
 }
@@ -765,8 +764,7 @@
   flex: 1 1 auto;
   min-width: 0;
   padding: 8px 12px;
-  border-radius: 10px;
-  border: 1px solid #d1d5db;
+  border-radius: 100px;
   background: #fff;
   font-size: 13px;
 }
@@ -795,7 +793,7 @@
   color: #6b7280;
   background: #fff;
   border: 1px dashed #d1d5db;
-  border-radius: 10px;
+  border-radius: 100px;
   padding: 8px 10px;
 }
 
