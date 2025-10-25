@@ -750,31 +750,39 @@
 
 .pe-variantOptions {
   display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.pe-variantOptionRow {
-  display: flex;
-  align-items: center;
+  flex-wrap: wrap;
   gap: 8px;
 }
 
-.pe-variantOptionInput {
-  flex: 1 1 auto;
-  min-width: 0;
-  padding: 8px 12px;
-  border-radius: 100px;
+.pe-variantOptionRow {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  border-radius: 999px;
   background: #fff;
+  border: 1px solid #e5e7eb;
+}
+
+.pe-variantOptionInput {
+  flex: 0 1 auto;
+  width: auto;
+  min-width: 48px;
+  padding: 2px 2px;
+  border-radius: 6px;
+  background: transparent;
+  border: none;
+  outline: none;
   font-size: 13px;
 }
 
 .pe-variantOptionRemove {
-  padding: 4px 6px;
-  font-size: 12px;
-  font-weight: 500;
+  padding: 0 6px;
+  font-size: 14px;
+  line-height: 1;
+  font-weight: 600;
   color: #6b7280;
-  border-radius: 6px;
+  border-radius: 999px;
   border: none;
   background: transparent;
   cursor: pointer;

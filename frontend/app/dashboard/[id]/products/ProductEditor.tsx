@@ -861,8 +861,9 @@ export default function ProductEditor({
                                     className="pe-variantOptionRemove"
                                     onClick={() => removeVariantOption(index, optionIndex)}
                                     aria-label={`Remove option ${opt.name || optionIndex + 1}`}
+                                    title="Remove option"
                                   >
-                                    Remove
+                                    ×
                                   </button>
                                 </div>
                               ))
