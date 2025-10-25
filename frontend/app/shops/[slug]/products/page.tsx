@@ -4,6 +4,7 @@ import LoaderStatus from '@/components/LoaderStatus'
 import { ShopProductGrid } from '@/components/shops/ProductGrid'
 import { useShop } from '@/hooks/useShop'
 import { useEffect } from 'react'
+import Link from 'next/link'
 
 export default function ShopProductsPage({ params }: { params: { slug: string } }) {
   const { slug } = params
@@ -50,6 +51,11 @@ export default function ShopProductsPage({ params }: { params: { slug: string } 
   return (
     <main className="public-shop-page">
       <section className="public-shop-content">
+        <div className="pp-breadcrumbs">
+          <Link href={`/shops/${shop.slug}`}>Home</Link>
+          <span> / </span>
+          <span>Products</span>
+        </div>
         <div className="public-shop-contentHeader">
           <h2>All products</h2>
           <p>

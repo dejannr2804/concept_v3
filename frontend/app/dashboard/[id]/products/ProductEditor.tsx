@@ -753,6 +753,22 @@ export default function ProductEditor({
               </div>
 
               <div className="pe-formGroup">
+                <h3 className="pe-groupTitle">Pricing</h3>
+                <div className="pe-rowFields">
+                  <label className="pe-formField">
+                    <span className="pe-label">Price</span>
+                    <input className="pe-input" type="number" step="0.01" value={data?.base_price ?? 0}
+                           onChange={(e) => setField('base_price', e.target.value === '' ? '' : Number(e.target.value))}/>
+                  </label>
+                  <label className="pe-formField">
+                    <span className="pe-label">Discounted Price</span>
+                    <input className="pe-input" type="number" step="0.01" value={data?.discounted_price ?? ''}
+                           onChange={(e) => setField('discounted_price', e.target.value === '' ? null : Number(e.target.value))}/>
+                  </label>
+                </div>
+              </div>
+
+              <div className="pe-formGroup">
                 <h3 className="pe-groupTitle">Variants</h3>
                 <p className="pe-variantsHint">
                   Optional: add up to three variant groups (like Size or Material). Each variant lets shoppers choose from your predefined text options.
@@ -874,21 +890,7 @@ export default function ProductEditor({
                 </button>
               </div>
 
-              <div className="pe-formGroup">
-                <h3 className="pe-groupTitle">Pricing</h3>
-                <div className="pe-rowFields">
-                  <label className="pe-formField">
-                    <span className="pe-label">Price</span>
-                    <input className="pe-input" type="number" step="0.01" value={data?.base_price ?? 0}
-                           onChange={(e) => setField('base_price', e.target.value === '' ? '' : Number(e.target.value))}/>
-                  </label>
-                  <label className="pe-formField">
-                    <span className="pe-label">Discounted Price</span>
-                    <input className="pe-input" type="number" step="0.01" value={data?.discounted_price ?? ''}
-                           onChange={(e) => setField('discounted_price', e.target.value === '' ? null : Number(e.target.value))}/>
-                  </label>
-                </div>
-              </div>
+              
 
               <div className="pe-formGroup">
                 <h3 className="pe-groupTitle">Inventory</h3>

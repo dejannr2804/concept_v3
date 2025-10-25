@@ -653,7 +653,7 @@
 }
 
 .pe-dragOver { 
-  outline: 2px dashed #2563eb; 
+  outline: 2px dashed #f59e0b; 
   outline-offset: -2px; 
 }
 
@@ -676,8 +676,8 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
-  border: 1px dashed #bfdbfe;
-  background-color: rgba(29, 78, 216, 0.03);
+  border: 1px dashed rgba(249, 117, 22, 0.35);
+  background-color: rgba(249, 117, 22, 0.07);
 }
 
 .pe-variantHeader {
@@ -809,20 +809,16 @@
 
 .pe-variantAddOption {
   align-self: flex-start;
-  border: 1px dashed #bfdbfe;
-  background: #f8fbff;
-  color: #1d4ed8;
-}
-
-.pe-variantAddOption:hover {
-  background: #eff6ff;
+  border: 1px dashed rgba(249, 117, 22, 0.35);
+  background: rgba(249, 117, 22, 0.07);
+  color: #f97316;
 }
 
 .pe-variantAddType {
   margin-top: 12px;
-  border: 1px dashed #d1d5db;
-  background: #ffffff;
-  color: #2563eb;
+  border: 1px dashed rgba(249, 117, 22, 0.35);
+  background: rgba(249, 117, 22, 0.07);
+  color: #f97316;
   align-self: flex-start;
 }
 
