@@ -209,6 +209,10 @@ export default function PublicProductPage({ params }: { params: { slug: string; 
           {originalText ? <span className="muted">{originalText}</span> : null}
         </div>
 
+        {product.description ? (
+          <p className="pre-wrap pp-description" style={{ marginTop: 12 }}>{product.description}</p>
+        ) : null}
+
         {variantTypes.length > 0 ? (
           <div className="pp-variants">
             {variantTypes.map((variant, idx) => {
@@ -248,9 +252,7 @@ export default function PublicProductPage({ params }: { params: { slug: string; 
 
         {/* Removed delivery/extra meta per request */}
 
-        {product.description ? (
-          <p className="pre-wrap" style={{marginTop: 12}}>{product.description}</p>
-        ) : null}
+        {/* description moved under price */}
       </section>
     </main>
   )

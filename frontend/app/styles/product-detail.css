@@ -58,6 +58,12 @@
   box-shadow: 0 10px 24px rgba(15, 23, 42, 0.18);
 }
 
+.pp-description {
+  color: #333;
+  font-size: 14px;
+  line-height: 18px;
+}
+
 .pp-sectionLabel { color: #6b7280; font-size: 12px; text-transform: none; letter-spacing: 0; margin-bottom: 6px; }
 
 .pp-colorRow, .pp-sizeRow { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
