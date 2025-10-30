@@ -14,7 +14,6 @@ type Product = {
   sku: string
   category?: string | null
   status: 'active' | 'inactive'
-  short_description?: string
   description?: string
   base_price?: number
   discounted_price?: number | null

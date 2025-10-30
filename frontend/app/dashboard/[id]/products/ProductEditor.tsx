@@ -36,7 +36,7 @@ type VariantType = {
 
 const PRODUCT_FIELD_KEYS = [
   'name', 'slug', 'sku', 'category',
-  'short_description', 'long_description',
+  'long_description',
   'status',
   'base_price', 'discounted_price',
   'stock_quantity', 'stock_status',
@@ -739,12 +739,7 @@ export default function ProductEditor({
               </div>
 
               <div className="pe-formGroup">
-                <h3 className="pe-groupTitle">Descriptions</h3>
-                <label className="pe-formField">
-                  <span className="pe-label">Short Description</span>
-                  <input className="pe-input" value={data?.short_description || ''}
-                         onChange={(e) => setField('short_description', e.target.value)}/>
-                </label>
+                <h3 className="pe-groupTitle">Description</h3>
                 <label className="pe-formField">
                   <span className="pe-label">Description</span>
                   <textarea className="pe-textarea" rows={6} value={data?.long_description || ''}

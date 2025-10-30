@@ -1,0 +1,24 @@
+/* Shop products listing page specific styles */
+
+.public-shop-products {
+  /* inherits base background/colors from shops.css */
+}
+
+.public-shop-products-header {
+  max-width: 1200px;
+  margin: 30px auto 16px;
+}
+
+.public-shop-products-header h2 {
+  margin: 0;
+  font-size: 32px;
+  font-weight: 500;
+  color: #121212;
+}
+
+.public-shop-products-content {
+  max-width: 1200px;
+  margin: 0 auto 40px;
+  padding: 0 20px;
+}
+

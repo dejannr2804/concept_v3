@@ -25,7 +25,6 @@ export type Product = {
   id: number
   name: string
   slug: string
-  short_description?: string | null
   description?: string | null
   base_price?: number | null
   discounted_price?: number | null
@@ -50,7 +49,6 @@ export type Shop = {
   currency?: string | null
   heading?: string | null
   description?: string | null
-  short_description?: string | null
   profile_image_url?: string | null
   cover_image_url?: string | null
   products: Product[]

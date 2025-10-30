@@ -4,7 +4,6 @@ import LoaderStatus from '@/components/LoaderStatus'
 import { ShopProductGrid } from '@/components/shops/ProductGrid'
 import { useShop } from '@/hooks/useShop'
 import { useEffect } from 'react'
-import Link from 'next/link'
 
 export default function ShopProductsPage({ params }: { params: { slug: string } }) {
   const { slug } = params
@@ -49,21 +48,17 @@ export default function ShopProductsPage({ params }: { params: { slug: string } 
   }
 
   return (
-    <main className="public-shop-page">
-      <section className="public-shop-content">
-        <div className="pp-breadcrumbs">
-          <Link href={`/shops/${shop.slug}`}>Home</Link>
-          <span> / </span>
-          <span>Products</span>
-        </div>
-        <div className="public-shop-contentHeader">
+    <main className="public-shop-page public-shop-products">
+      <section className="public-shop-products-content">
+        <div className="public-shop-products-header">
           <h2>All products</h2>
-          <p>
-            Browse the complete catalogue from {shop.name}. Filter by category or jump into a product to
-            see real-time availability and pricing details.
-          </p>
         </div>
-        <ShopProductGrid shopSlug={shop.slug} products={shop.products} currency={(shop as any).currency} />
+        <ShopProductGrid
+          shopSlug={shop.slug}
+          products={shop.products}
+          infoMode="compact"
+          currency={shop.currency}
+        />
       </section>
     </main>
   )
