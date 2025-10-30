@@ -382,23 +382,26 @@
 }
 
 .pe-dropZone {
-  border: 2px dashed #cbd5e1;
+  border: 2px dashed rgba(37, 99, 235, 0.35); /* blue-ish */
   border-radius: 12px;
-  background: #f0f0f0;
+  background: rgba(37, 99, 235, 0.07);
   height: 180px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #6b7280;
+  color: #121212; /* keep text black */
   text-align: center;
   cursor: pointer;
-  transition: background 120ms ease-in-out, border-color 120ms;
+  transition: background 120ms ease-in-out, border-color 120ms ease-in-out, color 120ms ease-in-out;
 }
 
 .pe-dropZone:hover { 
-  background: #eee;
-  border-color: #94a3b8; 
+  background: rgba(37, 99, 235, 0.12);
+  border-color: rgba(37, 99, 235, 0.6); 
 }
+
+/* Keep link text black to avoid coloring only text */
+.pe-dropZone .pe-link { color: #121212; }
 
 .pe-hiddenFile { 
   display: none; 
