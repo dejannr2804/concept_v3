@@ -4,6 +4,8 @@ import { useMemo, useState } from 'react'
 import Link from 'next/link'
 import LoaderStatus from '@/components/LoaderStatus'
 import { useCart } from '@/components/cart/CartProvider'
+import { DEFAULT_CURRENCY } from '@/lib/currencies'
+import { useShop } from '@/hooks/useShop'
 
 type CheckoutForm = {
   customer_name: string
@@ -28,12 +30,14 @@ const EMPTY_FORM: CheckoutForm = {
 export default function ShopCheckoutPage({ params }: { params: { slug: string } }) {
   const { slug } = params
   const { cart, loading, submitting, checkout } = useCart()
+  const shopData = useShop(slug)
   const [form, setForm] = useState<CheckoutForm>(EMPTY_FORM)
   const [error, setError] = useState<string | null>(null)
   const [completedOrder, setCompletedOrder] = useState<{ order_number: string } | null>(null)
 
   const items = cart?.items || []
-  const currency = cart?.currency || 'USD'
+  const shopCurrency = shopData?.shop?.currency || DEFAULT_CURRENCY
+  const currency = shopCurrency
   const subtotal = Number(cart?.subtotal_amount || 0)
 
   const breakdown = useMemo(() => ({
@@ -186,7 +190,7 @@ export default function ShopCheckoutPage({ params }: { params: { slug: string } 
                   {item.option_label ? <span className="checkout-item-variant">{item.option_label}</span> : null}
                   <span className="checkout-item-qty">Qty {item.quantity}</span>
                 </div>
-                <strong>{formatMoney(item.subtotal_amount, item.currency || currency)}</strong>
+                <strong>{formatMoney(item.subtotal_amount, shopCurrency)}</strong>
               </li>
             ))}
           </ul>

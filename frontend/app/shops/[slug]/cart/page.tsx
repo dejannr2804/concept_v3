@@ -4,17 +4,17 @@ import Link from 'next/link'
 import { useMemo } from 'react'
 import LoaderStatus from '@/components/LoaderStatus'
 import { useCart } from '@/components/cart/CartProvider'
+import { DEFAULT_CURRENCY } from '@/lib/currencies'
+import { useShop } from '@/hooks/useShop'
 
 export default function ShopCartPage({ params }: { params: { slug: string } }) {
   const { slug } = params
   const { cart, loading, submitting, updateQuantity, removeItem, refresh } = useCart()
-
-  if (loading && !cart) {
-    return <LoaderStatus label="Loading cart" delay={600} />
-  }
+  const shopData = useShop(slug)
 
   const items = cart?.items || []
-  const currency = cart?.currency || 'USD'
+  const shopCurrency = shopData?.shop?.currency || DEFAULT_CURRENCY
+  const currency = shopCurrency
   const subtotal = Number(cart?.subtotal_amount || 0)
 
   const breakdown = useMemo(() => ({
@@ -23,6 +23,10 @@ export default function ShopCartPage({ params }: { params: { slug: string } }) {
     shipping: 0,
     total: subtotal,
   }), [subtotal])
+
+  if (loading && !cart) {
+    return <LoaderStatus label="Loading cart" delay={600} />
+  }
 
   return (
     <main className="cart-page">
@@ -93,7 +97,7 @@ export default function ShopCartPage({ params }: { params: { slug: string } }) {
                       </button>
                     </div>
                     <strong className="cart-item-price">
-                      {formatMoney(item.subtotal_amount, item.currency || currency)}
+                      {formatMoney(item.subtotal_amount, shopCurrency)}
                     </strong>
                   </div>
                 </div>

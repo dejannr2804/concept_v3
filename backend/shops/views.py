@@ -305,6 +305,15 @@ class CartViewMixin:
     )
 
     def _load_cart(self, cart: Cart) -> Cart:
+        desired_currency = None
+        if getattr(cart, "shop", None):
+            desired_currency = getattr(cart.shop, "currency", None)
+        if not desired_currency:
+            desired_currency = Shop.objects.filter(pk=cart.shop_id).values_list("currency", flat=True).first()
+        desired_currency = desired_currency or cart.currency
+        if desired_currency and cart.currency != desired_currency:
+            cart.currency = desired_currency
+            cart.save(update_fields=["currency", "updated_at"])
         return (
             Cart.objects.filter(pk=cart.pk)
             .select_related("shop")
@@ -323,6 +332,11 @@ class CartViewMixin:
                 cart = None
         if not cart:
             cart = Cart.objects.create(shop=shop, currency=shop.currency or "USD")
+        else:
+            desired_currency = shop.currency or "USD"
+            if cart.currency != desired_currency:
+                cart.currency = desired_currency
+                cart.save(update_fields=["currency", "updated_at"])
         return cart
 
     def _get_product(self, *, shop: Shop, data: dict) -> Product:
@@ -337,7 +351,7 @@ class CartViewMixin:
             product = generics.get_object_or_404(qs, pk=product_id)
         else:
             product = generics.get_object_or_404(qs, slug=product_slug)
-        if product.stock_status == Product.StockStatus.OUT_OF_STOCK and not product.inventory_items.exists():
+        if product.stock_status == Product.StockStatus.OUT_OF_STOCK:
             raise ValidationError({"detail": "Product is out of stock"})
         return product
 

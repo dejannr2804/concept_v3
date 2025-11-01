@@ -216,6 +216,7 @@
 .cart-summary-continue {
   width: 100%;
   text-align: center;
+  box-sizing: border-box;
 }
 
 .cart-empty-state,

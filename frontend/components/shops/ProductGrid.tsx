@@ -53,8 +53,9 @@ export function ShopProductGrid({ shopSlug, products, emptyMessage = FALLBACK_EM
         const baseValue = parseAmount(product.base_price)
         const hasDiscount = discountedValue !== null && baseValue !== null && discountedValue < baseValue
         const primaryPriceValue = discountedValue ?? baseValue
-        const formattedPrimaryPrice = formatCurrency(primaryPriceValue, currency || product.currency)
-        const formattedOriginalPrice = hasDiscount ? formatCurrency(baseValue, currency || product.currency) : null
+        const preferredCurrency = currency || product.currency || DEFAULT_CURRENCY
+        const formattedPrimaryPrice = formatCurrency(primaryPriceValue, preferredCurrency)
+        const formattedOriginalPrice = hasDiscount ? formatCurrency(baseValue, preferredCurrency) : null
         const description = infoMode === 'full' ? (product.description || '').trim() : ''
         const isLimited = product.stock_status === 'limited'
         const isInStock = product.stock_status !== 'out_of_stock'

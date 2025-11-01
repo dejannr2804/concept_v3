@@ -95,7 +95,7 @@ export default function ShopLayout({
 
 function CartButton({ shopSlug }: { shopSlug: string }) {
   const { cart } = useCart()
-  const count = cart?.total_items ?? 0
+  const count = cart?.items?.length ?? 0
   return (
     <Link href={`/shops/${shopSlug}/cart`} className="cart-button" aria-label="View cart">
       <img src="/img/shopping-bag-02.svg" alt="" />
