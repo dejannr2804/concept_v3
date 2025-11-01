@@ -6,6 +6,7 @@ import type { ReactNode } from 'react'
 import { useMemo } from 'react'
 import LoaderStatus from '@/components/LoaderStatus'
 import { useShop } from '@/hooks/useShop'
+import { CartProvider, useCart } from '@/components/cart/CartProvider'
 
 const normalize = (value: string) => value.replace(/\/$/, '')
 
@@ -54,38 +55,52 @@ export default function ShopLayout({
   }
 
   return (
-    <div className="public-shop-layout">
-      <header className="public-shop-header">
-        <div className="public-shop-headerInner">
-          <Link href={basePath} className="public-shop-brand" aria-label={`${shop?.name || 'Shop'} home`}>
-            {shop?.profile_image_url ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={shop.profile_image_url} alt="Logo" className="public-shop-brandLogo" />
-            ) : (
-              <div className="public-shop-brandFallback">{brandInitial}</div>
-            )}
-            <div className="public-shop-brandCopy">
-              <span className="public-shop-brandNameText">{shop?.name || 'Loading shop'}</span>
+    <CartProvider shopSlug={slug}>
+      <div className="public-shop-layout">
+        <header className="public-shop-header">
+          <div className="public-shop-headerInner">
+            <Link href={basePath} className="public-shop-brand" aria-label={`${shop?.name || 'Shop'} home`}>
+              {shop?.profile_image_url ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={shop.profile_image_url} alt="Logo" className="public-shop-brandLogo" />
+              ) : (
+                <div className="public-shop-brandFallback">{brandInitial}</div>
+              )}
+              <div className="public-shop-brandCopy">
+                <span className="public-shop-brandNameText">{shop?.name || 'Loading shop'}</span>
+              </div>
+            </Link>
+            <nav className="public-shop-nav" aria-label="Shop navigation">
+              {navLinks.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className={`public-shop-navLink${activeClass(link.href)}`}
+                  aria-current={isActive(link.href) ? 'page' : undefined}
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </nav>
+            <div className="cart">
+              <CartButton shopSlug={slug} />
             </div>
-          </Link>
-          <nav className="public-shop-nav" aria-label="Shop navigation">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={`public-shop-navLink${activeClass(link.href)}`}
-                aria-current={isActive(link.href) ? 'page' : undefined}
-              >
-                {link.label}
-              </Link>
-            ))}
-          </nav>
-          <div className="cart">
-            <img src="/img/shopping-bag-02.svg" alt=""/>
           </div>
-        </div>
-      </header>
-      <div className="public-shop-body">{children}</div>
-    </div>
+        </header>
+        <div className="public-shop-body">{children}</div>
+      </div>
+    </CartProvider>
+  )
+}
+
+function CartButton({ shopSlug }: { shopSlug: string }) {
+  const { cart } = useCart()
+  const count = cart?.total_items ?? 0
+  return (
+    <Link href={`/shops/${shopSlug}/cart`} className="cart-button" aria-label="View cart">
+      <img src="/img/shopping-bag-02.svg" alt="" />
+      <span>Cart</span>
+      {count > 0 ? <span className="cart-count-pill">{count}</span> : null}
+    </Link>
   )
 }

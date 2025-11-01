@@ -100,7 +100,37 @@
   display: flex;
   align-items: center;
   justify-content: flex-end;
+}
+
+.public-shop-header .cart-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: none;
+  background: none;
   cursor: pointer;
+  font-size: 0.95rem;
+  color: #1f2937;
+  padding: 6px 12px;
+  border-radius: 999px;
+  transition: background 0.2s ease;
+}
+
+.public-shop-header .cart-button:hover {
+  background: rgba(15, 23, 42, 0.08);
+}
+
+.public-shop-header .cart-count-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: #111827;
+  color: #ffffff;
+  font-size: 0.75rem;
+  font-weight: 600;
 }
 
 .public-shop-body {

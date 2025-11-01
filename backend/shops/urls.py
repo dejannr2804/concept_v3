@@ -10,9 +10,15 @@ from .views import (
     ProductImageDestroyView,
     ProductImageReorderView,
     ShopProfileImageUploadView,
-    ShopCoverImageUploadView,
+   ShopCoverImageUploadView,
     CategoryListCreateView,
     CategoryRetrieveUpdateDestroyView,
+    CartAddItemView,
+    CartRetrieveView,
+    CartItemUpdateView,
+    CartCheckoutView,
+    OrderListView,
+    OrderDetailView,
 )
 
 urlpatterns = [
@@ -30,4 +36,12 @@ urlpatterns = [
     # Categories
     path('<int:shop_id>/categories/', CategoryListCreateView.as_view(), name='category-list-create'),
     path('<int:shop_id>/categories/<int:pk>/', CategoryRetrieveUpdateDestroyView.as_view(), name='category-detail'),
+    # Carts
+    path('slug/<slug:shop_slug>/cart/items/', CartAddItemView.as_view(), name='cart-add-item'),
+    path('carts/<str:token>/', CartRetrieveView.as_view(), name='cart-detail'),
+    path('carts/<str:token>/items/<int:item_id>/', CartItemUpdateView.as_view(), name='cart-item-update'),
+    path('carts/<str:token>/checkout/', CartCheckoutView.as_view(), name='cart-checkout'),
+    # Orders
+    path('<int:shop_id>/orders/', OrderListView.as_view(), name='order-list'),
+    path('<int:shop_id>/orders/<int:pk>/', OrderDetailView.as_view(), name='order-detail'),
 ]

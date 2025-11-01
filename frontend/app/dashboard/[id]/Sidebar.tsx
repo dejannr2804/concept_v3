@@ -16,12 +16,9 @@ export default function Sidebar({ shopId }: { shopId: string }) {
 
   // Show "Soon" badges on click for 5 seconds
   const [showSoonAnalytics, setShowSoonAnalytics] = useState(false)
-  const [showSoonInventory, setShowSoonInventory] = useState(false)
   const [analyticsKey, setAnalyticsKey] = useState(0)
-  const [inventoryKey, setInventoryKey] = useState(0)
   const [helpKey, setHelpKey] = useState(0)
   const analyticsTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const inventoryTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const helpTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const dashboardHref = `/dashboard/${shopId}` as Route
@@ -49,14 +46,6 @@ export default function Sidebar({ shopId }: { shopId: string }) {
     setAnalyticsKey((k) => k + 1)
     if (analyticsTimerRef.current) clearTimeout(analyticsTimerRef.current)
     analyticsTimerRef.current = setTimeout(() => setShowSoonAnalytics(false), 5000)
-  }
-
-  const handleInventoryClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    e.preventDefault()
-    setShowSoonInventory(true)
-    setInventoryKey((k) => k + 1)
-    if (inventoryTimerRef.current) clearTimeout(inventoryTimerRef.current)
-    inventoryTimerRef.current = setTimeout(() => setShowSoonInventory(false), 5000)
   }
 
   const handleHelpClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
@@ -131,14 +120,12 @@ export default function Sidebar({ shopId }: { shopId: string }) {
       </Link>
       <Link
         href={inventoryHref}
-        onClick={handleInventoryClick}
         className={`pe-sidebar-link ${isInventory ? 'is-active' : ''}`}
       >
         <div className="text">
           <img src="/img/box.svg" alt="" className="pe-icon pe-icon--inline" />
           <span>Inventory</span>
         </div>
-        {showSoonInventory && <div key={inventoryKey} className="soon soon--fade">Soon</div>}
       </Link>
 
       <h3 className="pe-sidebar-subtitle">Advanced</h3>

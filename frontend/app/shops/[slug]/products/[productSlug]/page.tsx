@@ -1,11 +1,12 @@
 "use client"
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import Link from 'next/link'
 import { api } from '@/lib/api'
 import LoaderStatus from '@/components/LoaderStatus'
 import type { Product as ShopProduct, ProductImage, ProductVariantType } from '@/lib/shops/types'
 import { useShop } from '@/hooks/useShop'
 import { DEFAULT_CURRENCY } from '@/lib/currencies'
+import { useCart } from '@/components/cart/CartProvider'
 
 type Product = ShopProduct
 
@@ -38,6 +39,8 @@ export default function PublicProductPage({ params }: { params: { slug: string; 
   const imgRef = useRef<HTMLImageElement | null>(null)
   const [imgSize, setImgSize] = useState<{ w: number; h: number } | null>(null)
   const [selectedVariants, setSelectedVariants] = useState<Record<string, number>>({})
+  const [quantity, setQuantity] = useState(1)
+  const { addItem, submitting } = useCart()
 
   const variantTypes = useMemo<ProductVariantType[]>(() => {
     if (!product?.variant_types || product.variant_types.length === 0) return []
@@ -49,6 +52,39 @@ export default function PublicProductPage({ params }: { params: { slug: string; 
         options: (variant.options ?? []).slice().sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0)),
       }))
   }, [product])
+
+  const inventoryItems = useMemo(() => product?.inventory_items ?? [], [product])
+
+  const selection = useMemo(() => {
+    if (variantTypes.length === 0) return []
+    const entries: { typeId: number; optionId: number }[] = []
+    variantTypes.forEach((variant, idx) => {
+      const options = variant.options ?? []
+      if (!options.length) return
+      const key = `${variant.id ?? idx}`
+      const selectedIndex = selectedVariants[key] ?? 0
+      const option = options[selectedIndex]
+      if (option?.id) entries.push({ typeId: variant.id, optionId: option.id })
+    })
+    return entries
+  }, [variantTypes, selectedVariants])
+
+  const selectedInventory = useMemo(() => {
+    if (!inventoryItems.length) return null
+    if (!selection.length) {
+      const preferred = inventoryItems.find((item) => item.is_default)
+      return preferred || inventoryItems[0]
+    }
+    return (
+      inventoryItems.find((item) =>
+        selection.every((sel) =>
+          (item.options || []).some(
+            (opt) => opt.variant_type_id === sel.typeId && opt.variant_option_id === sel.optionId,
+          ),
+        ),
+      ) || null
+    )
+  }, [inventoryItems, selection])
 
   useEffect(() => {
     setSelectedVariants((prev) => {
@@ -72,6 +108,28 @@ export default function PublicProductPage({ params }: { params: { slug: string; 
     setSelectedVariants((prev) => ({ ...prev, [key]: optionIndex }))
   }
 
+  const fallbackStock = product?.stock_status === 'in_stock' ? 99 : 0
+  const availableQuantity = selectedInventory
+    ? selectedInventory.stock_quantity ?? 0
+    : product?.stock_quantity ?? fallbackStock
+  const variantAvailable = selectedInventory?.is_available ?? (selectedInventory ? (selectedInventory.stock_quantity ?? 0) > 0 : undefined)
+  const isAvailable = selectedInventory
+    ? Boolean(variantAvailable)
+    : product ? product.stock_status !== 'out_of_stock' && (product.stock_quantity ?? 0) > 0 : false
+  const maxQuantity = availableQuantity > 0 ? availableQuantity : 1
+  const requiresSelection = inventoryItems.length > 0 && variantTypes.length > 0
+  const selectionMissing = requiresSelection && !selectedInventory
+  const disableAdd = selectionMissing || !isAvailable || submitting
+
+  useEffect(() => {
+    if (availableQuantity > 0 && quantity > availableQuantity) {
+      setQuantity(availableQuantity)
+    }
+    if (availableQuantity <= 0) {
+      setQuantity(1)
+    }
+  }, [availableQuantity, quantity])
+
   useEffect(() => {
     let cancelled = false
     async function load() {
@@ -89,6 +147,29 @@ export default function PublicProductPage({ params }: { params: { slug: string; 
     load()
     return () => { cancelled = true }
   }, [shopSlug, productSlug])
+
+  const incrementQuantity = useCallback(() => {
+    setQuantity((prev) => Math.min(prev + 1, maxQuantity))
+  }, [maxQuantity])
+
+  const decrementQuantity = useCallback(() => {
+    setQuantity((prev) => Math.max(1, prev - 1))
+  }, [])
+
+  const handleAddToCart = useCallback(async () => {
+    if (!product) return
+    if (requiresSelection && !selectedInventory) return
+    try {
+      await addItem({
+        product_id: product.id,
+        quantity: Math.max(1, Math.min(quantity, maxQuantity)),
+        inventory_item_id: selectedInventory?.id ?? null,
+      })
+      setQuantity(1)
+    } catch {
+      // errors handled by cart notifications
+    }
+  }, [product, requiresSelection, selectedInventory, addItem, quantity, maxQuantity])
 
   useEffect(() => {
     if (loading) {
@@ -115,13 +196,12 @@ export default function PublicProductPage({ params }: { params: { slug: string; 
 
   const base = parseAmount(product.base_price)
   const discount = parseAmount(product.discounted_price)
-  const hasDiscount = discount !== null && base !== null && discount < base
-  const primary = discount ?? base
+  const inventoryPrice = selectedInventory?.price ? parseAmount(Number(selectedInventory.price)) : null
+  const primary = inventoryPrice ?? (discount ?? base)
+  const hasDiscount = inventoryPrice === null && discount !== null && base !== null && discount < base
   const currency = shop?.currency || product.currency || DEFAULT_CURRENCY
   const priceText = formatMoney(primary, currency)
   const originalText = hasDiscount && base !== null ? formatMoney(base, currency) : ''
-
-  const stockLabel = product.stock_status === 'in_stock' ? 'In stock' : 'Out of stock'
 
   return (
     <main className="public-product">
@@ -247,8 +327,27 @@ export default function PublicProductPage({ params }: { params: { slug: string; 
         ) : null}
 
         <div className="pp-actions">
-          <button type="button" className="pp-addToCart">Add to cart</button>
+          <div className="pp-qtyControl" aria-label="Quantity">
+            <button type="button" onClick={decrementQuantity} disabled={quantity <= 1 || submitting || !isAvailable}>−</button>
+            <span>{quantity}</span>
+            <button
+              type="button"
+              onClick={incrementQuantity}
+              disabled={submitting || !isAvailable || quantity >= maxQuantity}
+            >
+              +
+            </button>
+          </div>
+          <button
+            type="button"
+            className="pp-addToCart"
+            onClick={handleAddToCart}
+            disabled={disableAdd}
+          >
+            {selectionMissing ? 'Select options' : isAvailable ? (submitting ? 'Adding…' : 'Add to cart') : 'Out of stock'}
+          </button>
         </div>
+        {selectionMissing ? <p className="pp-selectionHint">Select all options to add this product to your cart.</p> : null}
 
         {/* Removed delivery/extra meta per request */}
 
