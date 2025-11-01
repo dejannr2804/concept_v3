@@ -389,6 +389,10 @@ class CartViewMixin:
         return Decimal("0")
 
     def _ensure_stock(self, *, product: Product, inventory_item: ProductInventoryItem | None, quantity: int):
+        if product.stock_status == Product.StockStatus.OUT_OF_STOCK:
+            raise ValidationError({"detail": "Product is out of stock"})
+        if product.stock_status != Product.StockStatus.LIMITED:
+            return
         if inventory_item:
             available = inventory_item.stock_quantity
             if quantity > available:
@@ -549,19 +553,24 @@ class CartCheckoutView(CartViewMixin, APIView):
         for item in cart.items.select_related("product", "inventory_item"):
             product = item.product
             inventory_item = item.inventory_item
-            if inventory_item:
-                inventory_item = ProductInventoryItem.objects.select_for_update().get(pk=inventory_item.pk)
-                if inventory_item.stock_quantity < item.quantity:
-                    raise ValidationError({"detail": f"{product.name} ({inventory_item.label}) is out of stock"})
-                inventory_item.stock_quantity -= item.quantity
-                inventory_item.save()
-            else:
-                product = Product.objects.select_for_update().get(pk=product.pk)
-                if product.stock_quantity < item.quantity:
-                    raise ValidationError({"detail": f"{product.name} is out of stock"})
-                product.stock_quantity = max(0, product.stock_quantity - item.quantity)
-                product.stock_status = Product.StockStatus.IN_STOCK if product.stock_quantity > 0 else Product.StockStatus.OUT_OF_STOCK
-                product.save(update_fields=["stock_quantity", "stock_status", "updated_at"])
+            if product.stock_status == Product.StockStatus.OUT_OF_STOCK:
+                raise ValidationError({"detail": f"{product.name} is out of stock"})
+            if product.stock_status == Product.StockStatus.LIMITED:
+                if inventory_item:
+                    inventory_item = ProductInventoryItem.objects.select_for_update().get(pk=inventory_item.pk)
+                    if inventory_item.stock_quantity < item.quantity:
+                        raise ValidationError({"detail": f"{product.name} ({inventory_item.label}) is out of stock"})
+                    inventory_item.stock_quantity = max(0, inventory_item.stock_quantity - item.quantity)
+                    inventory_item.save()
+                else:
+                    product = Product.objects.select_for_update().get(pk=product.pk)
+                    if product.stock_quantity < item.quantity:
+                        raise ValidationError({"detail": f"{product.name} is out of stock"})
+                    product.stock_quantity = max(0, product.stock_quantity - item.quantity)
+                    product.stock_status = (
+                        Product.StockStatus.LIMITED if product.stock_quantity > 0 else Product.StockStatus.OUT_OF_STOCK
+                    )
+                    product.save(update_fields=["stock_quantity", "stock_status", "updated_at"])
             OrderItem.objects.create(
                 order=order,
                 product=item.product,

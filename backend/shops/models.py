@@ -82,6 +82,7 @@ class Product(models.Model):
 
     class StockStatus(models.TextChoices):
         IN_STOCK = "in_stock", "In stock"
+        LIMITED = "limited", "Limited stock"
         OUT_OF_STOCK = "out_of_stock", "Out of stock"
 
     stock_status = models.CharField(max_length=20, choices=StockStatus.choices, default=StockStatus.IN_STOCK)
@@ -101,6 +102,10 @@ class Product(models.Model):
 
     def __str__(self) -> str:
         return f"{self.name} (shop={self.shop_id})"
+
+    @property
+    def is_limited(self) -> bool:
+        return self.stock_status == Product.StockStatus.LIMITED
 
     def build_variant_label(self, option_values: dict | None) -> str:
         if not option_values:
@@ -126,20 +131,35 @@ class Product(models.Model):
         return " / ".join(parts)
 
     def refresh_inventory_snapshot(self):
-        items = list(self.inventory_items.filter(is_active=True))
-        if items:
-            total = sum(item.stock_quantity for item in items)
-            status = Product.StockStatus.IN_STOCK if total > 0 else Product.StockStatus.OUT_OF_STOCK
-            fields = {"stock_quantity": total, "stock_status": status}
-            for key, value in fields.items():
-                setattr(self, key, value)
-            self.save(update_fields=["stock_quantity", "stock_status", "updated_at"])
+        if self.stock_status == Product.StockStatus.LIMITED:
+            items = list(self.inventory_items.filter(is_active=True))
+            if items:
+                total = sum(item.stock_quantity for item in items)
+                status = Product.StockStatus.LIMITED if total > 0 else Product.StockStatus.OUT_OF_STOCK
+                updates: list[str] = []
+                if total != self.stock_quantity:
+                    self.stock_quantity = total
+                    updates.append("stock_quantity")
+                if status != self.stock_status:
+                    self.stock_status = status
+                    updates.append("stock_status")
+                if updates:
+                    updates.append("updated_at")
+                    self.save(update_fields=updates)
+            else:
+                # Limited stock without variant rows uses base quantity
+                status = Product.StockStatus.LIMITED if self.stock_quantity > 0 else Product.StockStatus.OUT_OF_STOCK
+                if status != self.stock_status:
+                    self.stock_status = status
+                    self.save(update_fields=["stock_status", "updated_at"])
         else:
-            # Preserve manual stock settings when no inventory records exist
-            status = Product.StockStatus.IN_STOCK if self.stock_quantity > 0 else Product.StockStatus.OUT_OF_STOCK
-            if status != self.stock_status:
-                self.stock_status = status
-                self.save(update_fields=["stock_status", "updated_at"])
+            updates: list[str] = []
+            if self.stock_quantity != 0:
+                self.stock_quantity = 0
+                updates.append("stock_quantity")
+            if updates:
+                updates.append("updated_at")
+                self.save(update_fields=updates)
 
 
 class ProductImage(models.Model):
@@ -271,12 +291,14 @@ class ProductInventoryItem(models.Model):
         if self.is_default:
             ProductInventoryItem.objects.filter(product=self.product, is_default=True).exclude(pk=self.pk).update(is_default=False)
         super().save(*args, **kwargs)
-        self.product.refresh_inventory_snapshot()
+        if self.product.is_limited:
+            self.product.refresh_inventory_snapshot()
 
     def delete(self, *args, **kwargs):
         product = self.product
         super().delete(*args, **kwargs)
-        product.refresh_inventory_snapshot()
+        if product.is_limited:
+            product.refresh_inventory_snapshot()
 
 
 class Cart(models.Model):

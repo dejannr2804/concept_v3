@@ -3,8 +3,8 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import DashboardLoadingPlaceholder from '@/components/DashboardLoadingPlaceholder'
-import { useResourceItem, useResourceList } from '@/hooks/resource'
-import type { Product, ProductInventoryItem, Shop } from '@/lib/shops/types'
+import { useResourceList } from '@/hooks/resource'
+import type { Product, ProductInventoryItem } from '@/lib/shops/types'
 import { api } from '@/lib/api'
 
 function rowKey(productId: number, item: ProductInventoryItem | null) {
@@ -14,13 +14,12 @@ function rowKey(productId: number, item: ProductInventoryItem | null) {
 type InventoryProduct = Product & {
   inventory_items?: ProductInventoryItem[]
   stock_quantity?: number | null
-  stock_status?: 'in_stock' | 'out_of_stock'
+  stock_status?: 'in_stock' | 'limited' | 'out_of_stock'
   status: 'active' | 'inactive'
 }
 
 export default function InventoryPageClient({ params }: { params: { id: string } }) {
   const { id: shopId } = params
-  const shop = useResourceItem<Shop>(`shops/${shopId}`)
   const products = useResourceList<InventoryProduct>(`shops/${shopId}/products`)
   const [draftQuantities, setDraftQuantities] = useState<Record<string, number>>({})
   const [pending, setPending] = useState<Record<string, boolean>>({})
@@ -40,11 +39,11 @@ export default function InventoryPageClient({ params }: { params: { id: string }
     setDraftQuantities(next)
   }, [products.data])
 
-  if (products.loading || shop.loading) {
+  if (products.loading) {
     return <DashboardLoadingPlaceholder />
   }
 
-  const list = products.data || []
+  const list = (products.data || []).filter((product) => product.stock_status === 'limited')
 
   const handleQuantityChange = (product: InventoryProduct, item: ProductInventoryItem | null, value: number) => {
     const key = rowKey(product.id, item)
@@ -78,7 +77,7 @@ export default function InventoryPageClient({ params }: { params: { id: string }
       } else {
         await api.patch(`shops/${shopId}/products/${product.id}`, {
           stock_quantity: quantity,
-          stock_status: quantity > 0 ? 'in_stock' : 'out_of_stock',
+          stock_status: quantity > 0 ? 'limited' : 'out_of_stock',
         })
       }
       products.notify.success('Inventory updated')
@@ -138,7 +137,7 @@ export default function InventoryPageClient({ params }: { params: { id: string }
 
       {list.length === 0 ? (
         <div className="inventory-empty">
-          <p>No products yet. Add a product to configure inventory.</p>
+          <p>No limited-stock products yet.</p>
           <Link href={`/dashboard/${shopId}/products/new`} className="cart-btn-primary cart-btn-inline">
             Create product
           </Link>
@@ -235,6 +234,9 @@ export default function InventoryPageClient({ params }: { params: { id: string }
                     const current = product.stock_quantity ?? 0
                     const draft = draftQuantities[key] ?? current
                     const isPending = pending[key]
+                    const simpleStatus = product.stock_status === 'limited'
+                      ? (draft > 0 ? 'Limited stock' : 'Out of stock')
+                      : (product.stock_status === 'in_stock' ? 'In stock' : 'Out of stock')
                     return (
                       <article className="inventory-row">
                         <div className="inventory-row-info">
@@ -242,7 +244,7 @@ export default function InventoryPageClient({ params }: { params: { id: string }
                             <strong>Default stock</strong>
                             <span className="inventory-row-sku">SKU: {product.sku}</span>
                           </div>
-                          <span className="inventory-simple-status">{product.stock_status === 'in_stock' ? 'In stock' : 'Out of stock'}</span>
+                          <span className="inventory-simple-status">{simpleStatus}</span>
                         </div>
                         <div className="inventory-row-controls">
                           <div className="inventory-qty-input">

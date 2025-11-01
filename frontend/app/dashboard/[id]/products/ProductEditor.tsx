@@ -911,6 +911,7 @@ export default function ProductEditor({
                       onChange={(v) => setField('stock_status', v)}
                       options={[
                         { value: 'in_stock', label: 'In stock' },
+                        { value: 'limited', label: 'Limited stock' },
                         { value: 'out_of_stock', label: 'Out of stock' },
                       ]}
                       placeholder="Select stock status"
@@ -918,23 +919,7 @@ export default function ProductEditor({
                     />
                   </label>
                 </div>
-                <div className="pe-rowFields3">
-                  <label className="pe-formField">
-                    <span className="pe-label">Stock Quantity</span>
-                    <input className="pe-input" type="number" value={data?.stock_quantity ?? 0}
-                           onChange={(e) => setField('stock_quantity', Number(e.target.value))}/>
-                  </label>
-                  <label className="pe-formField">
-                    <span className="pe-label">Available From</span>
-                    <input className="pe-input" type="date" value={data?.available_from || ''}
-                           onChange={(e) => setField('available_from', e.target.value || null)}/>
-                  </label>
-                  <label className="pe-formField">
-                    <span className="pe-label">Available To</span>
-                    <input className="pe-input" type="date" value={data?.available_to || ''}
-                           onChange={(e) => setField('available_to', e.target.value || null)}/>
-                  </label>
-                </div>
+                <p className="pe-hint">Detailed stock quantities are managed from the Inventory tab.</p>
               </div>
 
             </form>

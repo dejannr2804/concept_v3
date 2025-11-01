@@ -52,7 +52,7 @@ export type Product = {
   discounted_price?: number | null
   currency?: string | null
   category?: string | null
-  stock_status?: 'in_stock' | 'out_of_stock'
+  stock_status?: 'in_stock' | 'limited' | 'out_of_stock'
   stock_quantity?: number | null
   status?: 'active' | 'inactive'
   images?: ProductImage[]

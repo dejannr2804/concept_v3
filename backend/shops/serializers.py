@@ -336,6 +336,8 @@ class ProductSerializer(serializers.ModelSerializer):
         inventory_payload = self._get_inventory_payload()
         if inventory_payload is not None:
             self._sync_inventory_items(product=product, payload=inventory_payload)
+        if product.stock_status == Product.StockStatus.LIMITED:
+            product.refresh_inventory_snapshot()
         return product
 
     def update(self, instance, validated_data):
@@ -352,6 +354,7 @@ class ProductSerializer(serializers.ModelSerializer):
         inventory_payload = self._get_inventory_payload()
         if inventory_payload is not None:
             self._sync_inventory_items(product=product, payload=inventory_payload)
+        product.refresh_inventory_snapshot()
         return product
 
     def get_inventory_items(self, obj: Product):

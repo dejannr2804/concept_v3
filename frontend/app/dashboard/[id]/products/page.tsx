@@ -19,7 +19,7 @@ type Product = {
   discounted_price?: number | null
   currency?: string
   stock_quantity?: number
-  stock_status?: 'in_stock' | 'out_of_stock'
+  stock_status?: 'in_stock' | 'limited' | 'out_of_stock'
   images?: { id: number; url: string; alt_text?: string; sort_order: number }[]
 }
 

@@ -53,7 +53,11 @@ export default function PublicProductPage({ params }: { params: { slug: string; 
       }))
   }, [product])
 
-  const inventoryItems = useMemo(() => product?.inventory_items ?? [], [product])
+  const isLimited = product?.stock_status === 'limited'
+  const inventoryItems = useMemo(() => {
+    if (!isLimited) return []
+    return product?.inventory_items ?? []
+  }, [product, isLimited])
 
   const selection = useMemo(() => {
     if (variantTypes.length === 0) return []
@@ -108,27 +112,30 @@ export default function PublicProductPage({ params }: { params: { slug: string; 
     setSelectedVariants((prev) => ({ ...prev, [key]: optionIndex }))
   }
 
-  const fallbackStock = product?.stock_status === 'in_stock' ? 99 : 0
-  const availableQuantity = selectedInventory
-    ? selectedInventory.stock_quantity ?? 0
-    : product?.stock_quantity ?? fallbackStock
-  const variantAvailable = selectedInventory?.is_available ?? (selectedInventory ? (selectedInventory.stock_quantity ?? 0) > 0 : undefined)
-  const isAvailable = selectedInventory
-    ? Boolean(variantAvailable)
-    : product ? product.stock_status !== 'out_of_stock' && (product.stock_quantity ?? 0) > 0 : false
-  const maxQuantity = availableQuantity > 0 ? availableQuantity : 1
-  const requiresSelection = inventoryItems.length > 0 && variantTypes.length > 0
+  const availableQuantity = isLimited
+    ? (selectedInventory ? selectedInventory.stock_quantity ?? 0 : product?.stock_quantity ?? 0)
+    : Number.MAX_SAFE_INTEGER
+  const variantAvailable = isLimited
+    ? selectedInventory?.is_available ?? (selectedInventory ? (selectedInventory.stock_quantity ?? 0) > 0 : undefined)
+    : true
+  const isAvailable = product ? (product.stock_status !== 'out_of_stock' && (!isLimited || availableQuantity > 0)) : false
+  const maxQuantity = isLimited ? (availableQuantity > 0 ? availableQuantity : 1) : 99
+  const requiresSelection = isLimited && inventoryItems.length > 0 && variantTypes.length > 0
   const selectionMissing = requiresSelection && !selectedInventory
   const disableAdd = selectionMissing || !isAvailable || submitting
 
   useEffect(() => {
+    if (!isLimited) {
+      if (quantity <= 0) setQuantity(1)
+      return
+    }
     if (availableQuantity > 0 && quantity > availableQuantity) {
       setQuantity(availableQuantity)
     }
     if (availableQuantity <= 0) {
       setQuantity(1)
     }
-  }, [availableQuantity, quantity])
+  }, [availableQuantity, quantity, isLimited])
 
   useEffect(() => {
     let cancelled = false
@@ -164,12 +171,16 @@ export default function PublicProductPage({ params }: { params: { slug: string; 
         product_id: product.id,
         quantity: Math.max(1, Math.min(quantity, maxQuantity)),
         inventory_item_id: selectedInventory?.id ?? null,
+        options: selection.map((entry) => ({
+          variant_type_id: entry.typeId,
+          variant_option_id: entry.optionId,
+        })),
       })
       setQuantity(1)
     } catch {
       // errors handled by cart notifications
     }
-  }, [product, requiresSelection, selectedInventory, addItem, quantity, maxQuantity])
+  }, [product, requiresSelection, selectedInventory, addItem, quantity, maxQuantity, selection])
 
   useEffect(() => {
     if (loading) {
@@ -287,6 +298,13 @@ export default function PublicProductPage({ params }: { params: { slug: string; 
         <div className="pp-price">
           {priceText}
           {originalText ? <span className="muted">{originalText}</span> : null}
+        </div>
+        <div className={`pp-stockIndicator ${isAvailable ? 'is-available' : 'is-out'}`}>
+          {isLimited ? (
+            isAvailable ? `${availableQuantity} in stock` : 'Out of stock'
+          ) : (
+            product.stock_status === 'out_of_stock' ? 'Out of stock' : 'In stock'
+          )}
         </div>
 
         {product.description ? (
