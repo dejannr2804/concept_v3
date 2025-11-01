@@ -19,7 +19,7 @@
 .orders-skeleton .pill {
   height: 16px;
   border-radius: 999px;
-  background: #e6e6e6;
+  background: #ebebeb;
 }
 
 .orders-skeleton .pill--sm { width: 80px; }
