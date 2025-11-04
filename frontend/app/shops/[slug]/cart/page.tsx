@@ -10,10 +10,10 @@ import { useShop } from '@/hooks/useShop'
 export default function ShopCartPage({ params }: { params: { slug: string } }) {
   const { slug } = params
   const { cart, loading, submitting, updateQuantity, removeItem, refresh } = useCart()
-  const shopData = useShop(slug)
+  const { shop: shopInfo } = useShop(slug)
 
   const items = cart?.items || []
-  const shopCurrency = shopData?.shop?.currency || DEFAULT_CURRENCY
+  const shopCurrency = shopInfo?.currency || DEFAULT_CURRENCY
   const currency = shopCurrency
   const subtotal = Number(cart?.subtotal_amount || 0)
 

@@ -135,9 +135,22 @@ class Product(models.Model):
             items = list(self.inventory_items.filter(is_active=True))
             if items:
                 total = sum(item.stock_quantity for item in items)
+                status = Product.StockStatus.LIMITED if total > 0 else Product.StockStatus.OUT_OF_STOCK
+                updates: list[str] = []
                 if total != self.stock_quantity:
                     self.stock_quantity = total
-                    self.save(update_fields=["stock_quantity", "updated_at"])
+                    updates.append("stock_quantity")
+                if status != self.stock_status:
+                    self.stock_status = status
+                    updates.append("stock_status")
+                if updates:
+                    updates.append("updated_at")
+                    self.save(update_fields=updates)
+            else:
+                status = Product.StockStatus.LIMITED if self.stock_quantity > 0 else Product.StockStatus.OUT_OF_STOCK
+                if status != self.stock_status:
+                    self.stock_status = status
+                    self.save(update_fields=["stock_status", "updated_at"])
             return
         else:
             updates: list[str] = []

@@ -30,13 +30,13 @@ const EMPTY_FORM: CheckoutForm = {
 export default function ShopCheckoutPage({ params }: { params: { slug: string } }) {
   const { slug } = params
   const { cart, loading, submitting, checkout } = useCart()
-  const shopData = useShop(slug)
+  const { shop: shopInfo } = useShop(slug)
   const [form, setForm] = useState<CheckoutForm>(EMPTY_FORM)
   const [error, setError] = useState<string | null>(null)
   const [completedOrder, setCompletedOrder] = useState<{ order_number: string } | null>(null)
 
   const items = cart?.items || []
-  const shopCurrency = shopData?.shop?.currency || DEFAULT_CURRENCY
+  const shopCurrency = shopInfo?.currency || DEFAULT_CURRENCY
   const currency = shopCurrency
   const subtotal = Number(cart?.subtotal_amount || 0)
 
