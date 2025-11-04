@@ -581,10 +581,9 @@ class CartCheckoutView(CartViewMixin, APIView):
                     if product.stock_quantity < item.quantity:
                         raise ValidationError({"detail": f"{product.name} is out of stock"})
                     product.stock_quantity = max(0, product.stock_quantity - item.quantity)
-                    product.stock_status = (
-                        Product.StockStatus.LIMITED if product.stock_quantity > 0 else Product.StockStatus.OUT_OF_STOCK
-                    )
-                    product.save(update_fields=["stock_quantity", "stock_status", "updated_at"])
+                    # Keep stock_status as LIMITED to reflect tracked inventory;
+                    # availability is enforced via quantity checks elsewhere.
+                    product.save(update_fields=["stock_quantity", "updated_at"])
             OrderItem.objects.create(
                 order=order,
                 product=item.product,

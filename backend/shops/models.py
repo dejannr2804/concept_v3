@@ -132,25 +132,19 @@ class Product(models.Model):
 
     def refresh_inventory_snapshot(self):
         if self.stock_status == Product.StockStatus.LIMITED:
+            # When tracking inventory (LIMITED), keep stock_status as LIMITED regardless of
+            # current quantity. Only sync the aggregated stock_quantity from active items.
             items = list(self.inventory_items.filter(is_active=True))
             if items:
                 total = sum(item.stock_quantity for item in items)
-                status = Product.StockStatus.LIMITED if total > 0 else Product.StockStatus.OUT_OF_STOCK
                 updates: list[str] = []
                 if total != self.stock_quantity:
                     self.stock_quantity = total
                     updates.append("stock_quantity")
-                if status != self.stock_status:
-                    self.stock_status = status
-                    updates.append("stock_status")
                 if updates:
                     updates.append("updated_at")
                     self.save(update_fields=updates)
-            else:
-                status = Product.StockStatus.LIMITED if self.stock_quantity > 0 else Product.StockStatus.OUT_OF_STOCK
-                if status != self.stock_status:
-                    self.stock_status = status
-                    self.save(update_fields=["stock_status", "updated_at"])
+            # If there are no items, leave stock_status and stock_quantity as-is.
             return
         else:
             updates: list[str] = []

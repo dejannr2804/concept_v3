@@ -58,8 +58,9 @@ export function ShopProductGrid({ shopSlug, products, emptyMessage = FALLBACK_EM
         const formattedOriginalPrice = hasDiscount ? formatCurrency(baseValue, preferredCurrency) : null
         const description = infoMode === 'full' ? (product.description || '').trim() : ''
         const isLimited = product.stock_status === 'limited'
-        const isInStock = product.stock_status !== 'out_of_stock'
-        const stockLabel = isLimited ? 'Limited stock' : (isInStock ? 'In stock' : 'Out of stock')
+        const qty = typeof product.stock_quantity === 'number' ? product.stock_quantity : 0
+        const isInStock = product.stock_status !== 'out_of_stock' && (!isLimited || qty > 0)
+        const stockLabel = !isInStock ? 'Out of stock' : (isLimited ? 'Limited stock' : 'In stock')
 
         return (
           <li key={product.id} className="public-shop-card">
