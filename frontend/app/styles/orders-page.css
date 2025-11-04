@@ -74,9 +74,8 @@
 }
 
 .order-section {
-  background: #ffffff;
+  background: #f5f5f5;
   border-radius: 16px;
-  border: 1px solid #e2e8f0;
   padding: 20px;
   display: flex;
   flex-direction: column;
@@ -101,7 +100,7 @@
   font-size: 0.8rem;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  color: #94a3b8;
+  color: #374151;
   margin-bottom: 4px;
 }
 
@@ -128,3 +127,6 @@
 .order-item-name {
   font-weight: 600;
 }
+
+/* Ensure order items table wrapper has no top margin inside order detail */
+.order-detail-container .products-table-wrapper { margin-top: 0; }

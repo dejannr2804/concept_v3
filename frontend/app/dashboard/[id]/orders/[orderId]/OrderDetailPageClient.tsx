@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { useEffect, useMemo, useState } from 'react'
 import DashboardLoadingPlaceholder from '@/components/DashboardLoadingPlaceholder'
+import SelectPopup from '@/components/SelectPopup'
 import { useResourceItem } from '@/hooks/resource'
 import type { Order, Shop } from '@/lib/shops/types'
 import { DEFAULT_CURRENCY } from '@/lib/currencies'
@@ -109,30 +110,27 @@ export default function OrderDetailPageClient({ params }: { params: { id: string
   return (
     <div className="order-detail-container dlp-fadeIn">
       <div className="top-line">
-        <div>
-          <p className="detail-subheading">
-            <Link href={`/dashboard/${shopId}/orders`} className="back-link">
-              ← Orders
-            </Link>
-          </p>
-          <h1 className="heading">Order #{detail.order_number}</h1>
-        </div>
-        <div className="status-control">
-          <label htmlFor="order-status">Status</label>
-          <select
-            id="order-status"
-            value={status}
-            onChange={(e) => updateStatus(e.target.value as Order['status'])}
-            disabled={saving}
-          >
-            {STATUS_OPTIONS.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
+        <div className="pe-titleGroup">
+          <Link href={`/dashboard/${shopId}/orders`} className="pe-back">
+            <img src="/img/arrow-narrow-left.svg" alt=""/>
+            <span>Go back</span>
+          </Link>
+          <h1 className="pe-title">Order #{detail.order_number}</h1>
         </div>
       </div>
+
+      <section className="order-section">
+        <h2>Actions</h2>
+        <div className="status-control">
+          <label>Status</label>
+          <SelectPopup
+            value={status}
+            options={STATUS_OPTIONS}
+            onChange={(next) => updateStatus((next as Order['status']) || status)}
+            ariaLabel="Order status"
+          />
+        </div>
+      </section>
 
       <section className="order-section">
         <h2>Summary</h2>
@@ -185,33 +183,30 @@ export default function OrderDetailPageClient({ params }: { params: { id: string
         <div className="order-info-box">{renderAddress(detail.shipping_address)}</div>
       </section>
 
-      <section className="order-section">
-        <h2>Items</h2>
-        <div className="products-table-wrapper">
-          <table className="products-table">
-            <thead>
-              <tr>
-                <th>Item</th>
-                <th>Variant</th>
-                <th>Qty</th>
-                <th>Total</th>
+      <div className="products-table-wrapper">
+        <table className="products-table">
+          <thead>
+            <tr>
+              <th>Item</th>
+              <th>Variant</th>
+              <th>Qty</th>
+              <th>Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            {items.map((item) => (
+              <tr key={item.id}>
+                <td>
+                  <div className="order-item-name">{item.product_name}</div>
+                </td>
+                <td>{item.option_label || '—'}</td>
+                <td>{item.quantity}</td>
+                <td>{formatMoney(item.subtotal_amount, item.currency || currency)}</td>
               </tr>
-            </thead>
-            <tbody>
-              {items.map((item) => (
-                <tr key={item.id}>
-                  <td>
-                    <div className="order-item-name">{item.product_name}</div>
-                  </td>
-                  <td>{item.option_label || '—'}</td>
-                  <td>{item.quantity}</td>
-                  <td>{formatMoney(item.subtotal_amount, item.currency || currency)}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </section>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   )
 }
