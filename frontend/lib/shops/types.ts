@@ -36,6 +36,7 @@ export type ProductInventoryItem = {
   is_default?: boolean
   is_available?: boolean
   price?: string | null
+  calculated_price?: string | null
   price_override?: string | null
   currency?: string | null
   option_label?: string | null

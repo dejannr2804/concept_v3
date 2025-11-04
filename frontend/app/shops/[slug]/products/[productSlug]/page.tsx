@@ -113,15 +113,14 @@ export default function PublicProductPage({ params }: { params: { slug: string; 
   }
 
   const availableQuantity = isLimited
-    ? (selectedInventory ? selectedInventory.stock_quantity ?? 0 : product?.stock_quantity ?? 0)
+    ? (selectedInventory
+        ? (selectedInventory.stock_quantity ?? 0)
+        : (inventoryItems.length > 0 ? 0 : (product?.stock_quantity ?? 0)))
     : Number.MAX_SAFE_INTEGER
-  const variantAvailable = isLimited
-    ? selectedInventory?.is_available ?? (selectedInventory ? (selectedInventory.stock_quantity ?? 0) > 0 : undefined)
-    : true
   const isAvailable = product ? (product.stock_status !== 'out_of_stock' && (!isLimited || availableQuantity > 0)) : false
   const maxQuantity = isLimited ? (availableQuantity > 0 ? availableQuantity : 1) : 99
   const requiresSelection = isLimited && inventoryItems.length > 0 && variantTypes.length > 0
-  const selectionMissing = requiresSelection && !selectedInventory
+  const selectionMissing = requiresSelection && selection.length < variantTypes.length
   const disableAdd = selectionMissing || !isAvailable || submitting
 
   useEffect(() => {
@@ -207,9 +206,11 @@ export default function PublicProductPage({ params }: { params: { slug: string; 
 
   const base = parseAmount(product.base_price)
   const discount = parseAmount(product.discounted_price)
-  const inventoryPrice = selectedInventory?.price ? parseAmount(Number(selectedInventory.price)) : null
-  const primary = inventoryPrice ?? (discount ?? base)
-  const hasDiscount = inventoryPrice === null && discount !== null && base !== null && discount < base
+  const inventoryOverride = selectedInventory && selectedInventory.price_override != null
+    ? parseAmount(Number(selectedInventory.price_override))
+    : null
+  const primary = inventoryOverride ?? (discount ?? base)
+  const hasDiscount = inventoryOverride === null && discount !== null && base !== null && discount < base
   const currency = shop?.currency || product.currency || DEFAULT_CURRENCY
   const priceText = formatMoney(primary, currency)
   const originalText = hasDiscount && base !== null ? formatMoney(base, currency) : ''

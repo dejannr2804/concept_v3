@@ -242,10 +242,6 @@ export default function InventoryPageClient({ params }: { params: { id: string }
           <h1>Inventory</h1>
           <p>Adjust stock levels for each product and variation.</p>
         </div>
-        <Link href={`/dashboard/${shopId}/products`} className="ghost-btn">
-          <img src="/img/shopping-bag-02.svg" alt="" className="nav-icon" />
-          <span>Manage products</span>
-        </Link>
       </header>
 
       {pageError ? <div className="inventory-error">{pageError}</div> : null}
@@ -266,8 +262,11 @@ export default function InventoryPageClient({ params }: { params: { id: string }
               <section key={product.id} className="inventory-card">
               <header className="inventory-card-header">
                 <div>
-                  <h2>{product.name}</h2>
-                  <span className={`inventory-status inventory-status--${product.status}`}>{product.status === 'active' ? 'Active' : 'Inactive'}</span>
+                  <div className="inventory-card-titleRow">
+                    <h2>{product.name}</h2>
+                    <span className={`inventory-status inventory-status--${product.status}`}>{product.status === 'active' ? 'Active' : 'Inactive'}</span>
+                  </div>
+                  <span className="inventory-product-sku">SKU: {product.sku}</span>
                 </div>
                 <Link href={`/dashboard/${shopId}/products/${product.id}`} className="inventory-manage-link">
                   <img src="/img/settings-01-l.svg" alt="" className="nav-icon" />
@@ -288,18 +287,17 @@ export default function InventoryPageClient({ params }: { params: { id: string }
                         return (
                           <article key={combo.optionKey} className="inventory-row">
                             <div className="inventory-row-info">
-                              <div>
+                              <div className="inventory-row-title">
                                 <strong>{combo.label}</strong>
-                                <span className="inventory-row-sku">SKU: {combo.item?.sku || product.sku}</span>
+                                <button
+                                  type="button"
+                                  className={`inventory-active-toggle ${isActive ? 'is-active' : 'is-inactive'}`}
+                                  onClick={() => toggleVariantActive(product, combo, key)}
+                                  disabled={isPending}
+                                >
+                                  {isActive ? 'Active' : 'Inactive'}
+                                </button>
                               </div>
-                              <button
-                                type="button"
-                                className={`inventory-active-toggle ${isActive ? 'is-active' : 'is-inactive'}`}
-                                onClick={() => toggleVariantActive(product, combo, key)}
-                                disabled={isPending}
-                              >
-                                {isActive ? 'Active' : 'Inactive'}
-                              </button>
                             </div>
                             <div className="inventory-row-controls">
                               <div className="inventory-qty-input">
@@ -360,11 +358,10 @@ export default function InventoryPageClient({ params }: { params: { id: string }
                   <div className="inventory-rows">
                     <article className="inventory-row">
                       <div className="inventory-row-info">
-                        <div>
+                        <div className="inventory-row-title">
                           <strong>Default stock</strong>
-                          <span className="inventory-row-sku">SKU: {product.sku}</span>
+                          <span className="inventory-simple-status">{simpleStatus}</span>
                         </div>
-                        <span className="inventory-simple-status">{simpleStatus}</span>
                       </div>
                       <div className="inventory-row-controls">
                         <div className="inventory-qty-input">
