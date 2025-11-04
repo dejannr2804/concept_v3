@@ -431,7 +431,7 @@
 .inventory-card {
   border: 1px solid #e2e8f0;
   border-radius: 16px;
-  background: #ffffff;
+  background: #f5f5f5;
   padding: clamp(20px, 3vw, 28px);
   display: flex;
   flex-direction: column;
@@ -469,7 +469,6 @@
   padding: 4px 10px;
   border-radius: 999px;
   font-size: 0.8rem;
-  margin-top: 6px;
 }
 
 .inventory-status--active {
@@ -497,8 +496,45 @@
   gap: 8px;
 }
 
+.inventory-group-title {
+  margin: 8px 0 4px;
+  font-weight: 600;
+  color: #334155;
+}
+
+.inventory-subgroup-title {
+  margin: 6px 0 4px;
+  font-weight: 600;
+  color: #475569;
+  font-size: 0.9rem;
+}
+
+.inventory-subsubgroup-title {
+  margin: 4px 0 4px;
+  font-weight: 600;
+  color: #64748b;
+  font-size: 0.85rem;
+}
+
+.inventory-group,
+.inventory-subgroup,
+.inventory-subsubgroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.inventory-group:not(:first-child) {
+  border-top: 1px dashed #e2e8f0;
+  padding-top: 8px;
+}
+
+.inventory-subgroup:not(:first-child) {
+  border-top: 1px dotted #e2e8f0;
+  padding-top: 6px;
+}
+
 .inventory-row {
-  border: 1px solid #e2e8f0;
   border-radius: 8px;
   padding: 10px 12px;
   display: flex;
@@ -506,6 +542,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 12px;
+  background-color: #fff;
 }
 
 .inventory-row-info {
@@ -557,6 +594,8 @@
   align-items: center;
   gap: 12px;
 }
+
+/* (Removed toggle and active badge styles) */
 
 .inventory-qty-input {
   display: inline-flex;

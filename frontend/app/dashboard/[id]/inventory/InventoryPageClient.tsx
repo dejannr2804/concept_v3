@@ -58,7 +58,10 @@ function optionsMatch(a: ProductVariantSelection[] | undefined, b: ProductVarian
 }
 
 function computeVariantCombos(product: InventoryProduct): VariantCombo[] {
-  const variantTypes = (product.variant_types || []).filter((vt) => (vt.options || []).length > 0)
+  const variantTypes = (product.variant_types || [])
+    .filter((vt) => (vt.options || []).length > 0)
+    .slice()
+    .sort((a: any, b: any) => (a.sort_order ?? 0) - (b.sort_order ?? 0))
   if (variantTypes.length === 0) return []
 
   const combos: VariantCombo[] = []
@@ -269,79 +272,135 @@ export default function InventoryPageClient({ params }: { params: { id: string }
                   <span className="inventory-product-sku">SKU: {product.sku}</span>
                 </div>
                 <Link href={`/dashboard/${shopId}/products/${product.id}`} className="inventory-manage-link">
-                  <img src="/img/settings-01-l.svg" alt="" className="nav-icon" />
                   <span>Edit</span>
                 </Link>
               </header>
 
               {(() => {
                 if (hasVariantRows) {
+                  const variantTypes = (product.variant_types || [])
+                    .filter((vt) => (vt.options || []).length > 0)
+                    .slice()
+                    .sort((a: any, b: any) => (a.sort_order ?? 0) - (b.sort_order ?? 0))
+
+                  const dimCount = variantTypes.length
+
+                  const rowLabel = (combo: VariantCombo, hiddenTypeIds: number[]) => {
+                    const remaining = combo.options.filter((o) => !hiddenTypeIds.includes(o.variant_type_id))
+                    return remaining.map((o) => o.variant_option_name).join(' / ')
+                  }
+
+                  const renderRow = (combo: VariantCombo, hiddenTypeIds: number[] = []) => {
+                    const key = rowKey(product.id, combo.item, combo.optionKey)
+                    const current = combo.item?.stock_quantity ?? 0
+                    const draft = draftQuantities[key] ?? current
+                    const isPending = pending[key]
+                    return (
+                      <article key={combo.optionKey} className="inventory-row">
+                        <div className="inventory-row-info">
+                          <div className="inventory-row-title">
+                            {rowLabel(combo, hiddenTypeIds) ? (
+                              <strong>{rowLabel(combo, hiddenTypeIds)}</strong>
+                            ) : null}
+                          </div>
+                        </div>
+                        <div className="inventory-row-controls">
+                          <div className="inventory-qty-input">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const next = Math.max(0, draft - 1)
+                                handleQuantityChange(key, next)
+                                applyVariantQuantity(product, combo, key, next)
+                              }}
+                              aria-label="Decrease quantity"
+                              disabled={isPending || draft <= 0}
+                            >
+                              −
+                            </button>
+                            <input
+                              type="number"
+                              min={0}
+                              value={draft}
+                              onChange={(e) => handleQuantityChange(key, Number(e.target.value))}
+                              onBlur={(e) => applyVariantQuantity(product, combo, key, Number(e.currentTarget.value))}
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                  e.currentTarget.blur()
+                                }
+                              }}
+                              disabled={isPending}
+                            />
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const next = draft + 1
+                                handleQuantityChange(key, next)
+                                applyVariantQuantity(product, combo, key, next)
+                              }}
+                              aria-label="Increase quantity"
+                              disabled={isPending}
+                            >
+                              +
+                            </button>
+                          </div>
+                          <span className="inventory-qty-label">{draft} in stock</span>
+                        </div>
+                      </article>
+                    )
+                  }
+
+                  const vt1 = variantTypes[0]
+                  const vt2 = variantTypes[1]
+                  const vt3 = variantTypes[2]
+                  const getOpt = (c: VariantCombo, typeId: number) => c.options.find((o) => o.variant_type_id === typeId)
+
                   return (
                     <div className="inventory-rows">
-                      {combos.map((combo) => {
-                        const key = rowKey(product.id, combo.item, combo.optionKey)
-                        const current = combo.item?.stock_quantity ?? 0
-                        const draft = draftQuantities[key] ?? current
-                        const isPending = pending[key]
-                        const isActive = combo.item?.is_active ?? true
+                      {(vt1?.options || []).map((opt1) => {
+                        const level1 = combos.filter((c) => getOpt(c, vt1.id)?.variant_option_id === opt1.id)
+                        if (!level1.length) return null
+                        if (dimCount === 1) {
+                          const only = level1[0]
+                          return (
+                            <div className="inventory-group" key={`g1-${opt1.id}`}>
+                              {only ? renderRow(only, []) : null}
+                            </div>
+                          )
+                        }
+
                         return (
-                          <article key={combo.optionKey} className="inventory-row">
-                            <div className="inventory-row-info">
-                              <div className="inventory-row-title">
-                                <strong>{combo.label}</strong>
-                                <button
-                                  type="button"
-                                  className={`inventory-active-toggle ${isActive ? 'is-active' : 'is-inactive'}`}
-                                  onClick={() => toggleVariantActive(product, combo, key)}
-                                  disabled={isPending}
-                                >
-                                  {isActive ? 'Active' : 'Inactive'}
-                                </button>
-                              </div>
-                            </div>
-                            <div className="inventory-row-controls">
-                              <div className="inventory-qty-input">
-                                <button
-                                  type="button"
-                                  onClick={() => {
-                                    const next = Math.max(0, draft - 1)
-                                    handleQuantityChange(key, next)
-                                    applyVariantQuantity(product, combo, key, next)
-                                  }}
-                                  aria-label="Decrease quantity"
-                                  disabled={isPending || draft <= 0}
-                                >
-                                  −
-                                </button>
-                                <input
-                                  type="number"
-                                  min={0}
-                                  value={draft}
-                                  onChange={(e) => handleQuantityChange(key, Number(e.target.value))}
-                                  onBlur={(e) => applyVariantQuantity(product, combo, key, Number(e.currentTarget.value))}
-                                  onKeyDown={(e) => {
-                                    if (e.key === 'Enter') {
-                                      e.currentTarget.blur()
-                                    }
-                                  }}
-                                  disabled={isPending}
-                                />
-                                <button
-                                  type="button"
-                                  onClick={() => {
-                                    const next = draft + 1
-                                    handleQuantityChange(key, next)
-                                    applyVariantQuantity(product, combo, key, next)
-                                  }}
-                                  aria-label="Increase quantity"
-                                  disabled={isPending}
-                                >
-                                  +
-                                </button>
-                              </div>
-                              <span className="inventory-qty-label">{draft} in stock</span>
-                            </div>
-                          </article>
+                          <div className="inventory-group" key={`g1-${opt1.id}`}>
+                            <div className="inventory-group-title">{vt1.name}: {opt1.name}</div>
+                            {(vt2?.options || []).map((opt2) => {
+                              const level2 = level1.filter((c) => getOpt(c, vt2.id)?.variant_option_id === opt2.id)
+                              if (!level2.length) return null
+                              if (dimCount === 2) {
+                                const only2 = level2[0]
+                                return (
+                                  <div className="inventory-subgroup" key={`g2-${opt1.id}-${opt2.id}`}>
+                                    {only2 ? renderRow(only2, [vt1.id]) : null}
+                                  </div>
+                                )
+                              }
+
+                              return (
+                                <div className="inventory-subgroup" key={`g2-${opt1.id}-${opt2.id}`}>
+                                  <div className="inventory-subgroup-title">{vt2.name}: {opt2.name}</div>
+                                  {(vt3?.options || []).map((opt3) => {
+                                    const level3 = level2.filter((c) => getOpt(c, vt3.id)?.variant_option_id === opt3.id)
+                                    if (!level3.length) return null
+                                    const only3 = level3[0]
+                                    return (
+                                      <div className="inventory-subsubgroup" key={`g3-${opt1.id}-${opt2.id}-${opt3.id}`}>
+                                        {only3 ? renderRow(only3, [vt1.id, vt2.id]) : null}
+                                      </div>
+                                    )
+                                  })}
+                                </div>
+                              )
+                            })}
+                          </div>
                         )
                       })}
                     </div>
@@ -351,16 +410,12 @@ export default function InventoryPageClient({ params }: { params: { id: string }
                 const current = product.stock_quantity ?? 0
                 const draft = draftQuantities[key] ?? current
                 const isPending = pending[key]
-                const simpleStatus = product.stock_status === 'limited'
-                  ? (draft > 0 ? 'Limited stock' : 'Out of stock')
-                  : (product.stock_status === 'in_stock' ? 'In stock' : 'Out of stock')
                 return (
                   <div className="inventory-rows">
                     <article className="inventory-row">
                       <div className="inventory-row-info">
                         <div className="inventory-row-title">
                           <strong>Default stock</strong>
-                          <span className="inventory-simple-status">{simpleStatus}</span>
                         </div>
                       </div>
                       <div className="inventory-row-controls">

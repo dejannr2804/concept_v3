@@ -98,7 +98,7 @@ export default function OrdersPageClient({ params }: { params: { id: string } })
                   <td>{formatMoney(order.total_amount, order.currency || currency)}</td>
                   <td className="actions">
                     <Link href={`/dashboard/${id}/orders/${order.id}`}>
-                      <img src="/img/arrow-narrow-right.svg" alt="" className="nav-icon" />
+                      <img src="/img/arrow-narrow-up-right.svg" alt="" className="nav-icon" />
                       <span>View</span>
                     </Link>
                   </td>
